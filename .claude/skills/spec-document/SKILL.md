@@ -6,14 +6,18 @@ description: Create a Sistec engineering-sheet specification / design document a
 # spec-document
 
 Produce a specification document matching the Sistec engineering-sheet style: the exact CSS design
-system (`--paper`/`--ink`/`--signal` tokens, Cascadia + Segoe fonts, light/dark + theme toggle),
-structural chrome (`header.sheet`, `dl.sig`, numbered `§` sections, `figure` plates, `.tbl-wrap`
-tables, Revisions table, footer), and Sistec conventions.
+system (`--paper`/`--ink`/`--signal` tokens — warm terracotta accent `#cc785c` on cream `#f7f6f3`,
+Cascadia + Segoe fonts, light/dark + theme toggle), structural chrome (`header.sheet`, `dl.sig`,
+numbered `§` sections, `figure` plates, `.tbl-wrap` tables with accent-header cards, Revisions
+table, footer), and Sistec conventions.
 
 ## Files in this skill
 
 - `template.html` — the scaffold: full `<style>` block **verbatim** + a fillable body skeleton + the
   theme-toggle script. Start every document by copying this.
+- `sheet.css` — the same CSS as `template.html`'s `<style>` block, kept as a standalone file so it can
+  be diffed straight against the live site's `style.css` when the palette/style changes again. Not
+  linked by generated docs (those stay single-file) — edit it **and** `template.html` together, in sync.
 - `components.md` — copy-paste markup for every block (callout, figure/SVG, table, steps, pre, tags).
   Read it when you need a component you don't already have in front of you.
 
@@ -52,7 +56,8 @@ When editing an already-issued sheet, do all four in the same change:
 - **Self-contained, single file.** All CSS inline in the `<style>` block; SVG inline; no external
   fonts/scripts/images. It must open correctly by double-click and also survive as a Claude Artifact.
 - **Never touch the `<style>` block or the theme script** — they are the shared design system; copy
-  verbatim from `template.html`. Style only via the existing classes/tokens.
+  verbatim from `template.html`. Style only via the existing classes/tokens. If the design system
+  itself needs updating, edit `template.html` and `sheet.css` together (see "Files in this skill").
 - **Dates** `YYYY-MM-DD`. **Language** matches the request (the reference is Italian).
 - **Escape** `<`, `>`, `&` as `&lt;`/`&gt;`/`&amp;` inside `<pre>`/`<code>` content.
 - **Save location:** if a project is active (P3), write to `<project>\specifications\<name>.html`;
