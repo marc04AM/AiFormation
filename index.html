@@ -527,7 +527,38 @@ non richiede un progetto infrastrutturale: richiede formazione. Il referente per
 <b>---</b>
   ... corpo della skill: le istruzioni vere e proprie ...</pre>
 
-  <h3>6.2 Regole delle skill</h3>
+  <h3>6.2 Skills sbagliate — cosa NON sono</h3>
+  <p>Se pensi a una skill come a un comando — «quando invoco <code>/deploy</code> esegue il deploy» — c'è
+  un problema alla base. Una skill <strong>non incapsula comandi deterministici</strong>. Se una procedura è
+  sempre uguale — build, copia, incolla — scrivi uno script bash o Python, o ancora meglio una <strong>GitHub
+  Action</strong>. Non serve una skill: è un'azione meccanica che si risolve con uno script, non un comportamento che
+  Claude deve interpretare.</p>
+
+  <p>Allo stesso modo, una skill che «analizza tutto il repo, cerca i metodi definiti e vede se sono chiamati da
+  qualche parte» non ha senso. Non serve una skill per questo: scrivi mezza riga di prompt — <em>«builda ed elimina
+  tutti i warning di codice morto»</em> — e se vuoi rigore, usa un <strong>linter</strong>, che esiste da quarant'anni.
+  La skill non è un contenitore per rimediare alla mancanza di tooling: è un comportamento atteso per situazioni che
+  richiedono <em>giudizio</em>, non automazione lineare.</p>
+
+  <div class="callout key">
+    <h4>Il test infallibile</h4>
+    <p>Se la procedura che stai descrivendo si può scrivere in <strong>30 righe di bash</strong>, non è una skill: è
+    uno script. Mettilo in <code>scripts/</code> o in una GitHub Action. La skill serve quando c'è una <em>decisione
+    da prendere</em>, non un'istruzione da eseguire.</p>
+  </div>
+
+  <h3>6.3 Come si invoca una skill — l'interfaccia è il linguaggio naturale</h3>
+  <p>Conseguenza diretta: una skill non si invoca per nome. Non esiste un comando <code>/analyze-log</code> da
+  ricordare. Se la skill è scritta bene — con una <code>description</code> che descrive <em>quando</em> scatta —
+  basta scrivere <em>«analizza i log e cerca il problema X»</em> e il modello <strong>sceglie da solo</strong> la
+  skill giusta. L'interfaccia con l'utente è il linguaggio naturale, non un vocabolario di comandi da imparare. Non
+  serve sapere il nome esatto della skill né i suoi parametri: è il modello che decide se attivarla, in base alla
+  descrizione e al contesto.</p>
+
+  <p>Tradotto: se qualcuno chiede «come si chiama la skill per analizzare i log?» la domanda è già sbagliata. La
+  risposta giusta è «descrivi cosa vuoi fare e la skill scatterà da sola».</p>
+
+  <h3>6.4 Regole delle skill</h3>
   <ul class="tight">
     <li><b>Self-contained.</b> Tutto ciò che serve sta dentro la cartella della skill — niente dipendenze implicite dall'esterno.</li>
     <li><b>Nascono in un progetto.</b> Se lavoro alla commessa <code>141414</code>, la skill nasce lì. La condivisione è un passo successivo ed esplicito (§9), non automatica.</li>
@@ -887,6 +918,150 @@ openspec/
   </div>
 </section>
 
+<!-- ========== 13 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§13</span><h2>Criteri di verifica — chiudere il ciclo</h2></div>
+  <p>Il ciclo agentico (§1) si chiude solo quando i risultati sono <strong>verificabili</strong>. Senza un criterio
+  di verifica, Claude non sa se ha finito: indovina, produce codice plausibile ma non provato, e il ciclo si chiude
+  per esaurimento del contesto, non per successo. Il modo più efficace per migliorare la qualità dell'output è dare
+  a Claude un modo <em>eseguibile</em> di verificare sé stesso.</p>
+
+  <h3>13.1 Cosa rende un criterio di verifica efficace</h3>
+  <p>Tre caratteristiche, in ordine di potenza:</p>
+  <ol class="steps">
+    <li><b>Eseguibile.</b> Un comando che Claude può lanciare e di cui può leggere l'uscita — <code>npm test</code>,
+      <code>dotnet build</code>, <code>ruff check</code>. La build che passa è la forma più forte di verifica.</li>
+    <li><b>Osservabile.</b> Una regola che Claude può controllare leggendo un file — «la funzione accetta numeri
+      negativi?», «tutte le traduzioni hanno il placeholder <code>{name}</code>?». Si verifica con un grep o un
+      read, non con un test.</li>
+    <li><b>Descrittivo.</b> Una condizione scritta nel prompt — «il bottone dev'essere blu, non verde» — che Claude
+      valuta a vista. È la forma più debole: funziona, ma non chiude il ciclo da sola.</li>
+  </ol>
+
+  <figure>
+    <div class="plate-cap"><b>Tabella</b><span>Esempi di criteri di verifica — buoni e cattivi.</span></div>
+    <div class="plate-body"><div class="tbl-wrap"><table>
+      <thead><tr><th>Prompt</th><th>Criterio di verifica</th><th>Giudizio</th></tr></thead>
+      <tbody>
+        <tr><td><em>«Implementa login con JWT»</em></td><td>nessuno</td><td class="col-bad">❌ Claude produce codice, non sa se funziona</td></tr>
+        <tr><td><em>«Implementa login con JWT»</em></td><td>i test <code>auth.test.ts</code> passano</td><td class="col-good">✅ ciclo chiuso: <code>npm test</code> dice se è fatto</td></tr>
+        <tr><td><em>«Aggiungi validazione email»</em></td><td>nessuno</td><td class="col-bad">❌ plausibile ma non provato</td></tr>
+        <tr><td><em>«Aggiungi validazione email»</em></td><td><code>rg "email.*valid" src/routes/</code> trova il nuovo pattern</td><td class="col-good">✅ osservabile con grep</td></tr>
+        <tr><td><em>«Rendi il footer responsive»</em></td><td>«sembra giusto»</td><td class="col-bad">❌ Claude non può verificare l'estetica</td></tr>
+        <tr><td><em>«Rendi il footer responsive»</em></td><td>la build non dà errori CSS + screenshoot con Puppeteer a 3 viewport</td><td class="col-good">✅ verificabile con tool</td></tr>
+      </tbody>
+    </table></div></div>
+  </figure>
+
+  <div class="callout key">
+    <h4>Scrivi il test prima del codice</h4>
+    <p>Il modo più efficace per usare Claude Code è dargli un <strong>test che fallisce</strong> e dirgli di farlo
+    passare. Il test è il criterio di verifica — e il ciclo agentico si chiude da solo quando il test passa. È la
+    stessa dinamica del TDD, ma eseguita dall'agente invece che da te.</p>
+  </div>
+
+  <h3>13.2 Verifica nel piano, non nel codice</h3>
+  <p>Il criterio di verifica va stabilito <strong>prima</strong> di scrivere codice, nel piano (§5). Se aspetti che
+  Claude abbia finito per controllare, scoprirai errori quando costa di più correggerli. In fase di piano chiedi:
+  «come facciamo a sapere che è fatto bene?». La risposta è il criterio di verifica — e va scritto nel prompt,
+  non tenuto in testa.</p>
+
+  <div class="callout">
+    <h4>Esempio — verifica nel piano</h4>
+    <p><em>«Aggiungi un campo "data di nascita" al form di registrazione. Criterio di verifica: (1) il test
+    <code>form.test.ts</code> passa senza modifiche al test esistente; (2) una validazione client-side rifiuta
+    date future; (3) la build non produce warning TypeScript.»</em></p>
+  </div>
+</section>
+
+<!-- ========== 14 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§14</span><h2>Quando NON usare Claude Code</h2></div>
+  <p>Non tutto va delegato a un agente. Claude Code è potente, ma ci sono cose che si fanno <strong>meglio e più
+  veloce</strong> senza. Saperle riconoscere è parte dell'adozione matura — non è un fallimento dello strumento,
+  è saperlo usare al posto giusto.</p>
+
+  <h3>14.1 Cosa fare a mano</h3>
+  <ul class="tight">
+    <li><b>Task meccanici e locali.</b> Rinominare una variabile in 2-3 file? Un IDE lo fa in 5 secondi con
+      <em>refactor → rename</em>. Claude ci impiega di più a capire il contesto.</li>
+    <li><b>Operazioni deterministiche su larga scala.</b> Sostituire un pattern in 50 file? <code>sed</code> o
+      <code>rg --replace</code> in shell. Con Claude devi descrivere il pattern e verificare ogni file. Linea
+      di comando: 1 secondo. Agente: 5 minuti.</li>
+    <li><b>Una trasformazione dati una tantum.</b> Convertire un CSV, plottare una curva, estrarre un campo da
+      JSON annidato. Una riga di Python o <code>jq</code> è più veloce che descrivere il problema a Claude,
+      aspettare che scriva lo script, eseguirlo e verificare il risultato.</li>
+    <li><b>Quando sai esattamente cosa fare.</b> Se hai già la soluzione in testa — cambi una stringa, aggiungi
+      un import, modifichi una costante — scrivila. Il giro prompt→attesa→verifica è più lento della scrittura
+      diretta. Claude Code non è una bacchetta magica: è uno strumento per quando <em>non</em> sai già la
+      risposta.</li>
+  </ul>
+
+  <h3>14.2 Il test del minuto</h3>
+  <p>Regola pratica: se puoi fare la cosa in <strong>meno di un minuto</strong> a mano, falla a mano. Se ti
+  serve <strong>più di un minuto</strong> di descrizione, probabilmente Claude è la scelta giusta. Il punto di
+  pareggio è intorno ai 30 secondi di digitazione vs 30 secondi di prompt — ma il prompt richiede verifica, la
+  digitazione no.</p>
+
+  <h3>14.3 Cosa evitare del tutto</h3>
+  <ul class="tight">
+    <li><b>Auto-approvare in produzione.</b> Mai lasciare Claude scrivere su branch di produzione senza review.
+      Git è la rete di sicurezza (§2), ma la review umana resta obbligatoria sui cambiamenti critici.</li>
+    <li><b>Sessioni senza criterio di verifica.</b> Se non sai dire «fatto», Claude non lo sa nemmeno. Le
+      sessioni senza verifica sono le più costose in token e le meno produttive.</li>
+    <li><b>Usare Claude per imparare un framework.</b> Se non conosci il dominio, non riconosci quando Claude
+      sbaglia. Prima studia, poi delega. Claude è un acceleratore di competenza, non un sostituto.</li>
+  </ul>
+
+  <div class="callout">
+    <h4>Legge di Hitchens applicata</h4>
+    <p>«Ciò che può essere fatto senza un agente, può essere fatto meglio senza un agente.» Non perché Claude
+    sia scarso — ma perché il giro prompt→attesa→verifica ha un costo che non sempre vale la spesa. Usalo per i
+    problemi, non per le digitazioni.</p>
+  </div>
+</section>
+
+<!-- ========== Cheat sheet ========== -->
+<section aria-label="Cheat sheet">
+  <div class="sec-head"><span class="sec-no">⚡</span><h2>Cheat sheet — riferimento rapido</h2></div>
+  <p>Da stampare o tenere aperto in una scheda. Il minimo indispensabile per lavorare con Claude Code.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Comando</th><th>Quando</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><span class="kbd">/clear</span></td><td>inizio nuova feature</td><td>azzera contesto — niente bias dalla sessione precedente</td></tr>
+      <tr><td><span class="kbd">/compact</span></td><td>contesto quasi pieno, stessa feature</td><td>riassume mantenendo la memoria del lavoro in corso</td></tr>
+      <tr><td><span class="kbd">/context</span></td><td>vuoi ispezionare</td><td>mostra cosa occupa spazio nella finestra</td></tr>
+      <tr><td><span class="kbd">! comando</span></td><td>eseguire in shell</td><td>lancio un comando e l'output entra nel contesto</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th colspan="2">Workflow — Explore → Plan → Code → Commit</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. Explore</b></td><td>In plan mode (sola lettura): Claude legge i file e capisce dove intervenire. Nessuna modifica.</td></tr>
+      <tr><td><b>2. Plan</b></td><td>Claude produce un piano d'azione. <strong>Correggi qui</strong> — prima che una riga sia scritta. Definisci i criteri di successo.</td></tr>
+      <tr><td><b>3. Code</b></td><td>Approvato il piano, Claude lavora la lista. Dagli un test come fonte di verità — così verifica da solo.</td></tr>
+      <tr><td><b>4. Commit</b></td><td>Prima del commit, lancia un subagent reviewer. Poi genera il commit e fai push. Ripeti.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th colspan="2">Template prompt in 3 parti</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 · Prepara il terreno</b></td><td>Contesto e scopo: dove siamo, cosa c'è già. <em>«L'app ha un form di login in Vue, usa Pinia per lo stato»</em></td></tr>
+      <tr><td><b>2 · Descrivi il compito</b></td><td>Azione concreta, non desiderio vago. <em>«Aggiungi validazione email sul campo username»</em></td></tr>
+      <tr><td><b>3 · Fornisci le regole</b></td><td>Vincoli + criterio di verifica. <em>«Usa regex RFC 5322; i test esistenti devono ancora passare; la build non deve produrre warning»</em></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout key" style="margin-top:16px">
+    <h4>La regola che vale per tutte</h4>
+    <p>Se dai a Claude un modo di verificare il risultato (test, build, criterio esplicito), chiude il ciclo da
+    solo. Se non glielo dai, è una chat travestita — codice plausibile, niente garanzie.</p>
+  </div>
+</section>
+
 <!-- ========== Corso Claude 101 (pagina a parte) ========== -->
 <section aria-label="Corso Claude 101">
   <div class="sec-head"><span class="sec-no">corso</span><h2>Claude 101 — il corso ufficiale</h2></div>
@@ -927,6 +1102,15 @@ openspec/
   <div class="tbl-wrap"><table>
     <thead><tr><th>Versione</th><th>Data</th><th>Revisionato da</th><th>Modifiche introdotte</th></tr></thead>
     <tbody>
+      <tr><td class="col-mono">1.5</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
+        <td>Nuovo <b>§6.2 «Skills sbagliate — cosa NON sono»</b> (skill non è deploy script né analisi codice morto;
+          test: 30 righe di bash = script, non skill) e <b>§6.3 «Come si invoca una skill — l'interfaccia è il
+          linguaggio naturale»</b> (nessun <code>/analyze-log</code>, il modello sceglie dalla descrizione).
+          Nuovo <b>§13 «Criteri di verifica — chiudere il ciclo»</b> (eseguibile / osservabile / descrittivo,
+          tabelle esempi buoni-cattivi, test prima del codice, verifica nel piano). Nuovo <b>§14 «Quando NON usare
+          Claude Code»</b> (task meccanici, sed, trasformazioni dati, il test del minuto, cosa evitare — produzione
+          auto-approvata, sessioni senza verifica, imparare un framework). Nuovo <b>⚡ Cheat sheet</b> (comandi,
+          workflow, template prompt in 3 parti, regola finale).</td></tr>
       <tr><td class="col-mono">1.4</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
         <td>Aggiunto in §7 il ciclo di caricamento a tre modalità: <b>§7.3 «le rules»</b> (convenzioni di codice
           attivate per <code>paths</code>/glob) e <b>§7.4 «il perché di una modifica»</b> (dall'archivio post-hoc
@@ -967,7 +1151,7 @@ openspec/
 </section>
 
 <footer>
-  <span>Sistec · adozione Claude &amp; Claude Code · 12 § · 4 figure · 1 grafico · 1 interattivo · corsi Claude 101 + Claude Code 101 (pagine a parte)</span>
+  <span>Sistec · adozione Claude &amp; Claude Code · 14 § · 4 figure · 1 grafico · 1 interattivo · 1 cheat sheet · corsi Claude 101 + Claude Code 101 (pagine a parte)</span>
   <span>autorità: documentazione Claude Code + corsi ufficiali Anthropic + LLM-wiki (Karpathy) · 2026-07-07 · v1.4</span>
 </footer>
 </div>
