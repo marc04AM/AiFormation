@@ -13,12 +13,28 @@
 <link rel="stylesheet" href="style.css">
 
 <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<style>
+.theme-btn{position:fixed;top:14px;right:18px;z-index:99;font-family:var(--mono,monospace);
+  font-size:12px;letter-spacing:.05em;background:var(--surface,#fff);
+  color:var(--ink-soft,#666);border:1px solid var(--line-strong,#ccc);border-radius:2px;
+  padding:7px 11px;cursor:pointer;}
+.theme-btn:hover{border-color:var(--signal,#0a97b8)}
+</style>
 </head>
 <body class="doc">
+  <button class="theme-btn" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <script>
+  document.getElementById('themebtn').addEventListener('click',function(){
+    var root=document.documentElement;
+    var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+    var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+    root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  });
+  </script>
   <script>
     mermaid.initialize({
       startOnLoad: true,
-      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+      theme: document.documentElement.getAttribute('data-theme')==='dark'
           ? 'dark'
           : 'default'
     });
