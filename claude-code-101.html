@@ -4,128 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Claude Code 101 — corso ufficiale</title>
-<style>
-  :root{
-    --paper:#e9eef2; --surface:#ffffff; --surface-2:#f3f6f8;
-    --ink:#0f1720; --ink-soft:#3a4753; --slate:#647585; --slate-soft:#8a99a6;
-    --line:#d3dde4; --line-strong:#b3c2cd;
-    --signal:#0a97b8; --signal-ink:#0a6d84; --signal-wash:#0a97b81a;
-    --reuse:#b7791f;
-    --mono:"Cascadia Code","Cascadia Mono",Consolas,ui-monospace,"SF Mono",Menlo,monospace;
-    --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-    --top:56px;
-  }
-  @media (prefers-color-scheme:dark){
-    :root{
-      --paper:#0d1418; --surface:#141d23; --surface-2:#101a1f;
-      --ink:#e8eef2; --ink-soft:#b3c0ca; --slate:#8ea0ad; --slate-soft:#63737f;
-      --line:#243139; --line-strong:#334450;
-      --signal:#2fc4e2; --signal-ink:#7fdcef; --signal-wash:#2fc4e21f;
-      --reuse:#d9a441;
-    }
-  }
-  :root[data-theme="light"]{
-    --paper:#e9eef2; --surface:#ffffff; --surface-2:#f3f6f8;
-    --ink:#0f1720; --ink-soft:#3a4753; --slate:#647585; --slate-soft:#8a99a6;
-    --line:#d3dde4; --line-strong:#b3c2cd;
-    --signal:#0a97b8; --signal-ink:#0a6d84; --signal-wash:#0a97b81a; --reuse:#b7791f;
-  }
-  :root[data-theme="dark"]{
-    --paper:#0d1418; --surface:#141d23; --surface-2:#101a1f;
-    --ink:#e8eef2; --ink-soft:#b3c0ca; --slate:#8ea0ad; --slate-soft:#63737f;
-    --line:#243139; --line-strong:#334450;
-    --signal:#2fc4e2; --signal-ink:#7fdcef; --signal-wash:#2fc4e21f; --reuse:#d9a441;
-  }
-
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
-  a{color:var(--signal-ink);text-underline-offset:2px}
-
-  /* ---- topbar ---- */
-  .topbar{position:sticky;top:0;z-index:10;height:var(--top);display:flex;align-items:center;
-    justify-content:space-between;gap:14px;padding:0 clamp(14px,3vw,26px);
-    background:var(--surface);border-bottom:1px solid var(--line-strong);}
-  .brand{display:flex;flex-direction:column;line-height:1.15;min-width:0}
-  .brand b{font-weight:680;letter-spacing:-.01em;font-size:15.5px}
-  .brand small{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--signal-ink)}
-  .tb-right{display:flex;align-items:center;gap:9px;flex:none}
-  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.03em;background:var(--surface);
-    color:var(--ink-soft);border:1px solid var(--line-strong);border-radius:2px;
-    padding:7px 11px;cursor:pointer;text-decoration:none;white-space:nowrap;}
-  .btn:hover{border-color:var(--signal);color:var(--ink)}
-  .btn:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-  #menubtn{display:none}
-
-  /* ---- layout ---- */
-  .layout{display:grid;grid-template-columns:296px minmax(0,1fr);
-    max-width:1220px;margin:0 auto;align-items:start;}
-  nav.side{position:sticky;top:var(--top);align-self:start;height:calc(100vh - var(--top));
-    overflow-y:auto;border-right:1px solid var(--line);background:var(--surface-2);
-    padding:22px 16px 60px;}
-  nav.side .grp{margin:0 0 20px}
-  nav.side .grp>h3{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
-    color:var(--slate);margin:0 0 8px;padding:0 10px}
-  nav.side a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink-soft);
-    padding:7px 10px;border-radius:6px;font-size:13.6px;line-height:1.32;}
-  nav.side a .n{font-family:var(--mono);font-size:11px;color:var(--slate-soft);flex:none;min-width:24px}
-  nav.side a:hover{background:var(--surface)}
-  nav.side a.active{background:var(--signal-wash);color:var(--ink);font-weight:620;
-    box-shadow:inset 3px 0 0 var(--signal)}
-  nav.side a.active .n{color:var(--signal-ink)}
-
-  main.reader{padding:36px clamp(20px,4.5vw,64px) 110px;min-width:0}
-  .crumb{font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
-    color:var(--slate);margin:0 0 8px}
-  main.reader>h1{font-size:clamp(24px,4vw,34px);margin:0 0 22px;font-weight:680;
-    letter-spacing:-.02em;line-height:1.08;max-width:26ch}
-  article{max-width:74ch}
-  article h1{font-size:23px;margin:34px 0 12px;font-weight:660;letter-spacing:-.01em}
-  article h2{font-size:19.5px;margin:30px 0 10px;font-weight:640;letter-spacing:-.005em}
-  article h3{font-size:16px;margin:22px 0 8px;font-weight:640}
-  article p{margin:0 0 14px;line-height:1.66;color:var(--ink-soft)}
-  article ul,article ol{margin:0 0 16px;padding-left:1.45em}
-  article li{margin:7px 0;line-height:1.55;color:var(--ink-soft)}
-  article li>strong:first-child{color:var(--ink)}
-  article strong{color:var(--ink);font-weight:640}
-  article em{font-style:italic}
-  article a{color:var(--signal-ink)}
-  article code{font-family:var(--mono);font-size:.87em;background:var(--surface-2);
-    border:1px solid var(--line);border-radius:3px;padding:.06em .38em;color:var(--ink);}
-  article pre{font-family:var(--mono);font-size:12.8px;line-height:1.55;background:var(--surface-2);
-    border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;margin:16px 0;}
-  article pre code{background:none;border:none;padding:0;font-size:inherit;white-space:pre}
-  article blockquote{margin:16px 0;padding:9px 16px;border-left:3px solid var(--line-strong);
-    background:var(--surface-2);border-radius:0 5px 5px 0;color:var(--slate);}
-  article blockquote p{margin:.35em 0;color:var(--slate);font-size:14.5px}
-  article img{display:block;max-width:100%;height:auto;border:1px solid var(--line-strong);
-    border-radius:8px;margin:16px 0;background:var(--surface)}
-  article p.empty{color:var(--slate);font-style:italic}
-
-  .pager{display:flex;justify-content:space-between;gap:12px;margin:52px 0 0;max-width:74ch;
-    border-top:1px solid var(--line);padding-top:22px}
-  .pager a{flex:1;text-decoration:none;border:1px solid var(--line-strong);border-radius:8px;
-    padding:12px 15px;color:var(--ink-soft);background:var(--surface);min-width:0}
-  .pager a:hover{border-color:var(--signal);color:var(--ink)}
-  .pager a.next{text-align:right}
-  .pager a .dir{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--slate);margin-bottom:3px}
-  .pager a .ttl{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-  .pager .spacer{flex:1;border:none;background:none;pointer-events:none}
-
-  @media(max-width:860px){
-    #menubtn{display:inline-block}
-    .layout{grid-template-columns:1fr}
-    nav.side{position:fixed;top:var(--top);left:0;width:min(320px,84vw);z-index:9;
-      height:calc(100vh - var(--top));transform:translateX(-102%);transition:transform .2s ease;
-      box-shadow:2px 0 18px #0006}
-    nav.side.open{transform:none}
-    body.navopen::after{content:"";position:fixed;inset:var(--top) 0 0 0;background:#0007;z-index:8}
-  }
-  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="topbar">
@@ -134,7 +13,8 @@
     <span class="brand"><b>Claude Code 101</b><small>corso ufficiale · dispensa</small></span>
   </div>
   <div class="tb-right">
-    <a class="btn" href="adozione-claude-sistec.html">← al documento</a>
+    <a class="btn" href="index.html">← al documento</a>
+    <a class="btn" href="claude-101.html">← Claude 101</a>
     <button class="btn" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
   </div>
 </div>

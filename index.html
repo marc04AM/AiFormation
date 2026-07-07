@@ -1,265 +1,5 @@
 <title>Adozione Claude &amp; Claude Code in Sistec — ciclo agentico, repository, contesto e condivisione</title>
-<style>
-  :root{
-    --paper:#e9eef2; --surface:#ffffff; --surface-2:#f3f6f8;
-    --ink:#0f1720; --ink-soft:#3a4753; --slate:#647585; --slate-soft:#8a99a6;
-    --line:#d3dde4; --line-strong:#b3c2cd;
-    --signal:#0a97b8; --signal-ink:#0a6d84; --signal-wash:#0a97b81a;
-    --L-app:#6f8db4; --L-sess:#2f7d92; --L-trans:#1e5162;
-    --reuse:#b7791f; --reuse-wash:#b7791f1f;
-    --warn:#b7791f; --crit:#bf432c; --ok:#2f7d5b;
-    --mono:"Cascadia Code","Cascadia Mono",Consolas,ui-monospace,"SF Mono",Menlo,monospace;
-    --sans:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-    --measure:72ch;
-  }
-  @media (prefers-color-scheme:dark){
-    :root{
-      --paper:#0d1418; --surface:#141d23; --surface-2:#101a1f;
-      --ink:#e8eef2; --ink-soft:#b3c0ca; --slate:#8ea0ad; --slate-soft:#63737f;
-      --line:#243139; --line-strong:#334450;
-      --signal:#2fc4e2; --signal-ink:#7fdcef; --signal-wash:#2fc4e21f;
-      --L-app:#8fabce; --L-sess:#3fa8c1; --L-trans:#2b7f97;
-      --reuse:#d9a441; --reuse-wash:#d9a4411f;
-      --warn:#d9a441; --crit:#e5745a; --ok:#4faf83;
-    }
-  }
-  :root[data-theme="light"]{
-    --paper:#e9eef2; --surface:#ffffff; --surface-2:#f3f6f8;
-    --ink:#0f1720; --ink-soft:#3a4753; --slate:#647585; --slate-soft:#8a99a6;
-    --line:#d3dde4; --line-strong:#b3c2cd;
-    --signal:#0a97b8; --signal-ink:#0a6d84; --signal-wash:#0a97b81a;
-    --L-app:#6f8db4; --L-sess:#2f7d92; --L-trans:#1e5162;
-    --reuse:#b7791f; --reuse-wash:#b7791f1f;
-    --warn:#b7791f; --crit:#bf432c; --ok:#2f7d5b;
-  }
-  :root[data-theme="dark"]{
-    --paper:#0d1418; --surface:#141d23; --surface-2:#101a1f;
-    --ink:#e8eef2; --ink-soft:#b3c0ca; --slate:#8ea0ad; --slate-soft:#63737f;
-    --line:#243139; --line-strong:#334450;
-    --signal:#2fc4e2; --signal-ink:#7fdcef; --signal-wash:#2fc4e21f;
-    --L-app:#8fabce; --L-sess:#3fa8c1; --L-trans:#2b7f97;
-    --reuse:#d9a441; --reuse-wash:#d9a4411f;
-    --warn:#d9a441; --crit:#e5745a; --ok:#4faf83;
-  }
-
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);
-    font-family:var(--sans);font-size:16px;line-height:1.6;
-    -webkit-font-smoothing:antialiased;font-synthesis:none;}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 clamp(18px,4vw,40px) 120px;}
-
-  /* ---- header ---- */
-  header.sheet{border-bottom:2px solid var(--ink);margin-bottom:44px;
-    padding:36px 0 22px;position:relative;}
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--signal-ink);margin:0 0 14px;}
-  h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02;margin:0;
-    font-weight:680;letter-spacing:-.02em;text-wrap:balance;}
-  .lede{color:var(--ink-soft);font-size:clamp(16px,2vw,19px);
-    max-width:62ch;margin:16px 0 0;text-wrap:pretty;}
-  .meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:22px;
-    font-family:var(--mono);font-size:12.5px;}
-  .chip{border:1px solid var(--line-strong);border-radius:2px;
-    padding:4px 9px;color:var(--ink-soft);background:var(--surface);
-    display:inline-flex;gap:7px;align-items:center;}
-  .chip b{color:var(--ink);font-weight:600}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--signal);display:inline-block}
-  .toggle{position:absolute;top:36px;right:0;font-family:var(--mono);
-    font-size:12px;letter-spacing:.05em;background:var(--surface);
-    color:var(--ink-soft);border:1px solid var(--line-strong);border-radius:2px;
-    padding:7px 11px;cursor:pointer;}
-  .toggle:hover{border-color:var(--signal);color:var(--ink)}
-  .toggle:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-
-  /* ---- signature ---- */
-  dl.sig{display:grid;grid-template-columns:max-content 1fr;gap:8px 22px;align-items:baseline;
-    margin:26px 0 8px;padding:16px 20px;border:1px solid var(--line-strong);border-radius:6px;
-    background:var(--surface-2);max-width:var(--measure);}
-  dl.sig dt{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
-    color:var(--signal-ink);white-space:nowrap;padding-top:2px;}
-  dl.sig dd{margin:0;font-size:14.5px;color:var(--ink);}
-  dl.sig dd b{font-weight:640}
-  dl.sig .sig-note{color:var(--slate);font-size:12px;font-family:var(--mono)}
-
-  /* ---- sections ---- */
-  section{margin:0 0 30px}
-  .sec-head{display:flex;align-items:baseline;gap:14px;
-    border-top:1px solid var(--line);padding-top:26px;margin:52px 0 18px;}
-  .sec-no{font-family:var(--mono);font-size:13px;color:var(--signal-ink);
-    font-weight:600;letter-spacing:.05em;flex:none;padding-top:5px;}
-  h2{font-size:clamp(21px,3vw,28px);margin:0;font-weight:640;
-    letter-spacing:-.01em;text-wrap:balance;}
-  h3{font-size:17px;margin:28px 0 8px;font-weight:640;letter-spacing:-.005em;}
-  p{max-width:var(--measure);margin:0 0 14px}
-  strong{font-weight:640}
-  em{font-style:italic}
-  a{color:var(--signal-ink);text-decoration-thickness:1px;text-underline-offset:2px}
-  code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);
-    border:1px solid var(--line);border-radius:3px;padding:.06em .38em;
-    color:var(--ink);white-space:nowrap;}
-  .kbd{font-family:var(--mono);font-size:.86em;background:var(--surface);
-    border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;
-    padding:.05em .42em;color:var(--signal-ink);white-space:nowrap;}
-
-  /* ---- callouts ---- */
-  .callout{border-left:3px solid var(--signal);background:var(--signal-wash);
-    padding:14px 18px;border-radius:0 4px 4px 0;max-width:var(--measure);
-    margin:0 0 22px;color:var(--ink-soft);font-size:15px}
-  .callout h4{margin:0 0 5px;font-size:12px;text-transform:uppercase;
-    letter-spacing:.1em;color:var(--signal-ink);font-family:var(--mono);font-weight:600}
-  .callout p{margin:0;max-width:none}
-  .callout b,.callout strong{color:var(--ink)}
-  .callout.key{border-left-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
-  .callout.key h4{color:var(--ok)}
-  .callout.risk{border-left-color:var(--crit);background:color-mix(in srgb,var(--crit) 9%,transparent)}
-  .callout.risk h4{color:var(--crit)}
-
-  /* ---- figure plates ---- */
-  figure{margin:26px 0;background:var(--surface);border:1px solid var(--line-strong);
-    border-radius:6px;overflow:hidden;}
-  .plate-cap{display:flex;gap:10px;align-items:baseline;
-    padding:11px 16px;border-bottom:1px solid var(--line);
-    background:var(--surface-2);font-size:13.5px;color:var(--ink-soft);}
-  .plate-cap b{font-family:var(--mono);font-size:12px;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--signal-ink);flex:none}
-  .plate-body{padding:18px 16px;overflow-x:auto}
-  svg.dgm{display:block;width:100%;height:auto;min-width:620px;margin:0 auto}
-  .dgm text{fill:var(--ink);font-family:var(--sans)}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;padding:0 16px 14px;
-    font-size:12.5px;color:var(--slate);font-family:var(--mono)}
-  .legend span{display:inline-flex;align-items:center;gap:6px}
-  .sw{width:14px;height:10px;border-radius:2px;display:inline-block;border:1px solid var(--line-strong)}
-
-  /* ---- tables ---- */
-  .tbl-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line-strong);border-radius:6px}
-  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
-  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-  thead th{background:var(--surface-2);font-size:12px;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--slate);font-weight:600;
-    border-bottom:1.5px solid var(--line-strong)}
-  tbody tr:last-child td{border-bottom:none}
-  tbody tr:hover td{background:var(--surface-2)}
-  td code{white-space:normal}
-  .col-mono{font-family:var(--mono);font-size:12.8px;color:var(--ink-soft)}
-
-  /* ---- status tags ---- */
-  .tag{display:inline-block;border-radius:2px;padding:1px 7px;font-size:11px;font-weight:600;
-    white-space:nowrap;text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--sev);
-    color:var(--sev);margin-right:5px}
-  .t-ok{--sev:var(--ok)} .t-warn{--sev:var(--warn)} .t-bad{--sev:var(--crit)}
-
-  /* ---- steps ---- */
-  ol.steps{list-style:none;counter-reset:s;padding:0;margin:18px 0;max-width:var(--measure)}
-  ol.steps>li{counter-increment:s;position:relative;padding:11px 0 11px 46px;
-    border-bottom:1px solid var(--line);font-size:15px;color:var(--ink-soft)}
-  ol.steps>li:last-child{border-bottom:none}
-  ol.steps>li b{color:var(--ink)}
-  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:11px;
-    width:28px;height:28px;background:var(--signal);color:#fff;border-radius:3px;
-    display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
-  ul.tight{max-width:var(--measure);margin:0 0 14px;padding-left:1.15em}
-  ul.tight li{margin:6px 0;color:var(--ink-soft)}
-  ul.tight li b{color:var(--ink)}
-
-  pre{font-family:var(--mono);font-size:12.6px;line-height:1.55;background:var(--surface-2);
-    border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;
-    color:var(--ink);margin:16px 0}
-  pre b{color:var(--signal-ink);font-weight:600}
-  pre .c{color:var(--slate-soft)}
-  pre .crit{color:var(--crit);font-weight:700}
-  small.mut{color:var(--slate)}
-
-  /* ---- screenshot della demo (figura) ---- */
-  .shots{display:grid;gap:18px;grid-template-columns:1fr;align-items:start}
-  @media(min-width:640px){.shots{grid-template-columns:2fr 1fr}}
-  .shots .shot img{display:block;width:100%;height:auto;border:1px solid var(--line-strong);
-    border-radius:6px;background:#0b0f12}
-  .shots .shot .cap{margin:9px 0 0;max-width:none;font-family:var(--mono);font-size:12.3px;
-    line-height:1.45;color:var(--slate)}
-  .shots .shot .cap b{color:var(--ink-soft);font-weight:600}
-
-  /* ---- grafico raster (context rot) ---- */
-  .fig-chart{display:block;max-width:100%;height:auto;margin:0 auto;border-radius:4px;background:#fff}
-
-  /* ---- interattivo: finestra di contesto ---- */
-  .cw-figure .plate-cap b{color:var(--reuse)}
-  .cw{font-size:14px;color:var(--ink)}
-  .cw-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:4px 2px 12px}
-  .cw-title{font-size:16px;font-weight:640;letter-spacing:-.01em}
-  .cw-sub{font-size:12.5px;color:var(--slate);margin-top:3px}
-  .cw-h-r{text-align:right;flex:none}
-  .cw-count{font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:-.5px;line-height:1}
-  .cw-count span{font-size:13px;font-weight:500;margin-left:4px;color:var(--slate)}
-  .cw-max{font-family:var(--mono);font-size:12px;color:var(--slate);margin-top:3px}
-  .cw-barwrap{padding:0 2px}
-  .cw-bar{height:26px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;display:flex}
-  .cw-bar .seg{height:100%;border-right:.5px solid var(--line)}
-  .cw-legend{display:flex;flex-wrap:wrap;gap:9px 12px;margin-top:8px;font-family:var(--mono);font-size:11.5px;color:var(--slate)}
-  .cw-legend span{display:inline-flex;align-items:center;gap:5px}
-  .cw-legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
-  .cw-body{display:grid;grid-template-columns:1fr 288px;gap:14px;margin-top:14px}
-  .cw-timeline{height:368px;overflow-y:auto;padding-right:6px}
-  .cw-scroll::-webkit-scrollbar{width:6px}
-  .cw-scroll::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
-  .cw-phase{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-soft);margin:13px 0 5px;padding-left:2px}
-  .cw-phase:first-child{margin-top:2px}
-  .cw-evt{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;transition:background .1s}
-  .cw-evt:hover,.cw-evt.sel{background:var(--surface-2)}
-  .cw-evt.sel{outline:1px solid color-mix(in srgb,var(--signal) 45%,transparent)}
-  .cw-evt.sub{margin-left:16px;border-left:2px solid color-mix(in srgb,#9B7BC4 55%,transparent);padding-left:10px}
-  .cw-dot{width:8px;height:8px;border-radius:50%;flex:none;opacity:.7}
-  .cw-badge{font-family:var(--mono);font-size:11px;font-weight:600;padding:1px 5px;border-radius:3px;flex:none}
-  .cw-lbl{font-family:var(--mono);font-size:13.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-soft)}
-  .cw-tok{font-family:var(--mono);font-size:11.5px;color:var(--slate-soft);flex:none}
-  .cw-eye{width:14px;flex:none;text-align:center;color:var(--slate-soft);font-size:11px}
-  .cw-gate{margin:12px 0 4px;padding:10px 12px;border-radius:6px;background:color-mix(in srgb,var(--ok) 8%,transparent);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
-  .cw-gate.compact{background:color-mix(in srgb,var(--signal) 8%,transparent);border-color:color-mix(in srgb,var(--signal) 30%,transparent)}
-  .cw-gate .g-k{font-family:var(--mono);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ok);margin-bottom:5px}
-  .cw-gate.compact .g-k{color:var(--signal-ink)}
-  .cw-gate .cmd{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13.5px;color:var(--ink)}
-  .cw-gate button{margin-left:auto;border:none;border-radius:5px;padding:5px 13px;font-family:var(--mono);font-size:12.5px;font-weight:600;color:#fff;background:var(--ok);cursor:pointer;flex:none}
-  .cw-gate.compact button{background:var(--signal)}
-  .cw-freed{margin-bottom:10px;padding:9px 11px;border-radius:6px;background:color-mix(in srgb,var(--signal) 6%,transparent);border:1px solid color-mix(in srgb,var(--signal) 18%,transparent);font-size:12.5px;color:var(--ink-soft)}
-  .cw-freed b{color:var(--signal-ink);font-family:var(--mono)}
-  .cw-detail{padding:14px 15px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px}
-  .cw-detail .d-h{display:flex;align-items:center;gap:8px;font-weight:640;font-size:15px;margin-bottom:7px}
-  .cw-detail .d-h i{width:10px;height:10px;border-radius:3px;flex:none}
-  .cw-detail .d-tok{font-family:var(--mono);font-size:12.5px;color:var(--slate);margin-bottom:6px}
-  .cw-detail .d-desc{color:var(--ink-soft);line-height:1.5;margin:0}
-  .cw-detail .d-desc code,.cw-lbl code{font-family:var(--mono);font-size:.86em;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:.03em .3em}
-  .cw-detail .d-box{padding:8px 10px;border-radius:6px;font-size:12.5px;line-height:1.46;margin-top:10px}
-  .cw-detail .d-vis{background:var(--surface);border:1px solid var(--line);color:var(--slate)}
-  .cw-detail .d-tip{background:color-mix(in srgb,var(--ok) 8%,transparent);border:1px solid color-mix(in srgb,var(--ok) 20%,transparent)}
-  .cw-detail .d-tip b{color:var(--ok)}
-  .cw-detail .d-take{background:color-mix(in srgb,var(--reuse) 9%,transparent);border:1px solid color-mix(in srgb,var(--reuse) 22%,transparent)}
-  .cw-detail .d-take b{color:var(--reuse);display:block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-  .cw-detail .d-empty{color:var(--slate);text-align:center;padding:20px 0 8px}
-  .cw-controls{display:flex;align-items:center;gap:10px;margin-top:12px;padding:0 2px}
-  .cw-play{width:30px;height:30px;border-radius:6px;border:none;background:color-mix(in srgb,var(--signal) 14%,transparent);color:var(--signal-ink);cursor:pointer;font-size:14px;flex:none}
-  .cw-prog{flex:1;height:3px;border-radius:2px;background:var(--surface-2);overflow:hidden}
-  .cw-prog>div{height:100%;width:0;background:var(--signal);transition:width .12s linear}
-  .cw-pct{font-family:var(--mono);font-size:12px;color:var(--slate-soft);min-width:32px;text-align:right}
-  @media(max-width:720px){.cw-body{grid-template-columns:1fr}.cw-timeline{height:300px}}
-
-  /* ---- link al corso Claude Code 101 (pagina a parte) ---- */
-  .course-cta{display:flex;flex-wrap:wrap;align-items:center;gap:16px 22px;margin:20px 0 8px;
-    max-width:var(--measure);padding:20px 22px;background:var(--surface);
-    border:1px solid var(--line-strong);border-left:3px solid var(--reuse);border-radius:0 8px 8px 0}
-  .course-cta .cc-txt{flex:1;min-width:240px}
-  .course-cta .cc-k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--reuse);margin:0 0 4px}
-  .course-cta h3{margin:0 0 4px;font-size:17px;font-weight:640;letter-spacing:-.005em}
-  .course-cta .cc-txt p{margin:0;font-size:14px;color:var(--ink-soft);max-width:none}
-  .course-cta a.open{flex:none;text-decoration:none;font-family:var(--mono);font-size:13.5px;font-weight:600;
-    background:var(--signal);color:#fff;border:1px solid var(--signal);border-radius:6px;padding:11px 18px;white-space:nowrap}
-  .course-cta a.open:hover{filter:brightness(1.06)}
-
-  footer{margin-top:70px;border-top:1px solid var(--line);padding-top:20px;
-    font-family:var(--mono);font-size:12px;color:var(--slate);
-    display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
-
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+<link rel="stylesheet" href="style.css">
 
 <div class="wrap">
 <header class="sheet">
@@ -280,9 +20,23 @@
 
 <dl class="sig" aria-label="firma del documento">
   <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · Project lead</dd>
-  <dt>Versione</dt><dd>1.3 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
+  <dt>Versione</dt><dd>1.4 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
   <dt>Ultima revisione</dt><dd>2026-07-07 · revisionato da Marco Manfrin&nbsp;@Sistec</dd>
 </dl>
+
+<div class="callout key">
+  <h4>Documenti a monte — questa è la terza tappa</h4>
+  <p>Questo documento operativo segue e presuppone due documenti già prodotti. Leggili prima, in ordine:</p>
+  <ul class="tight">
+    <li><a href="ai-adoption-propose.html"><b>1 · Proposta di adozione dell'IA</b></a> — analisi di mercato, confronto
+      degli strumenti e scelta di Claude. <strong>Già accolta dalla Direzione.</strong></li>
+    <li><a href="ai-adoption-plan.html"><b>2 · Piano di introduzione, avviamento e reporting</b></a> — il piano ad
+      alto livello: pilota mirato, 15 persone su 5 licenze condivise, metriche, gate e timeline a 12 mesi.</li>
+    <li><b>3 · Adozione di Claude Code</b> <span class="sig-note">(questo documento)</span> — il «come» operativo:
+      il ciclo agentico, contesto, prompt, skill, <code>CLAUDE.md</code>, condivisione. Il <em>perché</em> e il
+      <em>quanto</em> stanno nei due documenti sopra; qui c'è lo <em>strumento</em>.</li>
+  </ul>
+</div>
 
 <p>Questo documento è una proposta operativa alternativa a <code>shared-ai</code> (il modello collector / lease
 Graph-ETag / Orchestrator). Non descrive un'altra infrastruttura: descrive il modo in cui Claude e Claude Code
@@ -1131,6 +885,24 @@ openspec/
   </div>
 </section>
 
+<!-- ========== Corso Claude 101 (pagina a parte) ========== -->
+<section aria-label="Corso Claude 101">
+  <div class="sec-head"><span class="sec-no">corso</span><h2>Claude 101 — il corso ufficiale</h2></div>
+  <p>Prima di Claude Code viene <em>Claude</em>. Il corso ufficiale <em>Claude 101</em> — undici lezioni su
+  claude.ai, dai fondamenti all'uso per ruolo — copre chat, progetti, artifact, skill, connettori e la modalità
+  <em>Research</em>. È la base per chi non è sviluppatore, e il ponte verso Claude Code (§12). Disponibile come
+  dispensa a parte: l'elenco delle lezioni a sinistra, il testo completo di ogni lezione a destra.</p>
+
+  <div class="course-cta">
+    <div class="cc-txt">
+      <p class="cc-k">Dispensa · pagina a parte</p>
+      <h3>Apri il corso Claude 101</h3>
+      <p>11 lezioni con i testi completi · elenco a sinistra · Chat · Progetti · Artifact · Skill · Connettori · Research.</p>
+    </div>
+    <a class="open" href="claude-101.html">Apri il corso →</a>
+  </div>
+</section>
+
 <!-- ========== Corso Claude Code 101 (pagina a parte) ========== -->
 <section aria-label="Corso Claude Code 101">
   <div class="sec-head"><span class="sec-no">corso</span><h2>Claude Code 101 — il corso ufficiale</h2></div>
@@ -1153,6 +925,16 @@ openspec/
   <div class="tbl-wrap"><table>
     <thead><tr><th>Versione</th><th>Data</th><th>Revisionato da</th><th>Modifiche introdotte</th></tr></thead>
     <tbody>
+      <tr><td class="col-mono">1.4</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
+        <td>Aggiunto in §7 il ciclo di caricamento a tre modalità: <b>§7.3 «le rules»</b> (convenzioni di codice
+          attivate per <code>paths</code>/glob) e <b>§7.4 «il perché di una modifica»</b> (dall'archivio post-hoc
+          <code>.claude/claude-archive</code>, via hook, al pattern spec-first <code>openspec</code>); <b>Fig 2</b>
+          ridisegnata a tre corsie (CLAUDE.md / skill / rules). Nuova pagina a parte <b>«Claude 101»</b>
+          (<code>claude-101.html</code>): dispensa del corso ufficiale su claude.ai — 11 lezioni (chat, progetti,
+          artifact, skill, connettori, Research, uso per ruolo) — con link dal documento, prima di «Claude Code 101».
+          Aggiunti in testa i <b>riferimenti ai due documenti a monte</b>: la proposta
+          (<code>ai-adoption-propose.html</code>, già accolta dalla Direzione) e il piano ad alto livello
+          (<code>ai-adoption-plan.html</code>).</td></tr>
       <tr><td class="col-mono">1.3</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
         <td>Arricchito il §3 (contesto): <b>grafico</b> del context rot (qualità dell'output vs riempimento della
           finestra) e widget <b>interattivo</b> «Esplora la finestra di contesto» — sessione simulata che mostra
@@ -1183,8 +965,8 @@ openspec/
 </section>
 
 <footer>
-  <span>Sistec · adozione Claude &amp; Claude Code · 12 § · 4 figure · 1 grafico · 1 interattivo · corso Claude Code 101 (pagina a parte)</span>
-  <span>autorità: documentazione Claude Code + LLM-wiki (Karpathy) · 2026-07-07 · v1.3</span>
+  <span>Sistec · adozione Claude &amp; Claude Code · 12 § · 4 figure · 1 grafico · 1 interattivo · corsi Claude 101 + Claude Code 101 (pagine a parte)</span>
+  <span>autorità: documentazione Claude Code + corsi ufficiali Anthropic + LLM-wiki (Karpathy) · 2026-07-07 · v1.4</span>
 </footer>
 </div>
 

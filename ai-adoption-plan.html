@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Piano_Adozione_AI_Sistec_AM.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body class="doc">
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="piano-di-introduzione-avviamento-e-reporting-dellai-claude-in-sistec-am">Piano di Introduzione, Avviamento e Reporting dell'AI (Claude) in Sistec AM</h1>
+<p><strong>Versione:</strong> 1.0 · <strong>Data:</strong> 15/06/2026
+<strong>Sponsor:</strong> Direzione / M. Manfrin
+<strong>Owner del framework di misura e analisi:</strong> Claude (assistente AI)
+<strong>Coordinamento operativo:</strong> Marco
+<strong>File operativo unico:</strong> <code>Source.xlsx</code> (modello self-service: ogni dipendente ha il proprio foglio, l'aggregato si calcola da solo)
+<strong>Orizzonte temporale:</strong> 12 mesi</p>
+<hr>
+<h2 id="1-sintesi-per-chi-ha-1-minuto">1. Sintesi (per chi ha 1 minuto)</h2>
+<ul>
+<li>Non facciamo un roll-out di massa: <strong>progetto pilota mirato</strong>, lo misuriamo, poi decidiamo con i numeri.</li>
+<li><strong>Due ambiti pilota:</strong> UT Software (coding) e Amministrazione/Ufficio (utilità d'ufficio).</li>
+<li><strong>15 persone su 5 licenze condivise:</strong> 3 Premium (UT Software) + 2 Standard (Amministrazione), ~3 persone per licenza.</li>
+<li><strong>Resto azienda</strong> (UT Meccanico, HR, ecc.): <strong>Claude Free</strong> per diffondere la cultura AI senza costi.</li>
+<li><strong>Modello dati self-service:</strong> ogni dipendente compila il proprio foglio in <code>Source.xlsx</code>; il foglio <strong>analisi pilota si aggrega da solo</strong>.</li>
+<li><strong>Tema centrale del pilota:</strong> con 5 licenze condivise da 15 persone, il rischio chiave è la <strong>contesa/attesa</strong>. Per questo si misurano limiti raggiunti e tempi di attesa.</li>
+</ul>
+<hr>
+<h2 id="2-punto-di-partenza-baseline">2. Punto di partenza (baseline)</h2>
+<p>Foglio <em>analisi utilizzo passato</em>: <strong>22 persone censite</strong>, <strong>3 già usano AI</strong>, <strong>Manfrin</strong> usa <strong>Claude Max da 6 mesi</strong> (riferimento esperto interno / affiancamento).</p>
+<p>Obiettivo: non solo &quot;usare Claude&quot; ma <strong>far emergere casi d'uso concreti e ripetibili</strong>.</p>
+<hr>
+<h2 id="3-obiettivi-e-domande-chiave">3. Obiettivi e domande chiave</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Domanda</th>
+<th>Metrica (foglio <em>analisi pilota</em>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Si raggiungono i limiti?</td>
+<td>Crediti orari esauriti (n°), crediti settimanali esauriti (n°)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Qualcuno deve aspettare?</td>
+<td>Volte costretto ad aspettare + durata attesa (min)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Quanto si usa?</td>
+<td>Giorni utilizzo (n°) + intensità prevalente</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Per cosa serve?</td>
+<td>Ambito di utilizzo principale + ambito più usato (diario)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>I piani sono dimensionati bene?</td>
+<td>Limiti/attese per licenza condivisa</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Cosa funziona meglio?</td>
+<td>Casi d'uso &quot;vincenti&quot; da diffondere</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criteri di successo (60 giorni):</strong> ≥3 casi d'uso ripetibili per ambito · utilizzo regolare (giorni/intensità) sulle licenze · decisione informata su scalare/riallocare.</p>
+<hr>
+<h2 id="4-ambiti-licenze-e-differenze-tra-i-piani">4. Ambiti, licenze e differenze tra i piani</h2>
+<h3 id="differenza-piani-come-da-nota-nel-file">Differenza piani (come da nota nel file)</h3>
+<ul>
+<li><strong>Free:</strong> <strong>niente code/cowork (sistemi agentici)</strong> → no Claude Code/automazioni. Solo chat di base.</li>
+<li><strong>Standard vs Premium:</strong> <strong>unica differenza = limiti di utilizzo</strong> (Premium più alti). Entrambi a pagamento, entrambi con agentici.</li>
+<li>Perciò: <strong>Premium a UT Software</strong> (coding intensivo, serve tetto alto), <strong>Standard ad Amministrazione</strong> (carico più leggero).</li>
+</ul>
+<h3 id="allocazione-reale-foglio-abbonamenti-proposti">Allocazione reale (foglio <em>abbonamenti proposti</em>)</h3>
+<table>
+<thead>
+<tr>
+<th>Ambito</th>
+<th>Piano</th>
+<th>Licenza</th>
+<th>Persone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UT Software</td>
+<td>Premium</td>
+<td>Licenza 1</td>
+<td>Manfrin, Pilat, Marcon</td>
+</tr>
+<tr>
+<td>UT Software</td>
+<td>Premium</td>
+<td>Licenza 2</td>
+<td>Ilie, Kaprakadan, De Biasi</td>
+</tr>
+<tr>
+<td>UT Software</td>
+<td>Premium</td>
+<td>Licenza 3</td>
+<td>Biasutti, Amistani, Pulzato</td>
+</tr>
+<tr>
+<td>Amministrazione</td>
+<td>Standard</td>
+<td>Licenza 1</td>
+<td>De Vecchi, Caella, Lovisotto</td>
+</tr>
+<tr>
+<td>Amministrazione</td>
+<td>Standard</td>
+<td>Licenza 2</td>
+<td>Da Broi, Barresi, Sevenello</td>
+</tr>
+</tbody>
+</table>
+<p><strong>15 persone / 5 licenze.</strong> UT Meccanico e HR: nessuna licenza a pagamento → Free.</p>
+<blockquote>
+<p>⚠️ <strong>Condivisione 3:1 = rischio contesa alto.</strong> È il punto da tenere d'occhio: se le attese sono frequenti, non è &quot;Claude inutile&quot; → è <strong>servono più licenze</strong>.</p>
+</blockquote>
+<hr>
+<h2 id="5-percorso-del-dipendente-nel-pilota-self-service">5. Percorso del dipendente nel pilota (self-service)</h2>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>Cosa fa</th>
+<th>Dove (in <code>Source.xlsx</code>)</th>
+<th>Quando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Uso passato</strong></td>
+<td>Compila: ho già usato AI? quale? quanto?</td>
+<td>foglio <em>analisi utilizzo passato</em></td>
+<td>Settimana 0</td>
+</tr>
+<tr>
+<td><strong>2. Proposta + approfondimenti</strong></td>
+<td>Legge l'allocazione licenze e gli <strong>approfondimenti del proprio ambito</strong> (§6)</td>
+<td>foglio <em>abbonamenti proposti</em> + schede</td>
+<td>Settimana 0</td>
+</tr>
+<tr>
+<td><strong>3. Report personale</strong></td>
+<td>Compila il <strong>proprio foglio</strong>: <em>Log utilizzo</em> (limiti/attese) + <em>Diario giornaliero</em></td>
+<td>foglio col proprio nome</td>
+<td>In continuo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Foglio individuale — due tabelle:</strong></p>
+<ul>
+<li><strong>Log utilizzo:</strong> Data · Tipo di limite (<em>Crediti orari</em> / <em>Crediti settimanali</em>) · Costretto ad aspettare? (<em>Sì</em>) · Ambito di utilizzo · Durata attesa (min) · Note.</li>
+<li><strong>Diario giornaliero:</strong> Data · Usato oggi? (<em>Sì</em>) · Intensità (<em>Leggero/Moderato/Intenso</em>) · Ambito principale · Note.</li>
+</ul>
+<p>Il foglio <em>analisi pilota</em> somma/conteggia tutto da solo. <strong>Marco</strong> verifica che i fogli siano compilati; <strong>non ricopia</strong>.</p>
+<hr>
+<h2 id="6-approfondimenti-per-ambito-da-leggere-prima-di-partire">6. Approfondimenti per ambito (da leggere prima di partire)</h2>
+<h3 id="a-ut-software--coding">A) UT Software — coding</h3>
+<ul>
+<li><strong>Claude Code (CLI/agente):</strong> scrive, rifattorizza, spiega codice su file di progetto reali.</li>
+<li><strong>CODESYS / PLC (IEC 61131-3) → forte e a basso rischio.</strong> CODESYS <strong>V3.5 SP22</strong> (mar 2026) ha un <strong>add-on MCP ufficiale</strong>: Claude genera/analizza/ottimizza blocchi, <strong>compila e rilegge gli errori</strong> = ciclo chiuso con correzione automatica. Esistono anche MCP community (testati su SP22). <em>Verificare licenza add-on sul CODESYS Store.</em></li>
+<li><strong>KUKA / KRL → utile ma senza ciclo automatico.</strong> Niente MCP né LSP ufficiale: Claude genera KRL (<code>.src</code>/<code>.dat</code>), ma <strong>validazione manuale</strong> (WorkVisual / KUKA.Sim / OfficeLite) e <strong>supervisione umana obbligatoria</strong> (rischio fisico). Solo syntax highlighting via estensione VS Code.</li>
+<li><strong>Regola d'oro (articolo KUKA sul coding AI):</strong> conta <strong>contesto + supervisione umana</strong>, non il tool. → usare un <code>CLAUDE.md</code> di progetto con convenzioni ed esempi.</li>
+</ul>
+<h3 id="b-amministrazione--ufficio--utilità-dufficio">B) Amministrazione / Ufficio — utilità d'ufficio</h3>
+<ul>
+<li>Documenti, email, verbali, sintesi di testi lunghi.</li>
+<li>Fogli di calcolo: formule, pulizia dati, riepiloghi.</li>
+<li>Ricerca e confronto info, bozze di procedure.</li>
+<li>Limite: niente dati sensibili/clienti nelle chat (§8).</li>
+</ul>
+<hr>
+<h2 id="7-fasi-e-timeline-12-mesi">7. Fasi e timeline (12 mesi)</h2>
+<table>
+<thead>
+<tr>
+<th>Fase</th>
+<th>Periodo</th>
+<th>Cosa succede</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 — Setup</strong></td>
+<td>Settimana 0</td>
+<td>Account, regole d'uso, lettura approfondimenti, passi 1–2, kick-off</td>
+<td>Pilota pronto</td>
+</tr>
+<tr>
+<td><strong>1 — Pilota attivo</strong></td>
+<td>Giorni 1–30</td>
+<td>Uso reale, ogni dipendente compila il proprio foglio</td>
+<td>1° report (foglio <em>analisi pilota</em>)</td>
+</tr>
+<tr>
+<td><strong>2 — Verifica intermedia</strong></td>
+<td>Giorni 30–60</td>
+<td>Misura, decisioni: riallocare/aggiungere licenze</td>
+<td>Decisione a 60 gg</td>
+</tr>
+<tr>
+<td><strong>3 — Consolidamento</strong></td>
+<td>Mesi 3–6</td>
+<td>Espansione casi d'uso, eventuale aumento licenze, mini-formazioni</td>
+<td>Catalogo casi d'uso</td>
+</tr>
+<tr>
+<td><strong>4 — Strutturazione &amp; diffusione</strong></td>
+<td>Mesi 6–12</td>
+<td>Policy AI aziendale, diffusione a tutta l'azienda, revisione offerta mercato</td>
+<td>Modello AI Sistec AM</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gate:</strong> Giorno 30 (dimensionamento) · Giorno 60 (scalare/riallocare) · Mese 6 (apertura controllata).</p>
+<hr>
+<h2 id="8-reporting-come-funziona-nel-file">8. Reporting (come funziona nel file)</h2>
+<ul>
+<li><strong>Input:</strong> ogni dipendente → il proprio foglio (<em>Log utilizzo</em> + <em>Diario</em>).</li>
+<li><strong>Aggregazione automatica:</strong> foglio <em>analisi pilota</em> (una riga per persona): crediti orari/settimanali esauriti, volte aspettato, ambito principale, giorni utilizzo, intensità prevalente, ambito più usato.</li>
+<li><strong>Lettura mensile:</strong> Marco consolida + Claude analizza → report alla Direzione (giorno 30) → gate (giorno 60).</li>
+</ul>
+<p><strong>Letture chiave:</strong></p>
+<ul>
+<li>Attese alte su una licenza → <strong>aggiungere licenza</strong> a quell'ambito.</li>
+<li>Una licenza poco usata → <strong>riallocare</strong>.</li>
+<li>Ambito prevalente &quot;Codice/Programmazione&quot; su UT Software → confermare Premium; valutare CODESYS-MCP.</li>
+</ul>
+<hr>
+<h2 id="9-regole-duso-dati-e-sicurezza">9. Regole d'uso, dati e sicurezza</h2>
+<ul>
+<li><strong>Non inserire</strong> dati personali sensibili, credenziali, dati clienti riservati, segreti industriali.</li>
+<li>KUKA/PLC: nessun comando su robot/impianto reale senza <strong>simulazione + validazione umana</strong>.</li>
+<li><strong>Account aziendali</strong> dedicati; attenzione: account/licenza condivisi tra 3 → concordare turni o regole d'uso.</li>
+<li>Codice proprietario: definire con UT Software cosa è ammesso condividere.</li>
+</ul>
+<hr>
+<h2 id="10-ruoli-e-responsabilità">10. Ruoli e responsabilità</h2>
+<table>
+<thead>
+<tr>
+<th>Ruolo</th>
+<th>Chi</th>
+<th>Responsabilità</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sponsor</td>
+<td>Direzione / M. Manfrin e A. biasuttib</td>
+<td>Budget, decisioni di scala</td>
+</tr>
+<tr>
+<td>Owner framework &amp; analisi</td>
+<td>Claude</td>
+<td>Metriche, analisi, report, approfondimenti</td>
+</tr>
+<tr>
+<td>Coordinamento operativo</td>
+<td>Marco</td>
+<td>Verifica completezza fogli, consolida, presenta (NON trascrive)</td>
+</tr>
+<tr>
+<td>Compilazione dati</td>
+<td>Ogni dipendente pilota</td>
+<td>Compila i propri 3 passi in autonomia</td>
+</tr>
+<tr>
+<td>Referente UT Software</td>
+<td>da nominare</td>
+<td>Casi d'uso coding (CODESYS/KUKA)</td>
+</tr>
+<tr>
+<td>Referente Amministrazione</td>
+<td>da nominare</td>
+<td>Casi d'uso ufficio</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="11-rischi-e-mitigazioni">11. Rischi e mitigazioni</h2>
+<table>
+<thead>
+<tr>
+<th>Rischio</th>
+<th>Mitigazione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contesa licenze condivise 3:1</td>
+<td>Tracciare attese/durata; se frequenti → aggiungere licenza</td>
+</tr>
+<tr>
+<td>Dipendenti non compilano il foglio</td>
+<td>Compilazione semplice, promemoria, Marco verifica</td>
+</tr>
+<tr>
+<td>Sotto-utilizzo</td>
+<td>Approfondimenti + casi d'uso pronti + affiancamento Manfrin</td>
+</tr>
+<tr>
+<td>Aspettative sbagliate (KUKA come CODESYS)</td>
+<td>Approfondimenti §6 chiariscono i limiti reali</td>
+</tr>
+<tr>
+<td>Dati sensibili immessi</td>
+<td>Regole §9 + promemoria</td>
+</tr>
+<tr>
+<td>Offerta AI cambia in 12 mesi</td>
+<td>Revisione di mercato in Fase 4 prima di scalare</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-prossimi-passi-immediati-settimana-0">12. Prossimi passi immediati (Settimana 0)</h2>
+<ol>
+<li>Confermare i <strong>15 nominativi</strong> e l'abbinamento licenza/persona (già impostato nel file).</li>
+<li>Attivare account/licenze; verificare licenza <strong>MCP CODESYS</strong> per UT Software.</li>
+<li>Concordare <strong>regole d'uso delle licenze condivise</strong> (turni/priorità).</li>
+<li>Nominare i <strong>2 referenti</strong> d'ambito.</li>
+<li>Distribuire le <strong>schede approfondimento</strong> (UT Software / Amministrazione).</li>
+<li>Kick-off (1 ora): obiettivi, regole, come si compila il proprio foglio.</li>
+<li>Far eseguire i <strong>passi 1–2</strong> a tutti i pilota.</li>
+<li>Fissare <strong>1° report (giorno 30)</strong> e <strong>gate decisionale (giorno 60)</strong>.</li>
+</ol>
+<hr>
+<p><em>Piano allineato alla struttura reale di <code>Source.xlsx</code> (modello per-dipendente con aggregazione automatica).</em></p>
+
+</body>
+</html>
