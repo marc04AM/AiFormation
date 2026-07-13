@@ -30,708 +30,708 @@
 </div>
 
 <!-- ===== contenuti: testo completo di ogni markdown, una lezione per blocco ===== -->
-<script type="text/markdown" data-id="1.1" data-ch="1" data-title="What is Claude Code?">
-# 1.1 What is Claude Code?
+<script type="text/markdown" data-id="1.1" data-ch="1" data-title="Cos'è Claude Code?">
+# 1.1 Cos'è Claude Code?
 
 [Video](https://www.youtube.com/watch?v=fl1DSmwQKKY)
 
-Claude Code is an agentic coding tool that understands your codebase, edits your files, runs commands, and integrates with your existing developer tools to help you get things done faster. It's available in your terminal, Visual Studio Code, the Claude Desktop app, on the web, and in JetBrains IDEs.
+Claude Code è uno strumento di programmazione agentico che comprende il tuo codebase, modifica i tuoi file, esegue comandi e si integra con i tuoi strumenti di sviluppo esistenti per aiutarti a portare a termine il lavoro più velocemente. È disponibile nel tuo terminale, in Visual Studio Code, nell'app Claude Desktop, sul web e negli IDE JetBrains.
 
-## What Separates Claude Code from Claude?
+## Cosa distingue Claude Code da Claude?
 
-If you've used Claude.ai before, you might be wondering what makes Claude Code different. Unlike Claude.ai, Claude Code has direct access to your files, your terminal, and your entire codebase. Instead of copying and pasting code back and forth, it goes in and does the work itself.
+Se hai già usato Claude.ai, potresti chiederti cosa rende diverso Claude Code. A differenza di Claude.ai, Claude Code ha accesso diretto ai tuoi file, al tuo terminale e all'intero codebase. Invece di copiare e incollare codice avanti e indietro, entra e fa il lavoro da solo.
 
-The key differentiator is that Claude Code works as an AI Agent.
+La differenza chiave è che Claude Code funziona come un Agente IA.
 
-## What is an Agent?
+## Cos'è un Agente?
 
-An AI Agent is software that can interact with its environment and perform actions to complete a defined goal. At its core, this works by having a large language model operating in a loop in real time. AI Agents can have access to tools, external services, or even other AI Agents to help reach their goals.
+Un Agente IA è un software che può interagire con il proprio ambiente ed eseguire azioni per raggiungere un obiettivo definito. Alla base, funziona facendo operare un modello linguistico di grandi dimensioni in un loop in tempo reale. Gli Agenti IA possono avere accesso a strumenti, servizi esterni, o persino ad altri Agenti IA per aiutarli a raggiungere i loro obiettivi.
 
-## What Can Claude Code Actually Do?
+## Cosa può fare davvero Claude Code?
 
-Here's what that looks like in practice:
+Ecco come si presenta nella pratica:
 
-- **Read and understand your codebase.** You can ask Claude Code to explain a feature or trace a bug throughout your code.
-- **Edit files across your project.** Claude Code can refactor a function and update every file that references it.
-- **Run terminal commands.** It can execute your build script, run your tests, install packages, and use the output to decide what to do next.
-- **Search the web.** If it needs documentation or the latest API references, it can look that up for you.
+- **Legge e comprende il tuo codebase.** Puoi chiedere a Claude Code di spiegare una funzionalità o rintracciare un bug in tutto il codice.
+- **Modifica file in tutto il progetto.** Claude Code può refactorare una funzione e aggiornare ogni file che la referenzia.
+- **Esegue comandi da terminale.** Può eseguire il tuo script di build, far girare i tuoi test, installare pacchetti e usare l'output per decidere cosa fare dopo.
+- **Cerca sul web.** Se ha bisogno di documentazione o dei riferimenti API più recenti, può cercarli per te.
 
-## Using Claude Code Effectively
+## Usare Claude Code in modo efficace
 
-To use Claude Code effectively, keep these three concepts in mind:
+Per usare Claude Code in modo efficace, tieni a mente questi tre concetti:
 
-- **The context window.** Think of this as Claude's working memory. It can hold a lot, but not everything at once. This is where the "agentic" aspect comes in — Claude finds strategic ways to locate answers within your codebase without loading the entire thing into context.
-- **It asks for permission.** By default, Claude Code will ask you before running commands or making changes. You're always in control, whether you prefer a hands-on or hands-off approach.
-- **It can make mistakes.** Just like any tool, Claude Code isn't perfect. It might misunderstand your intent, introduce a bug, or over-engineer a solution. Staying in the loop helps you catch these early.
+- **La finestra di contesto.** Pensala come la memoria di lavoro di Claude. Può contenere molto, ma non tutto in una volta. È qui che entra in gioco l'aspetto "agentico" — Claude trova modi strategici per individuare risposte nel tuo codebase senza caricare tutto nel contesto.
+- **Chiede il permesso.** Per default, Claude Code ti chiederà prima di eseguire comandi o fare modifiche. Hai sempre il controllo, sia che tu preferisca un approccio pratico o meno.
+- **Può commettere errori.** Come ogni strumento, Claude Code non è perfetto. Potrebbe fraintendere le tue intenzioni, introdurre un bug, o ingegnerizzare eccessivamente una soluzione. Rimanere coinvolto ti aiuta a individuare questi problemi in anticipo.
 
-## Recap
+## Riepilogo
 
-Claude Code is an agentic coding tool. It reads your codebase, edits your files, runs commands, and connects to external tools to help you ship faster. You can use it today in your terminal, VS Code, JetBrains, and the Claude Desktop app.
+Claude Code è uno strumento di programmazione agentico. Legge il tuo codebase, modifica i tuoi file, esegue comandi e si collega a strumenti esterni per aiutarti a rilasciare più velocemente. Puoi usarlo oggi stesso nel tuo terminale, in VS Code, JetBrains e l'app Claude Desktop.
 </script>
 
-<script type="text/markdown" data-id="1.2" data-ch="1" data-title="How Claude Code Works">
-# 1.2 How Claude Code Works
+<script type="text/markdown" data-id="1.2" data-ch="1" data-title="Come funziona Claude Code">
+# 1.2 Come funziona Claude Code
 
 [Video](https://www.youtube.com/watch?v=6bs5b4FltCU)
 
-Claude Code is different from typical chat applications. Understanding how it works under the hood will help you use it more effectively.
+Claude Code è diverso dalle tipiche applicazioni di chat. Capire come funziona sotto il cofano ti aiuterà a usarlo in modo più efficace.
 
-## The Agentic Loop
+## Il loop agentico
 
-![Agentic loop diagram](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F8lsy243ftffjjy1cx9lm3o2bw%2Fpublic%2F1775686365%2Fagenticloop.1775686365141.jpg)
+![Diagramma del loop agentico](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F8lsy243ftffjjy1cx9lm3o2bw%2Fpublic%2F1775686365%2Fagenticloop.1775686365141.jpg)
 
-Claude Code is best explained through the agentic loop:
+Claude Code si spiega meglio attraverso il loop agentico:
 
-1. You enter a prompt into Claude Code.
-2. Claude gathers the context it needs by interacting with the model, which returns text or a tool call that Claude Code can execute.
-3. It takes action — for example, editing a file or running a command.
-4. It verifies the results and determines whether they achieve what your prompt set out to do.
-5. If they do, Claude finishes and waits for the next prompt. If they don't, it loops back and tries again until the results are complete and verifiable.
+1. Inserisci un prompt in Claude Code.
+2. Claude raccoglie il contesto di cui ha bisogno interagendo con il modello, che restituisce testo o una chiamata a uno strumento che Claude Code può eseguire.
+3. Compie un'azione — per esempio, modificando un file o eseguendo un comando.
+4. Verifica i risultati e determina se raggiungono ciò che il tuo prompt si proponeva di fare.
+5. Se sì, Claude termina e attende il prossimo prompt. Se no, torna indietro nel loop e riprova finché i risultati non sono completi e verificabili.
 
-Throughout this loop, you can add context, interrupt, or steer the model to help guide it toward your goal.
+Durante tutto questo loop, puoi aggiungere contesto, interrompere o guidare il modello per aiutarlo a orientarsi verso il tuo obiettivo.
 
-> Diagram of the agentic loop: your prompt flows into the loop of Gather context, Take action, and Verify results, with the ability to interrupt, steer, or add context at any point.
+> Diagramma del loop agentico: il tuo prompt confluisce nel loop di Raccogliere contesto, Compiere un'azione e Verificare i risultati, con la possibilità di interrompere, guidare o aggiungere contesto in qualsiasi momento.
 
-## Context
+## Contesto
 
-Claude has a context window that determines how much of your conversation, file contents, command outputs, and more it can store and reference. Once you reach that limit, Claude Code compacts your conversation — automatically determining what it can remove or summarize to bring the context window back down to a usable size.
+Claude ha una finestra di contesto che determina quanta parte della tua conversazione, dei contenuti dei file, degli output dei comandi e altro può memorizzare e referenziare. Una volta raggiunto quel limite, Claude Code comprime la conversazione — determinando automaticamente cosa può rimuovere o riassumere per riportare la finestra di contesto a una dimensione utilizzabile.
 
-## Tools
+## Strumenti
 
-Tools are the backbone of how agents work. Most AI assistants simply take text in and return text out. Tools let Claude Code determine when to execute code to get closer to completing a task. This could be a file-reading tool, a web search tool, or any number of other capabilities. Claude Code uses semantic understanding to determine when to call a tool and how to use the output.
+Gli strumenti sono la spina dorsale del funzionamento degli agenti. La maggior parte degli assistenti IA si limita a prendere testo in input e restituire testo in output. Gli strumenti permettono a Claude Code di determinare quando eseguire codice per avvicinarsi al completamento di un compito. Potrebbe essere uno strumento di lettura file, uno strumento di ricerca web, o qualsiasi altro numero di capacità. Claude Code usa la comprensione semantica per determinare quando chiamare uno strumento e come usarne l'output.
 
-## Permissions
+## Permessi
 
-Claude Code has several permission modes:
+Claude Code ha diverse modalità di permesso:
 
-- **Default behavior:** Claude asks for explicit permission before editing a file or running a shell command.
-- **Auto-accept:** Files are edited without asking, but commands still require approval.
-- **Plan mode:** Uses read-only tools to compile a plan of action before starting any work.
+- **Comportamento predefinito:** Claude chiede il permesso esplicito prima di modificare un file o eseguire un comando shell.
+- **Accettazione automatica:** i file vengono modificati senza chiedere, ma i comandi richiedono ancora l'approvazione.
+- **Modalità Piano:** usa strumenti di sola lettura per compilare un piano d'azione prima di iniziare qualsiasi lavoro.
 
-> Claude Code asking for permission before running a bash command.
+> Claude Code che chiede il permesso prima di eseguire un comando bash.
 
-![Permission prompt example](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F8lsy243ftffjjy1cx9lm3o2bw%2Fpublic%2F1775686376%2Fvideo2ask.1775686376586.jpg)
+![Esempio di richiesta di permesso](https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F8lsy243ftffjjy1cx9lm3o2bw%2Fpublic%2F1775686376%2Fvideo2ask.1775686376586.jpg)
 
-All of this can be configured in your settings file. Be cautious when skipping permissions — giving Claude Code free rein to run commands means a mistake could be harder to catch before it happens.
+Tutto questo può essere configurato nel tuo file di impostazioni. Fai attenzione quando salti i permessi — dare a Claude Code mano libera per eseguire comandi significa che un errore potrebbe essere più difficile da individuare prima che accada.
 
-## Recap
+## Riepilogo
 
-Claude Code combines several agentic concepts: an agentic loop, a managed context window, tools, and configurable permissions — all inside your terminal. It can read your codebase, take action, and verify its own work. That's what makes it fundamentally different from a chat window.
+Claude Code combina diversi concetti agentici: un loop agentico, una finestra di contesto gestita, strumenti e permessi configurabili — tutto dentro il tuo terminale. Può leggere il tuo codebase, compiere azioni e verificare il proprio lavoro. Questo è ciò che lo rende fondamentalmente diverso da una finestra di chat.
 </script>
 
-<script type="text/markdown" data-id="2.1" data-ch="2" data-title="Installing Claude Code">
+<script type="text/markdown" data-id="2.1" data-ch="2" data-title="Installare Claude Code">
 </script>
 
-<script type="text/markdown" data-id="2.2" data-ch="2" data-title="Your First Prompt">
-# 2.2 Your First Prompt
+<script type="text/markdown" data-id="2.2" data-ch="2" data-title="Il tuo primo prompt">
+# 2.2 Il tuo primo prompt
 
 [Video](https://www.youtube.com/watch?v=gbetp6D7J_Q)
 
-You talk to Claude Code like you would any AI assistant. When entering your prompt, here are some things to consider that can both protect you and make things easier.
+Parli con Claude Code come faresti con qualsiasi assistente IA. Quando inserisci il tuo prompt, ecco alcune cose da considerare che possono sia proteggerti sia semplificarti la vita.
 
-## Auto-Accept vs. Approval
+## Accettazione automatica vs. approvazione
 
-You can choose whether Claude auto-accepts every file change it suggests, or whether it asks for your explicit permission each time. Press `Shift + Tab` to cycle between modes.
+Puoi scegliere se Claude accetta automaticamente ogni modifica ai file che propone, oppure se chiede il tuo permesso esplicito ogni volta. Premi `Shift + Tab` per alternare tra le modalità.
 
-- **Approval mode:** Claude asks permission each time it wants to edit a file or run a command.
-- **Auto-accept mode:** File edits are automatically approved, but commands still require your permission.
+- **Modalità approvazione:** Claude chiede il permesso ogni volta che vuole modificare un file o eseguire un comando.
+- **Modalità accettazione automatica:** le modifiche ai file vengono approvate automaticamente, ma i comandi richiedono ancora il tuo permesso.
 
-There's no right or wrong answer — it's whatever you're comfortable with.
+Non c'è una risposta giusta o sbagliata — dipende da cosa ti trovi più a tuo agio.
 
-> Claude Code in auto-accept mode, reading files and working through a task.
+> Claude Code in modalità accettazione automatica, mentre legge file e lavora su un compito.
 
-## Plan Mode
+## Modalità Piano
 
-Within the `Shift + Tab` menu is Plan Mode. Plan mode takes your prompt and uses read-only tools to analyze your codebase and research your suggested implementation. It will ask clarifying questions along the way, then return a detailed plan it can execute.
+All'interno del menu `Shift + Tab` c'è la Modalità Piano. La modalità piano prende il tuo prompt e usa strumenti di sola lettura per analizzare il tuo codebase e studiare l'implementazione che proponi. Farà domande di chiarimento lungo il percorso, poi restituirà un piano dettagliato che può eseguire.
 
-Plan mode is great for planning complex changes or doing a safe code review. Many times you'll be asking Claude to handle multi-step implementations toward a feature, and this is exactly where Plan Mode excels.
+La modalità piano è ottima per pianificare modifiche complesse o fare una revisione del codice sicura. Molte volte chiederai a Claude di gestire implementazioni multi-fase verso una funzionalità, ed è esattamente qui che la Modalità Piano eccelle.
 
-> Claude Code with plan mode on, showing the status bar indicator.
+> Claude Code con la modalità piano attiva, che mostra l'indicatore nella barra di stato.
 
-## Example: Add a Dark Mode Toggle
+## Esempio: aggiungere un toggle per la modalità scura
 
-Let's walk through an example. Say you have an application that needs a dark mode toggle. Open the root directory of your project and run `claude`. Press `Shift + Tab` a couple of times to enter Plan Mode, then write a prompt like:
+Vediamo un esempio. Supponi di avere un'applicazione che ha bisogno di un toggle per la modalità scura. Apri la directory radice del tuo progetto ed esegui `claude`. Premi `Shift + Tab` un paio di volte per entrare in Modalità Piano, poi scrivi un prompt come:
 
-> My app needs a dark mode implemented across the entire app. Can you create a toggle switch on the header that allows a user to toggle between light mode and dark mode? I need you to find a good contrast color that works based on my existing light theme.
+> La mia app ha bisogno della modalità scura implementata in tutta l'app. Puoi creare un interruttore a levetta nell'intestazione che permetta a un utente di passare tra modalità chiara e modalità scura? Ho bisogno che tu trovi un buon colore di contrasto che funzioni in base al mio tema chiaro esistente.
 
-> Entering the dark mode prompt in Claude Code with plan mode enabled.
+> Inserimento del prompt per la modalità scura in Claude Code con la modalità piano attiva.
 
-Let Claude plan it out. After reviewing the plan, if it looks good, accept it and let Claude ask you for approval at each step. At the end, you can see exactly what Claude did and how it reached its conclusions.
+Lascia che Claude pianifichi il tutto. Dopo aver rivisto il piano, se ti sembra buono, accettalo e lascia che Claude ti chieda l'approvazione a ogni passaggio. Alla fine, puoi vedere esattamente cosa ha fatto Claude e come è arrivato alle sue conclusioni.
 
-## Recap
+## Riepilogo
 
-When using Claude Code, try to be as descriptive as possible with your prompt. If you want to stay in the loop at every step, you can. Use Plan Mode to let Claude dig into the details of what you want to achieve before executing on any code.
+Quando usi Claude Code, cerca di essere il più descrittivo possibile nel tuo prompt. Se vuoi rimanere coinvolto a ogni passaggio, puoi farlo. Usa la Modalità Piano per lasciare che Claude approfondisca i dettagli di ciò che vuoi ottenere prima di eseguire qualsiasi codice.
 </script>
 
-<script type="text/markdown" data-id="3.1" data-ch="3" data-title="Explore → Plan → Code → Commit">
-# 3.1 The Explore → Plan → Code → Commit Workflow
+<script type="text/markdown" data-id="3.1" data-ch="3" data-title="Esplora → Pianifica → Programma → Commit">
+# 3.1 Il flusso di lavoro Esplora → Pianifica → Programma → Commit
 
 [Video](https://www.youtube.com/watch?v=xJQuF02NAK8)
 
-If you take one thing away from this course, let it be this workflow: Explore, Plan, Code, and Commit. Without it, most people jump straight to asking Claude to write code — which means more course-correcting later on.
+Se c'è una cosa sola da portare a casa da questo corso, che sia questa: Esplora, Pianifica, Programma e fai il Commit. Senza di essa, la maggior parte delle persone salta dritta a chiedere a Claude di scrivere codice — il che significa più correzioni di rotta in seguito.
 
-## Explore and Plan
+## Esplora e Pianifica
 
-The fastest way to handle these first two steps is with Plan Mode. In plan mode, Claude can't edit files — it just reads files to gather information about how it will tackle the implementation.
+Il modo più veloce per gestire questi primi due passaggi è con la Modalità Piano. In modalità piano, Claude non può modificare i file — si limita a leggerli per raccogliere informazioni su come affronterà l'implementazione.
 
-To enter plan mode, press `Shift + Tab` until you see "Plan Mode" under the text input. Then write a prompt like:
+Per entrare in modalità piano, premi `Shift + Tab` finché non vedi "Modalità Piano" sotto il campo di testo. Poi scrivi un prompt come:
 
-> I need to add WebP conversion to our image upload pipeline. Figure out where in the pipeline it should happen, whether we need new dependencies, and how to approach it.
+> Devo aggiungere la conversione WebP alla nostra pipeline di caricamento immagini. Individua dove nella pipeline dovrebbe avvenire, se servono nuove dipendenze, e come affrontarla.
 
-> Claude Code status bar showing plan mode on with shift+tab to cycle.
+> Barra di stato di Claude Code che mostra la modalità piano attiva con shift+tab per alternare.
 
-Claude will read relevant files, run some web searches, and give you a plan of action. Review it and decide if it meets your criteria. If not, ask it to revise specific areas.
+Claude leggerà i file rilevanti, farà alcune ricerche web e ti darà un piano d'azione. Rivedilo e decidi se soddisfa i tuoi criteri. Se no, chiedigli di rivedere aree specifiche.
 
-> Claude Code presenting the plan with options to approve, revise areas, or ask questions.
+> Claude Code che presenta il piano con opzioni per approvare, rivedere aree, o fare domande.
 
-This is the best place to course-correct because it's before any code is written. You can also run the explore subagent without being in plan mode if you just want a general summary of your codebase without intending to make changes afterward.
+Questo è il posto migliore per correggere la rotta perché è prima che venga scritto qualsiasi codice. Puoi anche eseguire il subagent di esplorazione senza essere in modalità piano se vuoi solo un riepilogo generale del tuo codebase senza l'intenzione di fare modifiche in seguito.
 
-## Code
+## Programma
 
-Once the plan looks good, select "approve" to accept it and let Claude work through the list items. You can choose whether Claude auto-accepts file edits or asks you each time.
+Una volta che il piano sembra buono, seleziona "approva" per accettarlo e lascia che Claude lavori sugli elementi dell'elenco. Puoi scegliere se Claude accetta automaticamente le modifiche ai file o te le chiede ogni volta.
 
-Claude will do its best to troubleshoot before considering the plan "finished," but at times you'll need to step in. This is the benefit of working with Plan Mode — after execution, you also have the context of how you got to the results, which helps guide Claude's next decisions.
+Claude farà del suo meglio per risolvere i problemi prima di considerare il piano "finito," ma a volte dovrai intervenire. Questo è il vantaggio di lavorare con la Modalità Piano — dopo l'esecuzione, hai anche il contesto di come sei arrivato ai risultati, il che aiuta a guidare le prossime decisioni di Claude.
 
-A few tips to make the coding phase smoother:
+Alcuni consigli per rendere più fluida la fase di programmazione:
 
-- **Define a success criteria.** For Claude to be confident in its results, it needs to be clear on what "correct" looks like. Make this explicit when writing your plan.
-- **Add tools.** Tools that help Claude complete its goals remove a lot of back and forth. For example, if you're building web UIs, install the Claude in Chrome extension so Claude Code can control a browser tab and test the UI directly.
+- **Definisci un criterio di successo.** Perché Claude sia sicuro dei suoi risultati, deve essere chiaro su cosa significhi "corretto." Rendilo esplicito quando scrivi il tuo piano.
+- **Aggiungi strumenti.** Gli strumenti che aiutano Claude a raggiungere i suoi obiettivi eliminano un sacco di andirivieni. Per esempio, se stai costruendo UI web, installa l'estensione Claude in Chrome così Claude Code può controllare una scheda del browser e testare direttamente l'interfaccia.
 
-> The Claude in Chrome extension page in the Chrome Web Store.
+> La pagina dell'estensione Claude in Chrome nel Chrome Web Store.
 
-- **Include a test suite.** Give Claude a test suite it can continuously validate against. Claude can even write tests for you. Before handing this off, make sure the tests are a reliable source of truth to avoid false positives.
+- **Includi una suite di test.** Dai a Claude una suite di test contro cui possa validare continuamente. Claude può persino scrivere i test per te. Prima di affidargliela, assicurati che i test siano una fonte di verità affidabile per evitare falsi positivi.
 
-> Quick tip: If you find Claude keeps running into the same issues, ask it to save the solution to its CLAUDE.md file.
+> Consiglio rapido: se noti che Claude continua a imbattersi negli stessi problemi, chiedigli di salvare la soluzione nel suo file CLAUDE.md.
 
 ## Commit
 
-Once you've tested the changes yourself and are happy with the results, it's time to push your code. Before you commit, run a subagent code reviewer to look at your work. A subagent gets a fresh pair of eyes on the codebase — it doesn't carry the bias the main agent might have from the session.
+Una volta che hai testato tu stesso le modifiche e sei soddisfatto dei risultati, è il momento di fare il push del codice. Prima di fare il commit, esegui un subagent di revisione del codice per esaminare il tuo lavoro. Un subagent porta uno sguardo nuovo sul codebase — non porta il pregiudizio che l'agente principale potrebbe avere dalla sessione.
 
-> A code-reviewer subagent running in Claude Code, reading files and reviewing recent changes.
+> Un subagent code-reviewer in esecuzione in Claude Code, mentre legge file e revisiona le modifiche recenti.
 
-Then get Claude to generate a commit message in your style. Rinse and repeat.
+Poi fai generare a Claude un messaggio di commit nel tuo stile. Ripeti il processo.
 
-## Recap
+## Riepilogo
 
-To be effective with Claude Code, follow the Explore, Plan, Code, and Commit workflow:
+Per essere efficace con Claude Code, segui il flusso di lavoro Esplora, Pianifica, Programma e Commit:
 
-- **Explore** gives Claude the relevant context it needs for your project.
-- **Plan** creates a plan of action that Claude uses to measure success.
-- **Code** is the back and forth between you and Claude before settling on the final outcome.
-- **Commit** helps you review and push your code so you can start on your next feature.
+- **Esplora** dà a Claude il contesto rilevante di cui ha bisogno per il tuo progetto.
+- **Pianifica** crea un piano d'azione che Claude usa per misurare il successo.
+- **Programma** è l'andirivieni tra te e Claude prima di stabilire il risultato finale.
+- **Commit** ti aiuta a rivedere e a fare il push del codice così puoi iniziare la tua prossima funzionalità.
 </script>
 
-<script type="text/markdown" data-id="3.2" data-ch="3" data-title="Context Management">
-# 3.2 Context Management
+<script type="text/markdown" data-id="3.2" data-ch="3" data-title="Gestione del contesto">
+# 3.2 Gestione del contesto
 
 [Video](https://www.youtube.com/watch?v=eW3oTyfeWZ0)
 
-Context is Claude's working memory. Every file it reads, every command it runs, every message you send — it all takes up space in the context window.
+Il contesto è la memoria di lavoro di Claude. Ogni file che legge, ogni comando che esegue, ogni messaggio che invii — tutto occupa spazio nella finestra di contesto.
 
-## What is the Context Window?
+## Cos'è la finestra di contesto?
 
-Think of the context window as the amount of space Claude can hold in its memory. Whenever you enter a prompt, Claude reads a file, runs a tool call, or receives a tool call result, it's all adding to the context window. Since there's a finite amount of space, it becomes important to optimize how you use it.
+Pensa alla finestra di contesto come alla quantità di spazio che Claude può tenere in memoria. Ogni volta che inserisci un prompt, Claude legge un file, esegue una chiamata a uno strumento, o riceve il risultato di una chiamata a uno strumento, tutto si aggiunge alla finestra di contesto. Poiché c'è una quantità finita di spazio, diventa importante ottimizzare come lo usi.
 
-> Diagram showing the context window as a grid of tokens — some taken, most available.
+> Diagramma che mostra la finestra di contesto come una griglia di token — alcuni occupati, la maggior parte disponibili.
 
-## What Happens When Context Fills Up
+## Cosa succede quando il contesto si riempie
 
-When you approach the limit, the context window is automatically compacted. Compaction summarizes important details and removes unnecessary tool call results to free up space. Note that this process can potentially lose details.
+Quando ti avvicini al limite, la finestra di contesto viene compressa automaticamente. La compressione riassume i dettagli importanti e rimuove i risultati non necessari delle chiamate agli strumenti per liberare spazio. Nota che questo processo può potenzialmente far perdere dei dettagli.
 
-> Claude Code showing "Compacting conversation..." as it summarizes the context. Claude Code displaying a compact summary of the previous conversation including key technical concepts and files.
+> Claude Code che mostra "Compressione della conversazione..." mentre riassume il contesto. Claude Code che mostra un riepilogo compresso della conversazione precedente inclusi i concetti tecnici chiave e i file.
 
-## Commands
+## Comandi
 
-You can run compaction manually with the `/compact` command. This compacts everything up to that point. It's handy when you want to free up context space while keeping a memory of what you previously worked on.
+Puoi eseguire la compressione manualmente con il comando `/compact`. Questo comprime tutto fino a quel punto. È utile quando vuoi liberare spazio di contesto mantenendo memoria di ciò su cui hai lavorato in precedenza.
 
-> The `/compact` command in Claude Code's autocomplete menu.
+> Il comando `/compact` nel menu di autocompletamento di Claude Code.
 
-If you want to completely start from scratch with no memory of the previous session, run `/clear`. This removes everything.
+Se vuoi ripartire completamente da zero senza memoria della sessione precedente, esegui `/clear`. Questo rimuove tutto.
 
-> Running `/clear` in Claude Code to start a fresh session.
+> Esecuzione di `/clear` in Claude Code per iniziare una sessione nuova.
 
-To check the state of your context, run the `/context` command. You'll get a high-level overview of your context size, the categories taking up the most space, and a visual graphic showing the breakdown.
+Per controllare lo stato del tuo contesto, esegui il comando `/context`. Otterrai una panoramica di alto livello della dimensione del tuo contesto, le categorie che occupano più spazio, e una rappresentazione visiva della ripartizione.
 
-> Output of the `/context` command showing context usage breakdown with a visual bar chart.
+> Output del comando `/context` che mostra la ripartizione dell'uso del contesto con un grafico a barre visivo.
 
-## When to Use Which
+## Quando usare quale
 
-A general rule of thumb:
+Una regola generale:
 
-- **Use `/compact`** when you're working on a specific feature and running up against the context limit but need to continue. Keeping the context relevant to your current feature is important.
-- **Use `/clear`** when you want to start a new feature. You don't want the previous conversation to introduce bias into something new. For things you want Claude to remember across sessions, put them in your CLAUDE.md file so it doesn't have to rediscover things from scratch.
+- **Usa `/compact`** quando stai lavorando su una funzionalità specifica e ti stai avvicinando al limite di contesto ma devi continuare. Mantenere il contesto rilevante per la tua funzionalità attuale è importante.
+- **Usa `/clear`** quando vuoi iniziare una nuova funzionalità. Non vuoi che la conversazione precedente introduca pregiudizi in qualcosa di nuovo. Per le cose che vuoi che Claude ricordi tra le sessioni, mettile nel tuo file CLAUDE.md così non deve riscoprirle da zero.
 
-> A CLAUDE.md file with commands, important notes, and architecture sections.
+> Un file CLAUDE.md con sezioni di comandi, note importanti e architettura.
 
-## Tips for Saving Context Space
+## Consigli per risparmiare spazio di contesto
 
-- **Be specific.** A vague prompt might seem smaller, but it actually costs more context in the long run. Without clear instructions, Claude is forced to explore your codebase more and do its own reasoning — which takes up far more context space than a detailed prompt would.
-- **Manage your MCP servers.** MCP servers load all of their available tools into context by default, even when you're not using them. If you have servers configured for things unrelated to the current project, consider turning them off. You can also try "Skills," which work similarly to MCP servers but don't load everything into context upfront.
-- **Use subagents.** Subagents run in parallel with your main agent but have a completely separate context window. For tasks where you only need the answer — like "where are the authentication endpoints located?" — a subagent does the work and returns just a summary to your main agent, keeping your primary context clean.
+- **Sii specifico.** Un prompt vago potrebbe sembrare più piccolo, ma in realtà costa più contesto a lungo termine. Senza istruzioni chiare, Claude è costretto a esplorare di più il tuo codebase e a fare il proprio ragionamento — il che occupa molto più spazio di contesto rispetto a un prompt dettagliato.
+- **Gestisci i tuoi server MCP.** I server MCP caricano tutti i loro strumenti disponibili nel contesto per default, anche quando non li stai usando. Se hai server configurati per cose non correlate al progetto attuale, considera di disattivarli. Puoi anche provare le "Skill," che funzionano in modo simile ai server MCP ma non caricano tutto in anticipo nel contesto.
+- **Usa i subagent.** I subagent girano in parallelo con il tuo agente principale ma hanno una finestra di contesto completamente separata. Per compiti dove ti serve solo la risposta — come "dove si trovano gli endpoint di autenticazione?" — un subagent fa il lavoro e restituisce solo un riepilogo al tuo agente principale, mantenendo pulito il tuo contesto principale.
 
-## Recap
+## Riepilogo
 
-Managing context within Claude Code is crucial. Use `/compact` to summarize long sessions and `/clear` to start fresh. To use your context window effectively: be specific with your prompts, check what's consuming your current context, and use subagents to delegate tasks where you only need the result.
+Gestire il contesto in Claude Code è cruciale. Usa `/compact` per riassumere sessioni lunghe e `/clear` per ripartire da zero. Per usare la tua finestra di contesto in modo efficace: sii specifico con i tuoi prompt, controlla cosa sta consumando il tuo contesto attuale, e usa i subagent per delegare compiti dove ti serve solo il risultato.
 </script>
 
-<script type="text/markdown" data-id="3.3" data-ch="3" data-title="Code Review">
-# 3.3 Code Review
+<script type="text/markdown" data-id="3.3" data-ch="3" data-title="Revisione del codice">
+# 3.3 Revisione del codice
 
 [Video](https://www.youtube.com/watch?v=RKsADl0ZC3Y)
 
-Claude Code has a few built-in features that make your git workflow faster. Let's go through them.
+Claude Code ha alcune funzionalità integrate che velocizzano il tuo flusso di lavoro git. Vediamole insieme.
 
-## Review with a Subagent
+## Revisione con un subagent
 
-Before you push a PR, ask Claude to use a subagent to review your changes. The subagent runs in its own context window with fresh eyes — it doesn't carry the bias of the main agent that just spent the session writing the code.
+Prima di fare il push di una PR, chiedi a Claude di usare un subagent per revisionare le tue modifiche. Il subagent gira nella propria finestra di contesto con occhi nuovi — non porta il pregiudizio dell'agente principale che ha appena passato la sessione a scrivere il codice.
 
-When creating a code-reviewer subagent, restrict it to read-only tools. A reviewer should flag issues, not edit files. Check the subagent configuration into your repo so your whole team uses the same reviewer.
+Quando crei un subagent code-reviewer, limitalo a strumenti di sola lettura. Un revisore dovrebbe segnalare problemi, non modificare file. Includi la configurazione del subagent nel tuo repository così tutto il team usa lo stesso revisore.
 
-## The `/commit-push-pr` Skill
+## La Skill `/commit-push-pr`
 
-The `/commit-push-pr` skill handles the commit, push, and PR creation all in one step. Instead of doing each manually, just run the skill and Claude takes care of it.
+La skill `/commit-push-pr` gestisce commit, push e creazione della PR tutto in un unico passaggio. Invece di farlo manualmente ogni volta, esegui semplicemente la skill e Claude se ne occupa.
 
-If you have a Slack MCP server configured with channels listed in your CLAUDE.md, it will automatically post the PR link to your team's channel.
+Se hai un server MCP Slack configurato con i canali elencati nel tuo CLAUDE.md, pubblicherà automaticamente il link della PR nel canale del tuo team.
 
-## Session Linking with `--from-pr`
+## Collegamento della sessione con `--from-pr`
 
-When Claude creates a PR through `gh pr create`, the session gets linked to that PR automatically. If you need to come back to it later — maybe to address review comments or fix a failing build — run:
+Quando Claude crea una PR tramite `gh pr create`, la sessione viene collegata automaticamente a quella PR. Se devi tornarci più avanti — magari per rispondere ai commenti di revisione o correggere una build che fallisce — esegui:
 
 ```
-claude --from-pr <PR_NUMBER>
+claude --from-pr <NUMERO_PR>
 ```
 
-This picks up right where you left off.
+Questo riprende esattamente da dove avevi lasciato.
 
-## Recap
+## Riepilogo
 
-Use a subagent for an unbiased code review before pushing. Use `/commit-push-pr` to handle the full commit-to-PR flow in one step. And use `--from-pr` to resume work on a PR later. These are small features, but they remove a lot of friction from your daily workflow.
+Usa un subagent per una revisione del codice imparziale prima di fare il push. Usa `/commit-push-pr` per gestire l'intero flusso da commit a PR in un unico passaggio. E usa `--from-pr` per riprendere il lavoro su una PR più avanti. Sono funzionalità piccole, ma eliminano molto attrito dal tuo flusso di lavoro quotidiano.
 </script>
 
-<script type="text/markdown" data-id="4.1" data-ch="4" data-title="The CLAUDE.md File">
-# 4.1 The CLAUDE.md File
+<script type="text/markdown" data-id="4.1" data-ch="4" data-title="Il file CLAUDE.md">
+# 4.1 Il file CLAUDE.md
 
 [Video](https://www.youtube.com/watch?v=O0FGCxkHM-U)
 
-One of the most useful features in Claude Code is the CLAUDE.md file. It gives Claude Code persistent memory about your project.
+Una delle funzionalità più utili in Claude Code è il file CLAUDE.md. Dà a Claude Code memoria persistente sul tuo progetto.
 
-## The Problem It Solves
+## Il problema che risolve
 
-When you open Claude Code without a CLAUDE.md file, it starts fresh every time. It has to re-explore your codebase, figure out what dependencies are needed, and understand what features are already implemented. Sometimes it makes assumptions, which makes it harder to steer Claude in the right direction.
+Quando apri Claude Code senza un file CLAUDE.md, riparte da zero ogni volta. Deve riesplorare il tuo codebase, capire quali dipendenze servono, e capire quali funzionalità sono già implementate. A volte fa supposizioni, il che rende più difficile guidare Claude nella direzione giusta.
 
-CLAUDE.md solves this. It's a Markdown file you add to the root of your project, and Claude Code reads it automatically every time you start a session. Think of it as an onboarding script for your codebase. The contents of the CLAUDE.md file are appended to your prompt.
+CLAUDE.md risolve questo problema. È un file Markdown che aggiungi alla radice del tuo progetto, e Claude Code lo legge automaticamente ogni volta che avvii una sessione. Pensalo come uno script di onboarding per il tuo codebase. Il contenuto del file CLAUDE.md viene aggiunto al tuo prompt.
 
-## An Example
+## Un esempio
 
-Here's what a typical CLAUDE.md file looks like:
+Ecco come appare un tipico file CLAUDE.md:
 
 ```markdown
-# Project
+# Progetto
 
-This is a Next.js 15 app using the App Router, Tailwind, and Drizzle ORM.
+Questa è un'app Next.js 15 che usa l'App Router, Tailwind e Drizzle ORM.
 
-# Commands
-- Dev server: `pnpm dev`
-- Run tests: `pnpm test`
+# Comandi
+- Server di sviluppo: `pnpm dev`
+- Esegui i test: `pnpm test`
 - Lint: `pnpm lint`
 
-# Code Style
-- Use 2-space indentation
-- Prefer named exports
-- All API routes go in app/api/
-- Use server actions instead of API routes where possible
+# Stile del codice
+- Usa indentazione a 2 spazi
+- Preferisci gli export nominati
+- Tutte le route API vanno in app/api/
+- Usa le server action invece delle route API dove possibile
 ```
 
-It's straightforward. Now if you ask Claude Code to create a React component, it already knows to use Tailwind for styling and to follow your code conventions.
+È semplice. Ora se chiedi a Claude Code di creare un componente React, sa già di usare Tailwind per lo stile e di seguire le tue convenzioni di codice.
 
-> A CLAUDE.md file open in VS Code showing project info, commands, and code style rules.
+> Un file CLAUDE.md aperto in VS Code che mostra informazioni sul progetto, comandi e regole di stile del codice.
 
-## CLAUDE.md is for Teams
+## CLAUDE.md è per i team
 
-You can (and should) commit your CLAUDE.md to version control so your team benefits from it. There's actually a hierarchy of memory files depending on who they're for:
+Puoi (e dovresti) fare il commit del tuo CLAUDE.md nel controllo versione così tutto il team ne beneficia. C'è in realtà una gerarchia di file di memoria a seconda di a chi sono destinati:
 
-- **Project-level CLAUDE.md** lives in the root directory of your project. Shared with the team.
-- **User-level CLAUDE.md** lives in your configuration folder. This one is just for you and applies across all your projects. Put your personal preferences here.
+- Il **CLAUDE.md a livello di progetto** vive nella directory radice del tuo progetto. Condiviso con il team.
+- Il **CLAUDE.md a livello utente** vive nella tua cartella di configurazione. Questo è solo per te e si applica a tutti i tuoi progetti. Metti qui le tue preferenze personali.
 
-## Tips
+## Consigli
 
-- **Save corrections to memory.** If you find yourself correcting Claude repeatedly — like telling it to always use server actions instead of API routes — explicitly ask Claude to save that rule to memory. Next time you open the project, it'll know.
+- **Salva le correzioni in memoria.** Se ti ritrovi a correggere Claude ripetutamente — come dirgli di usare sempre le server action invece delle route API — chiedi esplicitamente a Claude di salvare quella regola in memoria. La prossima volta che apri il progetto, la saprà.
 
-> Asking Claude to save a rule to the CLAUDE.md file — always use server actions instead of API routes.
+> Chiedere a Claude di salvare una regola nel file CLAUDE.md — usa sempre le server action invece delle route API.
 
-- **Reference project docs.** If you have documentation in your project that you want Claude to reference, use the `@` symbol with the file path:
+- **Fai riferimento alla documentazione del progetto.** Se hai documentazione nel tuo progetto a cui vuoi che Claude faccia riferimento, usa il simbolo `@` con il percorso del file:
 
 ```markdown
 ## README.md
 
-Please read if you need more info: @README.md
+Leggi qui per maggiori informazioni: @README.md
 ```
 
-- **Start without one.** We recommend starting a project without a CLAUDE.md file so you can see where you constantly have to course-correct the model. This keeps your CLAUDE.md compact and focused on only the necessary information. When you're ready, run `/init` to have Claude generate one for you.
+- **Inizia senza uno.** Ti consigliamo di iniziare un progetto senza un file CLAUDE.md così puoi vedere dove devi costantemente correggere la rotta al modello. Questo mantiene il tuo CLAUDE.md compatto e focalizzato solo sulle informazioni necessarie. Quando sei pronto, esegui `/init` per far generare a Claude uno per te.
 
-## Recap
+## Riepilogo
 
-The difference between a frustrating Claude Code session and a productive one often comes down to context — and the CLAUDE.md file is how you provide that context. Start with your stack, your preferences, and your commands, then build from there as you go.
+La differenza tra una sessione frustrante con Claude Code e una produttiva spesso dipende dal contesto — e il file CLAUDE.md è come fornisci quel contesto. Inizia con il tuo stack, le tue preferenze e i tuoi comandi, poi costruisci da lì mano a mano che procedi.
 </script>
 
-<script type="text/markdown" data-id="4.2" data-ch="4" data-title="Subagents">
-# 4.2 Subagents
+<script type="text/markdown" data-id="4.2" data-ch="4" data-title="Subagent">
+# 4.2 Subagent
 
 [Video](https://www.youtube.com/watch?v=jKErNxuxPXg)
 
-Claude can delegate tasks to subagents that break them down and run component tasks in parallel, improving your context management. Each subagent operates in its own isolated context window.
+Claude può delegare compiti a subagent che li scompongono ed eseguono i compiti componenti in parallelo, migliorando la tua gestione del contesto. Ogni subagent opera nella propria finestra di contesto isolata.
 
-## How It Works
+## Come funziona
 
-Managing context in Claude Code is important. A lot of the context window gets consumed by things like tool calls exploring your codebase or running web searches for research. What Claude discovers during that exploration isn't always relevant to the main feature you're developing.
+Gestire il contesto in Claude Code è importante. Molto della finestra di contesto viene consumato da cose come chiamate a strumenti che esplorano il tuo codebase o eseguono ricerche web. Ciò che Claude scopre durante quell'esplorazione non è sempre rilevante per la funzionalità principale che stai sviluppando.
 
-This is where subagents come in. Claude spawns a subagent to handle a task like "explore this codebase for me." The subagent runs in parallel with its own context window, does all the exploration work, and once finished, summarizes its findings and returns that summary back to Claude.
+È qui che entrano in gioco i subagent. Claude avvia un subagent per gestire un compito come "esplora questo codebase per me." Il subagent gira in parallelo con la propria finestra di contesto, fa tutto il lavoro di esplorazione, e una volta finito, riassume i suoi risultati e restituisce quel riepilogo a Claude.
 
-The result: you get the answer you were looking for, without the entire journey it took to get there cluttering your main context.
+Il risultato: ottieni la risposta che cercavi, senza che l'intero percorso per arrivarci ingombri il tuo contesto principale.
 
-## Creating Your Own Subagent
+## Creare il tuo subagent
 
-Subagents are defined in Markdown files with YAML frontmatter. The easiest way to get started is to let Claude generate one for you. Run:
+I subagent sono definiti in file Markdown con frontmatter YAML. Il modo più semplice per iniziare è lasciare che Claude ne generi uno per te. Esegui:
 
 ```
 /agents
 ```
 
-Then select "Create new agent." You'll walk through steps including choosing the scope of the agent, defining its purpose, selecting the tools it has access to, and even picking a color for it.
+Poi seleziona "Crea nuovo agente." Percorrerai dei passaggi che includono la scelta dell'ambito dell'agente, la definizione del suo scopo, la selezione degli strumenti a cui ha accesso, e persino la scelta di un colore per esso.
 
-Claude will generate a name, description, and prompt for the subagent. This also tells Claude when to call the subagent based on the prompts you give it.
+Claude genererà un nome, una descrizione e un prompt per il subagent. Questo dice anche a Claude quando chiamare il subagent in base ai prompt che gli dai.
 
-## Further Customization
+## Ulteriore personalizzazione
 
-Subagents can be customized further. Here are some highlights:
+I subagent possono essere personalizzati ulteriormente. Ecco alcuni punti salienti:
 
-- **Persistent memory** lets your subagent retain memory across conversations. This is great if you're using it consistently on the same projects.
-- **Preload skills** into subagents by adding the skill key and listing skills by name. Note that unlike skills in your main conversation, the entire skill is loaded into context here.
+- La **memoria persistente** permette al tuo subagent di mantenere la memoria tra le conversazioni. Ottimo se lo usi costantemente sugli stessi progetti.
+- **Precarica le skill** nei subagent aggiungendo la chiave skill ed elencando le skill per nome. Nota che a differenza delle skill nella tua conversazione principale, qui l'intera skill viene caricata nel contesto.
 
-## Recap
+## Riepilogo
 
-Keeping your context window clean is one of the best ways to stay productive with Claude Code. With subagents, you can run an agent in the background to handle the heavy lifting and return just the answer to your main context window.
+Mantenere pulita la finestra di contesto è uno dei modi migliori per rimanere produttivi con Claude Code. Con i subagent, puoi far girare un agente in background per gestire il lavoro pesante e restituire solo la risposta alla tua finestra di contesto principale.
 </script>
 
-<script type="text/markdown" data-id="4.3" data-ch="4" data-title="Skills">
-# 4.3 Skills
+<script type="text/markdown" data-id="4.3" data-ch="4" data-title="Skill">
+# 4.3 Skill
 
 [Video](https://www.youtube.com/watch?v=bjdBVZa66oU)
 
-Every time you explain your team's coding standards to Claude, you're repeating yourself. Every PR review, you re-describe how you want feedback structured. Every commit message, you remind Claude of your preferred format. Skills fix this. A skill is a markdown file that teaches Claude how to do something once, and Claude then applies that knowledge automatically whenever it's relevant.
+Ogni volta che spieghi gli standard di codifica del tuo team a Claude, ti stai ripetendo. Ogni revisione di PR, ridescrivi come vuoi che sia strutturato il feedback. Ogni messaggio di commit, ricordi a Claude il tuo formato preferito. Le Skill risolvono questo problema. Una skill è un file markdown che insegna a Claude come fare qualcosa una volta sola, e Claude poi applica quella conoscenza automaticamente ogni volta che è rilevante.
 
-## What are skills? (3 min)
+## Cosa sono le skill? (3 min)
 
-Skills are reusable markdown files that teach Claude Code how to handle specific tasks automatically. Instead of repeating instructions every time you ask Claude to review a PR or write a commit message, you write a skill once and Claude applies it whenever the task comes up.
+Le Skill sono file markdown riutilizzabili che insegnano a Claude Code come gestire automaticamente compiti specifici. Invece di ripetere le istruzioni ogni volta che chiedi a Claude di revisionare una PR o scrivere un messaggio di commit, scrivi una skill una volta e Claude la applica ogni volta che il compito si ripresenta.
 
-**Key takeaways**
+**Punti chiave**
 
-- Skills are folders of instructions that Claude Code can discover and use to handle tasks more accurately. Each skill lives in a SKILL.md file with a name and description in its frontmatter.
-- Claude uses the description to match skills to requests. When you ask Claude to do something, it compares your request against available skill descriptions and activates the ones that match.
-- Personal skills go in ~/.claude/skills and follow you across all projects. Project skills go in .claude/skills inside a repository and are shared with anyone who clones it.
-- Skills load on demand — unlike CLAUDE.md (which loads into every conversation) or slash commands (which require explicit invocation), skills activate automatically when Claude recognizes the situation.
-- If you find yourself explaining the same thing to Claude repeatedly, that's a skill waiting to be written.
+- Le Skill sono cartelle di istruzioni che Claude Code può scoprire e usare per gestire i compiti in modo più accurato. Ogni skill vive in un file SKILL.md con un nome e una descrizione nel suo frontmatter.
+- Claude usa la descrizione per abbinare le skill alle richieste. Quando chiedi a Claude di fare qualcosa, confronta la tua richiesta con le descrizioni delle skill disponibili e attiva quelle che corrispondono.
+- Le skill personali vanno in ~/.claude/skills e ti seguono in tutti i progetti. Le skill di progetto vanno in .claude/skills dentro un repository e sono condivise con chiunque lo clona.
+- Le skill si caricano su richiesta — a differenza di CLAUDE.md (che si carica in ogni conversazione) o degli slash command (che richiedono un'invocazione esplicita), le skill si attivano automaticamente quando Claude riconosce la situazione.
+- Se ti ritrovi a spiegare la stessa cosa a Claude ripetutamente, quella è una skill in attesa di essere scritta.
 
-### What Skills Are
+### Cosa sono le Skill
 
-Skills are folders of instructions and resources that Claude Code can discover and use to handle tasks more accurately. Each skill lives in a SKILL.md file with a name and description in its frontmatter.
+Le Skill sono cartelle di istruzioni e risorse che Claude Code può scoprire e usare per gestire i compiti in modo più accurato. Ogni skill vive in un file SKILL.md con un nome e una descrizione nel suo frontmatter.
 
-The description is how Claude decides whether to use the skill. When you ask Claude to review a PR, it matches your request against available skill descriptions and finds the relevant one. Claude reads your request, compares it to all available skill descriptions, and activates the ones that match.
+La descrizione è come Claude decide se usare la skill. Quando chiedi a Claude di revisionare una PR, confronta la tua richiesta con le descrizioni delle skill disponibili e trova quella rilevante. Claude legge la tua richiesta, la confronta con tutte le descrizioni delle skill disponibili, e attiva quelle che corrispondono.
 
-Here's what a skill's frontmatter looks like:
+Ecco come appare il frontmatter di una skill:
 
 ```
 ---
 name: pr-review
-description: Reviews pull requests for code quality. Use when reviewing PRs or checking code changes.
+description: Revisiona le pull request per la qualità del codice. Usa quando revisioni PR o controlli modifiche al codice.
 ---
 ```
 
-Below the frontmatter, you write the actual instructions — your review checklist, formatting preferences, or whatever Claude needs to know for that task.
+Sotto il frontmatter, scrivi le istruzioni vere e proprie — la tua checklist di revisione, le preferenze di formattazione, o qualsiasi cosa Claude debba sapere per quel compito.
 
-### Where Skills Live
+### Dove vivono le Skill
 
-You can store skills in different places depending on who needs them:
+Puoi conservare le skill in posti diversi a seconda di chi ne ha bisogno:
 
-- **Personal skills** go in ~/.claude/skills (your home directory). These follow you across all your projects — your commit message style, your documentation format, how you like code explained.
-- **Project skills** go in .claude/skills inside the root directory of your repository. Anyone who clones the repo gets these skills automatically. This is where team standards live, like your company's brand guidelines, preferred fonts, and colors for web design.
-- On Windows, personal skills live in C:/Users/your-user/.claude/skills.
+- Le **skill personali** vanno in ~/.claude/skills (la tua home directory). Ti seguono in tutti i tuoi progetti — il tuo stile di messaggi di commit, il tuo formato di documentazione, come preferisci che il codice venga spiegato.
+- Le **skill di progetto** vanno in .claude/skills dentro la directory radice del tuo repository. Chiunque clona il repo ottiene queste skill automaticamente. È qui che vivono gli standard del team, come le linee guida del brand della tua azienda, i font e i colori preferiti per il design web.
+- Su Windows, le skill personali vivono in C:/Users/tuo-utente/.claude/skills.
 
-Project skills get committed to version control alongside your code, so the whole team shares them.
+Le skill di progetto vengono incluse nel controllo versione insieme al tuo codice, così tutto il team le condivide.
 
-### Skills vs. CLAUDE.md vs. Slash Commands
+### Skill vs. CLAUDE.md vs. Slash Command
 
-Claude Code has several ways to customize behavior. Skills are unique because they're automatic and task-specific. Here's how they compare:
+Claude Code ha diversi modi per personalizzare il comportamento. Le Skill sono uniche perché sono automatiche e specifiche per compito. Ecco come si confrontano:
 
-- **CLAUDE.md** files load into every conversation. If you want Claude to always use TypeScript's strict mode, that goes in CLAUDE.md.
-- **Skills** load on demand when they match your request. Claude only loads the name and description initially, so they don't fill up your entire context window. Your PR review checklist doesn't need to be in context when you're debugging — it loads when you actually ask for a review.
-- **Slash commands** require you to explicitly type them. Skills don't — Claude applies them when it recognizes the situation.
+- I file **CLAUDE.md** si caricano in ogni conversazione. Se vuoi che Claude usi sempre la modalità strict di TypeScript, quello va in CLAUDE.md.
+- Le **Skill** si caricano su richiesta quando corrispondono alla tua richiesta. Claude carica inizialmente solo il nome e la descrizione, così non riempiono l'intera finestra di contesto. La tua checklist di revisione PR non deve essere nel contesto quando stai facendo debug — si carica quando effettivamente richiedi una revisione.
+- Gli **slash command** richiedono che tu li digiti esplicitamente. Le skill no — Claude le applica quando riconosce la situazione.
 
-### When to Use Skills
+### Quando usare le Skill
 
-Skills work best for specialized knowledge that applies to specific tasks:
+Le Skill funzionano meglio per conoscenza specializzata che si applica a compiti specifici:
 
-- Code review standards your team follows
-- Commit message formats you prefer
-- Brand guidelines for your organization
-- Documentation templates for specific types of docs
-- Debugging checklists for particular frameworks
+- Standard di revisione del codice che il tuo team segue
+- Formati di messaggi di commit che preferisci
+- Linee guida del brand per la tua organizzazione
+- Modelli di documentazione per tipi specifici di documenti
+- Checklist di debug per framework particolari
 
-The rule of thumb is simple: if you find yourself explaining the same thing to Claude repeatedly, that's a skill waiting to be written.
+La regola generale è semplice: se ti ritrovi a spiegare la stessa cosa a Claude ripetutamente, quella è una skill in attesa di essere scritta.
 
-## Creating your first skill (4 min)
+## Creare la tua prima skill (4 min)
 
-**Key takeaways**
+**Punti chiave**
 
-- A skill is a directory containing a SKILL.md file with metadata (name, description) in frontmatter and instructions below.
-- Claude loads only skill names and descriptions at startup, then matches incoming requests against those descriptions using semantic matching.
-- You get a confirmation prompt before Claude loads the full skill content into context.
-- Priority for name conflicts: Enterprise → Personal → Project → Plugins.
-- To update a skill, edit its SKILL.md. To remove one, delete its directory. Always restart Claude Code for changes to take effect.
+- Una skill è una directory contenente un file SKILL.md con metadati (nome, descrizione) nel frontmatter e istruzioni sotto.
+- Claude carica solo i nomi e le descrizioni delle skill all'avvio, poi confronta le richieste in arrivo con quelle descrizioni usando un abbinamento semantico.
+- Ottieni una richiesta di conferma prima che Claude carichi il contenuto completo della skill nel contesto.
+- Priorità per i conflitti di nome: Enterprise → Personale → Progetto → Plugin.
+- Per aggiornare una skill, modifica il suo SKILL.md. Per rimuoverne una, elimina la sua directory. Riavvia sempre Claude Code perché le modifiche abbiano effetto.
 
-### Creating a Skill
+### Creare una Skill
 
-We'll build a personal skill that teaches Claude how to write PR descriptions in a consistent format. Since it's a personal skill, it lives in your home directory and works across all your projects.
+Costruiremo una skill personale che insegna a Claude come scrivere descrizioni di PR in un formato coerente. Poiché è una skill personale, vive nella tua home directory e funziona in tutti i tuoi progetti.
 
-First, create a directory for your skill inside the skills folder. The directory name should match your skill name:
+Prima, crea una directory per la tua skill dentro la cartella skills. Il nome della directory dovrebbe corrispondere al nome della tua skill:
 
 ```
 mkdir -p ~/.claude/skills/pr-description
 ```
 
-Then create a SKILL.md file inside that directory. The file has two parts separated by frontmatter dashes:
+Poi crea un file SKILL.md dentro quella directory. Il file ha due parti separate dai trattini del frontmatter:
 
 ```
 ---
 name: pr-description
-description: Writes pull request descriptions. Use when creating a PR, writing a PR, or when the user asks to summarize changes for a pull request.
+description: Scrive descrizioni di pull request. Usa quando crei una PR, scrivi una PR, o quando l'utente chiede di riassumere le modifiche per una pull request.
 ---
 
-When writing a PR description:
+Quando scrivi una descrizione di PR:
 
-1. Run `git diff main...HEAD` to see all changes on this branch
-2. Write a description following this format:
+1. Esegui `git diff main...HEAD` per vedere tutte le modifiche su questo branch
+2. Scrivi una descrizione seguendo questo formato:
 
-## What
-One sentence explaining what this PR does.
+## Cosa
+Una frase che spiega cosa fa questa PR.
 
-## Why
-Brief context on why this change is needed
+## Perché
+Breve contesto sul perché questa modifica è necessaria
 
-## Changes
-- Bullet points of specific changes made
-- Group related changes together
-- Mention any files deleted or renamed
+## Modifiche
+- Punti elenco delle modifiche specifiche apportate
+- Raggruppa le modifiche correlate insieme
+- Menziona eventuali file eliminati o rinominati
 ```
 
-The name identifies your skill. The description tells Claude when to use it — this is the matching criteria. Everything after the second set of dashes is the instructions Claude follows when the skill is activated.
+Il nome identifica la tua skill. La descrizione dice a Claude quando usarla — questo è il criterio di abbinamento. Tutto ciò che segue il secondo set di trattini sono le istruzioni che Claude segue quando la skill viene attivata.
 
-### Testing Your Skill
+### Testare la tua Skill
 
-Claude Code loads skills at startup, so restart your session after creating one. You can verify it's available by checking the available skills list. You should see your skill listed. To test it, make some changes on a branch and say something like "write a PR description for my changes." Claude will indicate it's using the PR description skill, check your diff, and write a description following your template — same format every time.
+Claude Code carica le skill all'avvio, quindi riavvia la tua sessione dopo averne creata una. Puoi verificare che sia disponibile controllando l'elenco delle skill disponibili. Dovresti vedere la tua skill elencata. Per testarla, fai alcune modifiche su un branch e di' qualcosa come "scrivi una descrizione di PR per le mie modifiche." Claude indicherà che sta usando la skill di descrizione PR, controllerà il tuo diff, e scriverà una descrizione seguendo il tuo modello — stesso formato ogni volta.
 
-### How Skill Matching Works
+### Come funziona l'abbinamento delle Skill
 
-When Claude Code starts, it scans four locations for skills but only loads the name and description — not the full content. This is an important detail.
+Quando Claude Code si avvia, scansiona quattro posizioni per le skill ma carica solo il nome e la descrizione — non il contenuto completo. Questo è un dettaglio importante.
 
-When you send a request, Claude compares your message against the descriptions of all available skills. For example, "explain what this function does" would match a skill described as "explain code with visual diagrams" because the intent overlaps.
+Quando invii una richiesta, Claude confronta il tuo messaggio con le descrizioni di tutte le skill disponibili. Per esempio, "spiega cosa fa questa funzione" corrisponderebbe a una skill descritta come "spiega il codice con diagrammi visivi" perché l'intento si sovrappone.
 
-Once a match is found, Claude asks you to confirm loading the skill. This confirmation step keeps you aware of what context Claude is pulling in. After you confirm, Claude reads the complete SKILL.md file and follows its instructions.
+Una volta trovata una corrispondenza, Claude ti chiede di confermare il caricamento della skill. Questo passaggio di conferma ti mantiene consapevole di quale contesto Claude sta importando. Dopo la tua conferma, Claude legge il file SKILL.md completo e ne segue le istruzioni.
 
-### Skill Priority
+### Priorità delle Skill
 
-If you clone a repository that has a skill with the same name as one of your personal skills, which one wins? There's a clear priority order:
+Se cloni un repository che ha una skill con lo stesso nome di una delle tue skill personali, quale vince? C'è un ordine di priorità chiaro:
 
-1. **Enterprise** — managed settings, highest priority
-2. **Personal** — your home directory (~/.claude/skills)
-3. **Project** — the .claude/skills directory inside a repository
-4. **Plugins** — installed plugins, lowest priority
+1. **Enterprise** — impostazioni gestite, priorità più alta
+2. **Personale** — la tua home directory (~/.claude/skills)
+3. **Progetto** — la directory .claude/skills dentro un repository
+4. **Plugin** — plugin installati, priorità più bassa
 
-This lets organizations enforce standards through enterprise skills while still allowing individual customization. If your company has an enterprise "code-review" skill and you create a personal "code-review" skill with the same name, the enterprise version takes precedence.
+Questo permette alle organizzazioni di far rispettare gli standard tramite skill enterprise pur continuando a consentire la personalizzazione individuale. Se la tua azienda ha una skill enterprise "code-review" e crei una skill personale "code-review" con lo stesso nome, la versione enterprise ha la precedenza.
 
-To avoid conflicts, use descriptive names. Instead of just "review," use something like "frontend-review" or "backend-review."
+Per evitare conflitti, usa nomi descrittivi. Invece di semplicemente "review," usa qualcosa come "frontend-review" o "backend-review."
 
-### Updating and Removing Skills
+### Aggiornare ed eliminare le Skill
 
-To update a skill, edit its SKILL.md file. To remove one, delete its directory. Restart Claude Code after any changes for them to take effect.
+Per aggiornare una skill, modifica il suo file SKILL.md. Per rimuoverne una, elimina la sua directory. Riavvia Claude Code dopo qualsiasi modifica perché abbia effetto.
 
-## Troubleshooting skills (4 min)
+## Risoluzione dei problemi delle skill (4 min)
 
-When skills don't work as expected, the problem usually falls into one of a few categories: the skill doesn't trigger, doesn't load, has conflicts, or fails at runtime. The good news is that most fixes are pretty straightforward.
+Quando le skill non funzionano come previsto, il problema di solito rientra in una di poche categorie: la skill non si attiva, non si carica, ha conflitti, o fallisce in esecuzione. La buona notizia è che la maggior parte delle correzioni sono piuttosto semplici.
 
-**Key takeaways**
+**Punti chiave**
 
-- Start with the skills validator tool — it catches structural problems before you spend time debugging other things.
-- If a skill doesn't trigger, the cause is almost always the description — add trigger phrases that match how you actually phrase requests.
-- If a skill doesn't load, check that SKILL.md is inside a named directory (not at the skills root) and the file name is exactly SKILL.md.
-- If the wrong skill gets used, your descriptions are too similar — make them more distinct.
-- For runtime errors, check dependencies, file permissions (chmod +x), and path separators (use forward slashes everywhere).
+- Inizia con lo strumento validatore delle skill — individua problemi strutturali prima che tu perda tempo a fare debug di altre cose.
+- Se una skill non si attiva, la causa è quasi sempre la descrizione — aggiungi frasi trigger che corrispondano a come formuli davvero le richieste.
+- Se una skill non si carica, controlla che SKILL.md sia dentro una directory con nome (non alla radice delle skill) e che il nome del file sia esattamente SKILL.md.
+- Se viene usata la skill sbagliata, le tue descrizioni sono troppo simili — rendile più distinte.
+- Per errori di runtime, controlla le dipendenze, i permessi dei file (chmod +x), e i separatori di percorso (usa le barre in avanti ovunque).
 
-### Use the Skills Validator
+### Usa il validatore delle Skill
 
-The first thing to try is the agent skills verifier command. Installation steps vary by operating system, but using uv is the easiest way to get it set up quickly. Once installed, either navigate to your skill directory or run the command from anywhere. The validator will catch structural problems before you spend time debugging other things.
+La prima cosa da provare è il comando di verifica delle agent skill. I passaggi di installazione variano a seconda del sistema operativo, ma usare uv è il modo più semplice per configurarlo rapidamente. Una volta installato, naviga alla tua directory skill oppure esegui il comando da qualsiasi posizione. Il validatore individuerà problemi strutturali prima che tu perda tempo a fare debug di altre cose.
 
-### Skill Doesn't Trigger
+### La Skill non si attiva
 
-Your skill exists and passes validation, but Claude isn't using it when you expect. The cause is almost always the description. Claude uses semantic matching, so your request needs to overlap with the description's meaning. If there's not enough overlap, no match. Here's what to do:
+La tua skill esiste e supera la validazione, ma Claude non la usa quando te lo aspetti. La causa è quasi sempre la descrizione. Claude usa un abbinamento semantico, quindi la tua richiesta deve sovrapporsi al significato della descrizione. Se non c'è abbastanza sovrapposizione, nessuna corrispondenza. Ecco cosa fare:
 
-- Check your description against how you're actually phrasing requests
-- Add trigger phrases users would actually say
-- Test with variations like "help me profile this," "why is this slow?", "make this faster"
-- If any variation fails to trigger, add those keywords to your description
+- Controlla la tua descrizione rispetto a come formuli effettivamente le richieste
+- Aggiungi frasi trigger che gli utenti direbbero davvero
+- Testa con variazioni come "aiutami a profilare questo," "perché questo è lento?", "rendi questo più veloce"
+- Se qualche variazione non attiva la skill, aggiungi quelle parole chiave alla tua descrizione
 
-### Skill Doesn't Load
+### La Skill non si carica
 
-If your skill doesn't appear when you ask Claude "what skills are available," check these structural requirements:
+Se la tua skill non appare quando chiedi a Claude "quali skill sono disponibili," controlla questi requisiti strutturali:
 
-- The SKILL.md file must be inside a named directory, not at the skills root
-- The file name must be exactly SKILL.md — all caps on "SKILL", lowercase "md"
+- Il file SKILL.md deve essere dentro una directory con nome, non alla radice delle skill
+- Il nome del file deve essere esattamente SKILL.md — tutto maiuscolo per "SKILL", minuscolo "md"
 
-Run claude --debug to see loading errors. Look for messages mentioning your skill name. Sometimes this alone will point you straight to the problem.
+Esegui claude --debug per vedere gli errori di caricamento. Cerca messaggi che menzionano il nome della tua skill. A volte questo da solo ti indica direttamente il problema.
 
-### Wrong Skill Gets Used
+### Viene usata la skill sbagliata
 
-If Claude uses the wrong skill or seems confused between skills, your descriptions are probably too similar. Make them distinct. Being as specific as possible doesn't just help Claude decide when to use your skill — it also prevents conflicts with other similar-sounding skills.
+Se Claude usa la skill sbagliata o sembra confuso tra le skill, le tue descrizioni sono probabilmente troppo simili. Rendile distinte. Essere il più specifici possibile non aiuta solo Claude a decidere quando usare la tua skill — previene anche conflitti con altre skill dal suono simile.
 
-### Skill Priority Conflicts
+### Conflitti di priorità delle Skill
 
-If your personal skill is being ignored, an enterprise or higher-priority skill might have the same name. For example, if there's an enterprise "code-review" skill and you also have a personal "code-review" skill, the enterprise one wins every time. Your options:
+Se la tua skill personale viene ignorata, una skill enterprise o di priorità più alta potrebbe avere lo stesso nome. Per esempio, se c'è una skill enterprise "code-review" e hai anche una skill personale "code-review," quella enterprise vince sempre. Le tue opzioni:
 
-- Rename your skill to something more distinct (this is usually the easier path)
-- Talk to your admin about the enterprise skill
+- Rinomina la tua skill in qualcosa di più distinto (di solito è il percorso più semplice)
+- Parla con il tuo amministratore della skill enterprise
 
-### Plugin Skills Not Appearing
+### Le skill dei plugin non appaiono
 
-Installed a plugin but can't see its skills? Clear the cache, restart Claude Code, and reinstall. If skills still don't appear after that, the plugin structure might be wrong. This is when the validator tool really earns its keep.
+Hai installato un plugin ma non vedi le sue skill? Svuota la cache, riavvia Claude Code, e reinstalla. Se le skill continuano a non apparire dopo questo, la struttura del plugin potrebbe essere sbagliata. Questo è il momento in cui lo strumento validatore si rivela davvero utile.
 
-### Runtime Errors
+### Errori di runtime
 
-The skill loads but fails during execution. A few common causes:
+La skill si carica ma fallisce durante l'esecuzione. Alcune cause comuni:
 
-- **Missing dependencies:** if your skill uses external packages, they must be installed. Add dependency info to your skill description so Claude knows what's needed.
-- **Permission issues:** scripts need execute permission. Run chmod +x on any scripts your skill references.
-- **Path separators:** use forward slashes everywhere, even on Windows.
+- **Dipendenze mancanti:** se la tua skill usa pacchetti esterni, devono essere installati. Aggiungi informazioni sulle dipendenze alla descrizione della tua skill così Claude sa cosa serve.
+- **Problemi di permessi:** gli script hanno bisogno del permesso di esecuzione. Esegui chmod +x su qualsiasi script a cui la tua skill fa riferimento.
+- **Separatori di percorso:** usa le barre in avanti ovunque, anche su Windows.
 
-### Quick Troubleshooting Checklist
+### Checklist rapida di risoluzione dei problemi
 
-- **Not triggering?** Improve your description and add trigger phrases.
-- **Not loading?** Check your path, file name, and YAML syntax.
-- **Wrong skill used?** Make descriptions more distinct from each other.
-- **Being shadowed?** Check the priority hierarchy and rename if needed.
-- **Plugin skills missing?** Clear cache and reinstall.
-- **Runtime failure?** Check dependencies, permissions, and paths.
+- **Non si attiva?** Migliora la tua descrizione e aggiungi frasi trigger.
+- **Non si carica?** Controlla il percorso, il nome del file e la sintassi YAML.
+- **Viene usata la skill sbagliata?** Rendi le descrizioni più distinte tra loro.
+- **Viene oscurata?** Controlla la gerarchia di priorità e rinomina se necessario.
+- **Skill dei plugin mancanti?** Svuota la cache e reinstalla.
+- **Fallimento a runtime?** Controlla dipendenze, permessi e percorsi.
 </script>
 
 <script type="text/markdown" data-id="4.4" data-ch="4" data-title="MCP">
 # 4.4 MCP
 
-Model Context Protocol (MCP) is an open standard that lets Claude Code connect to external tools and data sources. When you ask a question, Claude automatically understands when it should use those tools to better handle your query.
+Il Model Context Protocol (MCP) è uno standard aperto che permette a Claude Code di collegarsi a strumenti e fonti di dati esterne. Quando fai una domanda, Claude capisce automaticamente quando dovrebbe usare quegli strumenti per gestire meglio la tua richiesta.
 
-A lot of your context lives outside your codebase — in databases, productivity apps, or public repositories. MCP bridges that gap.
+Molto del tuo contesto vive fuori dal tuo codebase — in database, app di produttività, o repository pubblici. MCP colma questo divario.
 
-## What Can You Do With It?
+## Cosa puoi fare con esso?
 
-First, it's important to understand the concept of "tools" in agentic AI. Tools give agents like Claude Code the ability to perform actions that help them complete tasks more effectively. This is different from typical AI, where you just get a text response back.
+Prima di tutto, è importante capire il concetto di "strumenti" nell'IA agentica. Gli strumenti danno ad agenti come Claude Code la capacità di eseguire azioni che li aiutano a completare i compiti in modo più efficace. Questo è diverso dall'IA tipica, dove ottieni solo una risposta testuale.
 
-For example, if your team uses Linear for project management, you can add a Linear MCP server to bring in the details of your specific issues. If you need up-to-date documentation for a dependency, a docs MCP server like Context7 can provide that to Claude Code.
+Per esempio, se il tuo team usa Linear per la gestione dei progetti, puoi aggiungere un server MCP Linear per portare i dettagli delle tue issue specifiche. Se hai bisogno di documentazione aggiornata per una dipendenza, un server MCP di documentazione come Context7 può fornirla a Claude Code.
 
-> Claude Code querying a Linear MCP server to retrieve issue details for ticket MEN-12. Claude Code using the Context7 MCP server to look up the latest shadcn/ui documentation.
+> Claude Code che interroga un server MCP Linear per recuperare i dettagli dell'issue per il ticket MEN-12. Claude Code che usa il server MCP Context7 per cercare la documentazione più recente di shadcn/ui.
 
-## Adding an MCP Server
+## Aggiungere un server MCP
 
-You can add MCP servers with the `claude mcp add` command. There are two main types:
+Puoi aggiungere server MCP con il comando `claude mcp add`. Ci sono due tipi principali:
 
-> Running `claude mcp add` to add an HTTP Linear MCP server from the terminal.
+> Esecuzione di `claude mcp add` per aggiungere un server MCP Linear HTTP dal terminale.
 
-- **HTTP servers** are for remote services. These are hosted by the service provider and connect over the network.
-- **Stdio servers** are for local processes that run on your machine.
+- I **server HTTP** sono per servizi remoti. Sono ospitati dal fornitore del servizio e si collegano tramite rete.
+- I **server Stdio** sono per processi locali che girano sulla tua macchina.
 
-> Running `claude mcp add` to add a local stdio MCP server with a Python script.
+> Esecuzione di `claude mcp add` per aggiungere un server MCP stdio locale con uno script Python.
 
-You can manage your servers with `/mcp` inside a Claude Code session to see what's connected, check status, and disable servers you don't need.
+Puoi gestire i tuoi server con `/mcp` dentro una sessione di Claude Code per vedere cosa è connesso, controllare lo stato, e disattivare i server che non ti servono.
 
-> The `/mcp` command showing connected MCP servers and their status.
+> Il comando `/mcp` che mostra i server MCP connessi e il loro stato.
 
-## Scoping Servers
+## Definire l'ambito dei server
 
-MCP servers can be scoped in three ways:
+I server MCP possono avere l'ambito definito in tre modi:
 
-- **Local** — only available in the current project, just for you.
-- **User** — available across all your projects.
-- **Project** — uses a `.mcp.json` file that you check into version control so anyone on the codebase gets the exact same servers automatically.
+- **Locale** — disponibile solo nel progetto corrente, solo per te.
+- **Utente** — disponibile in tutti i tuoi progetti.
+- **Progetto** — usa un file `.mcp.json` che includi nel controllo versione così chiunque lavori sul codebase ottiene automaticamente esattamente gli stessi server.
 
-## Context Costs
+## Costi di contesto
 
-MCP servers add tool definitions to your context window — even when you're not actively using them. If you have a lot of servers configured, this eats into your available context. Run `/mcp` to see what's connected and disable anything you're not actively using.
+I server MCP aggiungono definizioni di strumenti alla tua finestra di contesto — anche quando non li stai usando attivamente. Se hai molti server configurati, questo consuma il tuo contesto disponibile. Esegui `/mcp` per vedere cosa è connesso e disattiva tutto ciò che non stai usando attivamente.
 
-> The `/mcp` server detail view with options to view tools, reconnect, or disable a server.
+> La vista dettagliata del server `/mcp` con opzioni per vedere gli strumenti, riconnettere, o disattivare un server.
 
-If a tool has a CLI equivalent (like `gh` for GitHub or `aws` for AWS), the CLI is more context-efficient because it doesn't add persistent tool definitions.
+Se uno strumento ha un equivalente CLI (come `gh` per GitHub o `aws` per AWS), la CLI è più efficiente in termini di contesto perché non aggiunge definizioni di strumenti persistenti.
 
-You might also benefit from using a Skill instead. A Skill has a name and description loaded into context, and Claude only loads the full skill contents when it determines it needs to use it.
+Potresti anche beneficiare dall'uso di una Skill. Una Skill ha un nome e una descrizione caricati nel contesto, e Claude carica il contenuto completo della skill solo quando determina di doverla usare.
 
-If your MCP tools exceed 10% of your context window, Claude Code automatically switches to tool search mode, which discovers the right tools on demand — though this may not work as reliably.
+Se i tuoi strumenti MCP superano il 10% della tua finestra di contesto, Claude Code passa automaticamente alla modalità di ricerca strumenti, che scopre gli strumenti giusti su richiesta — anche se questo potrebbe non funzionare in modo altrettanto affidabile.
 
-## Recap
+## Riepilogo
 
-MCP connects Claude Code to your external tools and data sources. Add servers with `claude mcp add`. Scope them to your project with `.mcp.json` so your team gets them automatically. And keep an eye on context usage by disabling servers you're not actively using.
+MCP collega Claude Code ai tuoi strumenti e fonti di dati esterne. Aggiungi server con `claude mcp add`. Definisci il loro ambito al tuo progetto con `.mcp.json` così il tuo team li ottiene automaticamente. E tieni d'occhio l'uso del contesto disattivando i server che non stai usando attivamente.
 </script>
 
-<script type="text/markdown" data-id="4.5" data-ch="4" data-title="Hooks">
-# 4.5 Hooks
+<script type="text/markdown" data-id="4.5" data-ch="4" data-title="Hook">
+# 4.5 Hook
 
-Hooks let you run commands at specific points in Claude Code's lifecycle. The key difference between hooks and everything else covered in this course is that hooks are deterministic — they always run.
+Gli hook ti permettono di eseguire comandi in punti specifici del ciclo di vita di Claude Code. La differenza chiave tra gli hook e tutto il resto trattato in questo corso è che gli hook sono deterministici — vengono sempre eseguiti.
 
-## Why Use Hooks
+## Perché usare gli Hook
 
-You can tell Claude in your CLAUDE.md to run Prettier after every file edit. Most of the time it will. But sometimes it won't. A hook makes it happen every single time, no exceptions.
+Puoi dire a Claude nel tuo CLAUDE.md di eseguire Prettier dopo ogni modifica ai file. Il più delle volte lo farà. Ma a volte no. Un hook lo fa succedere ogni singola volta, senza eccezioni.
 
-Common use cases include:
+I casi d'uso comuni includono:
 
-- Auto-formatting after file edits
-- Logging all executed commands for compliance
-- Blocking dangerous operations like modifying production files
-- Sending yourself notifications when Claude finishes a task
+- Formattazione automatica dopo le modifiche ai file
+- Registrazione di tutti i comandi eseguiti per conformità
+- Blocco di operazioni pericolose come la modifica di file di produzione
+- Invio di notifiche a te stesso quando Claude finisce un compito
 
-## How They Work
+## Come funzionano
 
-Hooks are configured in your `settings.json`. You pick an event, optionally set a matcher for which tools it applies to, and provide a command to run. The available events are:
+Gli hook sono configurati nel tuo `settings.json`. Scegli un evento, imposti opzionalmente un matcher per a quali strumenti si applica, e fornisci un comando da eseguire. Gli eventi disponibili sono:
 
-- **PreToolUse** — runs before a tool call
-- **PostToolUse** — runs after a tool call completes
-- **UserPromptSubmit** — runs when you submit a prompt, before Claude processes it
-- **Stop** — runs when Claude finishes responding
-- **Notification** — runs when Claude sends a notification
+- **PreToolUse** — viene eseguito prima di una chiamata a uno strumento
+- **PostToolUse** — viene eseguito dopo che una chiamata a uno strumento è completata
+- **UserPromptSubmit** — viene eseguito quando invii un prompt, prima che Claude lo elabori
+- **Stop** — viene eseguito quando Claude finisce di rispondere
+- **Notification** — viene eseguito quando Claude invia una notifica
 
-You configure them through the `/hooks` command inside Claude Code, or by editing `settings.json` directly.
+Li configuri tramite il comando `/hooks` dentro Claude Code, o modificando direttamente `settings.json`.
 
-> The `settings.json` file inside the `.claude` directory with hooks configuration.
+> Il file `settings.json` dentro la directory `.claude` con la configurazione degli hook.
 
-## A Practical Example
+## Un esempio pratico
 
-The most common hook: auto-formatting after edits. Set a `PostToolUse` hook with a matcher of `"Edit|MultiEdit|Write"` so it fires whenever Claude modifies a file. The command checks the file extension and runs the appropriate formatter — Prettier for TypeScript, gofmt for Go, whatever your project uses.
+L'hook più comune: formattazione automatica dopo le modifiche. Imposta un hook `PostToolUse` con un matcher di `"Edit|MultiEdit|Write"` così si attiva ogni volta che Claude modifica un file. Il comando controlla l'estensione del file ed esegue il formattatore appropriato — Prettier per TypeScript, gofmt per Go, qualunque cosa usi il tuo progetto.
 
-## Blocking with PreToolUse
+## Bloccare con PreToolUse
 
-`PreToolUse` hooks can block tool calls before they execute. Your hook receives the tool name and input as JSON on stdin. The exit code determines the behavior:
+Gli hook `PreToolUse` possono bloccare le chiamate agli strumenti prima che vengano eseguite. Il tuo hook riceve il nome dello strumento e l'input come JSON su stdin. Il codice di uscita determina il comportamento:
 
-- **Exit code 0** — proceed normally.
-- **Exit code 2** — block the action. The stderr message gets fed back to Claude as feedback so it knows why it was blocked and can adjust.
-- **Any other exit code** — a non-blocking error that gets shown to you but doesn't stop anything.
+- **Codice di uscita 0** — procedi normalmente.
+- **Codice di uscita 2** — blocca l'azione. Il messaggio stderr viene restituito a Claude come feedback così sa perché è stato bloccato e può adattarsi.
+- **Qualsiasi altro codice di uscita** — un errore non bloccante che ti viene mostrato ma non ferma nulla.
 
-This is how you enforce hard rules. Block writes to a production config directory. Block bash commands that contain `rm -rf`. Block commits to main. Whatever your team needs to be guaranteed, not suggested.
+Questo è come applichi regole rigide. Blocca le scritture in una directory di configurazione di produzione. Blocca i comandi bash che contengono `rm -rf`. Blocca i commit su main. Qualunque cosa il tuo team abbia bisogno che sia garantita, non solo suggerita.
 
-> A `settings.json` file showing `PreToolUse` and `PostToolUse` hooks with matchers and commands.
+> Un file `settings.json` che mostra hook `PreToolUse` e `PostToolUse` con matcher e comandi.
 
-## Sharing Hooks with Your Team
+## Condividere gli Hook con il tuo team
 
-Hooks configured in `.claude/settings.json` are project-level and can be checked into your repo. This means your entire team gets the same hooks automatically. Use the `CLAUDE_PROJECT_DIR` environment variable in your commands to reference scripts stored in your project, so they work regardless of Claude's current working directory.
+Gli hook configurati in `.claude/settings.json` sono a livello di progetto e possono essere inclusi nel controllo versione del tuo repository. Questo significa che tutto il tuo team ottiene automaticamente gli stessi hook. Usa la variabile d'ambiente `CLAUDE_PROJECT_DIR` nei tuoi comandi per referenziare script conservati nel tuo progetto, così funzionano indipendentemente dalla directory di lavoro corrente di Claude.
 
-## Recap
+## Riepilogo
 
-Hooks give you deterministic control over Claude Code's behavior. Use `PostToolUse` for auto-formatting and logging. Use `PreToolUse` to block dangerous operations. Configure them with `/hooks` or in `settings.json`. And check them into your repo so your team gets them too.
+Gli hook ti danno controllo deterministico sul comportamento di Claude Code. Usa `PostToolUse` per formattazione automatica e registrazione. Usa `PreToolUse` per bloccare operazioni pericolose. Configurali con `/hooks` o in `settings.json`. E includili nel tuo repository così anche il tuo team li ottiene.
 
-If something needs to happen every time without fail, don't put it in a prompt. Put it in a hook.
+Se qualcosa deve succedere ogni volta senza fallire, non metterlo in un prompt. Mettilo in un hook.
 </script>
 
 <script>
