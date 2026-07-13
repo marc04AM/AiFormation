@@ -18,7 +18,7 @@
 
 <dl class="sig" aria-label="firma del documento">
   <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · AI expert and early adopter, Developer</dd>
-  <dt>Versione</dt><dd>1.4 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
+  <dt>Versione</dt><dd>1.0 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
   <dt>Ultima revisione</dt><dd>2026-07-07 · revisionato da Marco Manfrin&nbsp;@Sistec</dd>
 </dl>
 
@@ -1103,57 +1103,32 @@ openspec/
   <div class="tbl-wrap"><table>
     <thead><tr><th>Versione</th><th>Data</th><th>Revisionato da</th><th>Modifiche introdotte</th></tr></thead>
     <tbody>
-      <tr><td class="col-mono">1.5</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
-        <td>Nuovo <b>§6.2 «Skills sbagliate — cosa NON sono»</b> (skill non è deploy script né analisi codice morto;
-          test: 30 righe di bash = script, non skill) e <b>§6.3 «Come si invoca una skill — l'interfaccia è il
-          linguaggio naturale»</b> (nessun <code>/analyze-log</code>, il modello sceglie dalla descrizione).
-          Nuovo <b>§13 «Criteri di verifica — chiudere il ciclo»</b> (eseguibile / osservabile / descrittivo,
-          tabelle esempi buoni-cattivi, test prima del codice, verifica nel piano). Nuovo <b>§14 «Quando NON usare
-          Claude Code»</b> (task meccanici, sed, trasformazioni dati, il test del minuto, cosa evitare — produzione
-          auto-approvata, sessioni senza verifica, imparare un framework). Nuovo <b>⚡ Cheat sheet</b> (comandi,
-          workflow, template prompt in 3 parti, regola finale).</td></tr>
-      <tr><td class="col-mono">1.4</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
-        <td>Aggiunto in §7 il ciclo di caricamento a tre modalità: <b>§7.3 «le rules»</b> (convenzioni di codice
-          attivate per <code>paths</code>/glob) e <b>§7.4 «il perché di una modifica»</b> (dall'archivio post-hoc
-          <code>.claude/claude-archive</code>, via hook, al pattern spec-first <code>openspec</code>); <b>Fig 2</b>
-          ridisegnata a tre corsie (CLAUDE.md / skill / rules). Nuova pagina a parte <b>«Claude 101»</b>
-          (<code>claude-101.html</code>): dispensa del corso ufficiale su claude.ai — 11 lezioni (chat, progetti,
-          artifact, skill, connettori, Research, uso per ruolo) — con link dal documento, prima di «Claude Code 101».
-          Aggiunti in testa i <b>riferimenti ai due documenti a monte</b>: la proposta
-          (<code>ai-adoption-propose.html</code>, già accolta dalla Direzione) e il piano ad alto livello
-          (<code>ai-adoption-plan.html</code>).</td></tr>
-      <tr><td class="col-mono">1.3</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
-        <td>Arricchito il §3 (contesto): <b>grafico</b> del context rot (qualità dell'output vs riempimento della
-          finestra) e widget <b>interattivo</b> «Esplora la finestra di contesto» — sessione simulata che mostra
-          cosa entra nel contesto e quanto costa (fonte: documentazione ufficiale di Claude Code). Aggiunti in §6.2
-          i riferimenti reali (sito + github) per le skill <code>caveman</code>, <code>openspec</code> e
-          <code>graphify</code>.</td></tr>
-      <tr><td class="col-mono">1.2</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
-        <td>Innesti dal materiale «AI Fluency»: nuovo <b>§12 «Chat, Cowork, Code — un solo motore»</b> (Cowork e Code
-          girano sullo stesso motore Claude Code; ponte per l'ufficio non-dev e con la wiki-LLM del §10); callout
-          <b>«Comportamenti vs conoscenza»</b> nel §9 (i progetti conservano la conoscenza, le skill eseguono i
-          compiti); aggiunti i numeri della finestra di contesto (~200K token, fino a 1M) nel §3.</td></tr>
-      <tr><td class="col-mono">1.1</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
-        <td>Sostituita l'appendice a schede con il <b>corso «Claude Code 101»</b> come pagina a parte
-          (<code>claude-code-101.html</code>): dispensa con l'elenco delle lezioni a sinistra e il testo completo
-          di ogni markdown, una pagina per lezione; nel documento resta un link per aprirlo. Aggiunto il link al
-          gist ufficiale di Karpathy nel §10 e la <b>Fig 4</b>: screenshot della demo <code>sistec-llm-wiki</code>
-          (vista a grafo + struttura della cartella).</td></tr>
       <tr><td class="col-mono">1.0</td><td class="col-mono">2026-07-07</td><td>Marco Manfrin @Sistec</td>
         <td><b>Emissione iniziale.</b> Proposta operativa alternativa a <code>shared-ai</code>: il ciclo agentico come
-          fondamento, Claude Code nel repository e in git, contesto e context rot, prompting in tre parti, il ciclo
+          fondamento, Claude Code nel repository e in git, contesto e context rot (con <b>grafico</b> qualità/riempimento
+          finestra e widget <b>interattivo</b> «Esplora la finestra di contesto»), prompting in tre parti, il ciclo
           Explore→Plan→Code→Commit, la directory <code>.claude</code> con comandi deprecati e skill (self-contained,
-          nate nel progetto), <code>CLAUDE.md</code> come memoria di progetto e cosa viene caricato nel contesto,
-          subagent e agent team, il marketplace di plugin per le skill, la wiki-LLM per la conoscenza (pattern
-          Karpathy, no infrastruttura custom) e l'accesso graduale via opencode. Tre figure SVG: ciclo agentico,
-          caricamento del contesto, due canali di condivisione.</td></tr>
+          nate nel progetto, con <b>§6.2 «Skills sbagliate — cosa NON sono»</b> e <b>§6.3 «Come si invoca una
+          skill»</b>, riferimenti reali a <code>caveman</code>, <code>openspec</code> e <code>graphify</code>),
+          <code>CLAUDE.md</code> come memoria di progetto e cosa viene caricato nel contesto, il ciclo di caricamento
+          a tre modalità in §7 (<b>§7.3 «le rules»</b> — convenzioni di codice attivate per <code>paths</code>/glob,
+          con esempi reali distillati dalla commessa 5309 FAEL — e <b>§7.4 «il perché di una modifica»</b>, dall'archivio
+          post-hoc via hook al pattern spec-first <code>openspec</code>), subagent e agent team, il marketplace di
+          plugin per le skill, la wiki-LLM per la conoscenza (pattern Karpathy, no infrastruttura custom, con link al
+          gist ufficiale e <b>Fig 4</b> screenshot demo <code>sistec-llm-wiki</code>), <b>§12 «Chat, Cowork, Code — un
+          solo motore»</b>, <b>§13 «Criteri di verifica — chiudere il ciclo»</b>, <b>§14 «Quando NON usare Claude
+          Code»</b>, <b>⚡ Cheat sheet</b> e l'accesso graduale via opencode. Quattro figure SVG (ciclo agentico,
+          caricamento del contesto a tre corsie, due canali di condivisione), un grafico, un widget interattivo e un
+          cheat sheet. Pagine a parte: corsi <b>«Claude 101»</b> e <b>«Claude Code 101»</b>. In testa, riferimenti ai
+          due documenti a monte: la proposta (<code>ai-adoption-propose.html</code>, già accolta dalla Direzione) e
+          il piano ad alto livello (<code>ai-adoption-plan.html</code>).</td></tr>
     </tbody>
   </table></div>
 </section>
 
 <footer>
   <span>Sistec · adozione Claude &amp; Claude Code · 14 § · 4 figure · 1 grafico · 1 interattivo · 1 cheat sheet · corsi Claude 101 + Claude Code 101 (pagine a parte)</span>
-  <span>autorità: documentazione Claude Code + corsi ufficiali Anthropic + LLM-wiki (Karpathy) · 2026-07-07 · v1.4</span>
+  <span>autorità: documentazione Claude Code + corsi ufficiali Anthropic + LLM-wiki (Karpathy) · 2026-07-07 · v1.0</span>
 </footer>
 </div>
 
