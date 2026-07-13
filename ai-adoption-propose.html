@@ -24,6 +24,7 @@
 <body class="doc">
   <button class="theme-btn" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
   <script>
+  document.documentElement.setAttribute('data-theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.getElementById('themebtn').addEventListener('click',function(){
     var root=document.documentElement;
     var dark=matchMedia('(prefers-color-scheme:dark)').matches;

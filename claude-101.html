@@ -687,6 +687,7 @@ Un'estensione del browser che aggiunge Claude come barra laterale in Chrome; pu√
 
   // ---- theme toggle ----
   var root=document.documentElement;
+  root.setAttribute('data-theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   document.getElementById('themebtn').addEventListener('click',function(){
     var dark=matchMedia('(prefers-color-scheme:dark)').matches;
     var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
