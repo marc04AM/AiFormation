@@ -1,3 +1,10 @@
 bash.exe.stackdump
 __MACOSX
 .DS_Store
+bin/
+obj/
+*/bin/
+*/obj/
+.vs
+*/.vs/
+*.user
