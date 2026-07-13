@@ -1,0 +1,407 @@
+{
+  "/Users/marco/Documents/repos/demo/.claude/settings.json": {
+    "mtime": 1781702459.006996,
+    "ast_hash": "2b1d1f7a0779512b8bcd9c1c8ab89aa9",
+    "semantic_hash": "2b1d1f7a0779512b8bcd9c1c8ab89aa9"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/settings.local.json": {
+    "mtime": 1781701769.1535125,
+    "ast_hash": "3b0bcf118e04abf5204c6c8a7a838331",
+    "semantic_hash": "3b0bcf118e04abf5204c6c8a7a838331"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/statusline-command.sh": {
+    "mtime": 1781700939.3262753,
+    "ast_hash": "1e85a0f56fb0a92189c4099a144df97c",
+    "semantic_hash": "1e85a0f56fb0a92189c4099a144df97c"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/hooks/build-reminder.py": {
+    "mtime": 1781700731.9840717,
+    "ast_hash": "05207a1514ca1db85144f44fdb4e0b50",
+    "semantic_hash": "05207a1514ca1db85144f44fdb4e0b50"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/hooks/archive-recall.py": {
+    "mtime": 1781700731.9836714,
+    "ast_hash": "c6939e9f1e0b82fece88ea5475e65390",
+    "semantic_hash": "c6939e9f1e0b82fece88ea5475e65390"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/TodoApp.csproj": {
+    "mtime": 1781701604.5013828,
+    "ast_hash": "72c8b889f590ad66e8ccea37c67774ce",
+    "semantic_hash": "72c8b889f590ad66e8ccea37c67774ce"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Program.cs": {
+    "mtime": 1781701830.3509383,
+    "ast_hash": "8adc98fd334b3928892030bc0a0e6f75",
+    "semantic_hash": "8adc98fd334b3928892030bc0a0e6f75"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/TodoApp.csproj.nuget.dgspec.json": {
+    "mtime": 1781701604.5042994,
+    "ast_hash": "82848da50675356a1e09eaea2cab2351",
+    "semantic_hash": "82848da50675356a1e09eaea2cab2351"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/project.assets.json": {
+    "mtime": 1781701604.5028832,
+    "ast_hash": "cd306fed1a9112a8c804c0c1169763cf",
+    "semantic_hash": "cd306fed1a9112a8c804c0c1169763cf"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/Debug/net9.0/TodoApp.GlobalUsings.g.cs": {
+    "mtime": 1781701642.7436836,
+    "ast_hash": "70500239e348e01027b65982f5792ea0",
+    "semantic_hash": "70500239e348e01027b65982f5792ea0"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/Debug/net9.0/TodoApp.AssemblyInfo.cs": {
+    "mtime": 1781701642.7922246,
+    "ast_hash": "a6e580ae4ec6bce7dd5493066ba2fc5e",
+    "semantic_hash": "a6e580ae4ec6bce7dd5493066ba2fc5e"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/Debug/net9.0/.NETCoreApp,Version=v9.0.AssemblyAttributes.cs": {
+    "mtime": 1781701642.7809217,
+    "ast_hash": "2549799abdb49bfc3546e8120b0a8f8a",
+    "semantic_hash": "2549799abdb49bfc3546e8120b0a8f8a"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/bin/Debug/net9.0/TodoApp.runtimeconfig.json": {
+    "mtime": 1781701719.099992,
+    "ast_hash": "7f5f714b2f23c20ea6d3a4fa62969625",
+    "semantic_hash": "7f5f714b2f23c20ea6d3a4fa62969625"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/bin/Debug/net9.0/TodoApp.deps.json": {
+    "mtime": 1781701719.0841358,
+    "ast_hash": "5428934d9dc18f51f69cc8aec50a8c99",
+    "semantic_hash": "5428934d9dc18f51f69cc8aec50a8c99"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/UpdateTodoHandler.cs": {
+    "mtime": 1781701638.2651505,
+    "ast_hash": "52737938f5908040140d08e79335dfc9",
+    "semantic_hash": "52737938f5908040140d08e79335dfc9"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/IStorageRepository.cs": {
+    "mtime": 1781701623.901555,
+    "ast_hash": "c921bf082b9b1cc48e8dc56fa74703fb",
+    "semantic_hash": "c921bf082b9b1cc48e8dc56fa74703fb"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/CompleteTodoHandler.cs": {
+    "mtime": 1781701632.9077933,
+    "ast_hash": "11145a81524a151b3cbac1dad1dbd667",
+    "semantic_hash": "11145a81524a151b3cbac1dad1dbd667"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/RemoveTodoHandler.cs": {
+    "mtime": 1781701635.1860583,
+    "ast_hash": "5babd1be2ae48df747026e9cc607a888",
+    "semantic_hash": "5babd1be2ae48df747026e9cc607a888"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/AddTodoHandler.cs": {
+    "mtime": 1781701627.028935,
+    "ast_hash": "58d2a75a3f30301cbaab1a8a45516366",
+    "semantic_hash": "58d2a75a3f30301cbaab1a8a45516366"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Application/ListTodosHandler.cs": {
+    "mtime": 1781701629.9348333,
+    "ast_hash": "3d216f8e731c389e2aaa7c8751abeac2",
+    "semantic_hash": "3d216f8e731c389e2aaa7c8751abeac2"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Infrastructure/FileStorageRepository.cs": {
+    "mtime": 1781701716.804538,
+    "ast_hash": "51bc83b11c2b2c6b8725056ba2d6aac8",
+    "semantic_hash": "51bc83b11c2b2c6b8725056ba2d6aac8"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Domain/Priority.cs": {
+    "mtime": 1781701614.3671224,
+    "ast_hash": "db22b9a20f734abe483c8fc1e112adb9",
+    "semantic_hash": "db22b9a20f734abe483c8fc1e112adb9"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Domain/TodoStatus.cs": {
+    "mtime": 1781701611.942343,
+    "ast_hash": "fcf9b6e919077cb4c9ea42f9ee9bee0d",
+    "semantic_hash": "fcf9b6e919077cb4c9ea42f9ee9bee0d"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Domain/TodoId.cs": {
+    "mtime": 1781701616.6714828,
+    "ast_hash": "6b6b13cc8ff57160e476b1359696469f",
+    "semantic_hash": "6b6b13cc8ff57160e476b1359696469f"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/Domain/TodoItem.cs": {
+    "mtime": 1781701621.1236877,
+    "ast_hash": "1afd4d07c978de8bbea3cedbfe31f973",
+    "semantic_hash": "1afd4d07c978de8bbea3cedbfe31f973"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/TodoApp.Tests.csproj": {
+    "mtime": 1781701671.0601966,
+    "ast_hash": "df406a8ac17726d72f975e0979936e53",
+    "semantic_hash": "df406a8ac17726d72f975e0979936e53"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/ApplicationTests.cs": {
+    "mtime": 1781701697.186525,
+    "ast_hash": "dbd13ac5de93cb372d192ff0ea3c64a9",
+    "semantic_hash": "dbd13ac5de93cb372d192ff0ea3c64a9"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/DomainTests.cs": {
+    "mtime": 1781701684.7803192,
+    "ast_hash": "e7e8547e3680196a68f3519ab4107287",
+    "semantic_hash": "e7e8547e3680196a68f3519ab4107287"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/StorageRepositoryTests.cs": {
+    "mtime": 1781701753.171973,
+    "ast_hash": "aefbe89c0c695b8f9fef4065cde1a27a",
+    "semantic_hash": "aefbe89c0c695b8f9fef4065cde1a27a"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/TodoApp.Tests.csproj.nuget.dgspec.json": {
+    "mtime": 1781701730.615776,
+    "ast_hash": "a753ce7b4de4c383d518738f8b174103",
+    "semantic_hash": "a753ce7b4de4c383d518738f8b174103"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/project.assets.json": {
+    "mtime": 1781701730.6136327,
+    "ast_hash": "eac467801843ce41b951e8e0cc9fd976",
+    "semantic_hash": "eac467801843ce41b951e8e0cc9fd976"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/Debug/net9.0/TodoApp.Tests.AssemblyInfo.cs": {
+    "mtime": 1781701667.5838172,
+    "ast_hash": "d57d1143b3da505cbd492cfdb990cacc",
+    "semantic_hash": "d57d1143b3da505cbd492cfdb990cacc"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/Debug/net9.0/TodoApp.Tests.GlobalUsings.g.cs": {
+    "mtime": 1781701667.5576549,
+    "ast_hash": "d9f213f127247d09fb01b02dfb192ce2",
+    "semantic_hash": "d9f213f127247d09fb01b02dfb192ce2"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/Debug/net9.0/.NETCoreApp,Version=v9.0.AssemblyAttributes.cs": {
+    "mtime": 1781701667.5808306,
+    "ast_hash": "2549799abdb49bfc3546e8120b0a8f8a",
+    "semantic_hash": "2549799abdb49bfc3546e8120b0a8f8a"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/bin/Debug/net9.0/TodoApp.runtimeconfig.json": {
+    "mtime": 1781701719.099992,
+    "ast_hash": "7f5f714b2f23c20ea6d3a4fa62969625",
+    "semantic_hash": "7f5f714b2f23c20ea6d3a4fa62969625"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/bin/Debug/net9.0/TodoApp.deps.json": {
+    "mtime": 1781701719.0841358,
+    "ast_hash": "5428934d9dc18f51f69cc8aec50a8c99",
+    "semantic_hash": "5428934d9dc18f51f69cc8aec50a8c99"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/bin/Debug/net9.0/TodoApp.Tests.deps.json": {
+    "mtime": 1781701731.002963,
+    "ast_hash": "976c6d3effacef90b9fbe45dc8028181",
+    "semantic_hash": "976c6d3effacef90b9fbe45dc8028181"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/bin/Debug/net9.0/TodoApp.Tests.runtimeconfig.json": {
+    "mtime": 1781701731.0155551,
+    "ast_hash": "7f5f714b2f23c20ea6d3a4fa62969625",
+    "semantic_hash": "7f5f714b2f23c20ea6d3a4fa62969625"
+  },
+  "/Users/marco/Documents/repos/demo/external-skills.md": {
+    "mtime": 1781700858.0187712,
+    "ast_hash": "2b0b9788e5d975028c3d1c65b2c29330",
+    "semantic_hash": "2b0b9788e5d975028c3d1c65b2c29330"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/CLAUDE.md": {
+    "mtime": 1781700731.9703116,
+    "ast_hash": "99feb9af30dfeaca1a2684ca6a4e0cf8",
+    "semantic_hash": "99feb9af30dfeaca1a2684ca6a4e0cf8"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/async-threading.md": {
+    "mtime": 1781700731.9854543,
+    "ast_hash": "c8c1736ddbf6e0fb77ff5818d74e7147",
+    "semantic_hash": "c8c1736ddbf6e0fb77ff5818d74e7147"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/architecture.md": {
+    "mtime": 1781700731.9851034,
+    "ast_hash": "db57fa0f1db2368aed3ff4349a71a58d",
+    "semantic_hash": "db57fa0f1db2368aed3ff4349a71a58d"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/events-delegates.md": {
+    "mtime": 1781700731.98729,
+    "ast_hash": "e76144349fc76385292eeb36191fdf3c",
+    "semantic_hash": "e76144349fc76385292eeb36191fdf3c"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/ui-controls.md": {
+    "mtime": 1781700731.9886708,
+    "ast_hash": "ade89941e17dacdecb14d11b0646f931",
+    "semantic_hash": "ade89941e17dacdecb14d11b0646f931"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/workflow.md": {
+    "mtime": 1781700731.9889607,
+    "ast_hash": "515c12405aa9c46ae9ebf565171ef4a2",
+    "semantic_hash": "515c12405aa9c46ae9ebf565171ef4a2"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/tests.md": {
+    "mtime": 1781700731.9884417,
+    "ast_hash": "5421c67d352a7821a7d922ea72972c9b",
+    "semantic_hash": "5421c67d352a7821a7d922ea72972c9b"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/business-logic.md": {
+    "mtime": 1781700731.9857657,
+    "ast_hash": "fc492ec4eb51b3eb52f74564d0b2fc43",
+    "semantic_hash": "fc492ec4eb51b3eb52f74564d0b2fc43"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/design-patterns.md": {
+    "mtime": 1781700731.9867578,
+    "ast_hash": "a816eb4fc198860ccc4a066706b0a63a",
+    "semantic_hash": "a816eb4fc198860ccc4a066706b0a63a"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/data-communication.md": {
+    "mtime": 1781700731.9864602,
+    "ast_hash": "6432eb95de24c887554b96d999b8b8c0",
+    "semantic_hash": "6432eb95de24c887554b96d999b8b8c0"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/naming-style.md": {
+    "mtime": 1781700731.9878125,
+    "ast_hash": "473e86ced820b48756d39729c3f90674",
+    "semantic_hash": "473e86ced820b48756d39729c3f90674"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/tdd-verification.md": {
+    "mtime": 1781700731.9881346,
+    "ast_hash": "5fe7ee981c2320583305d31fbd894a3b",
+    "semantic_hash": "5fe7ee981c2320583305d31fbd894a3b"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/error-handling.md": {
+    "mtime": 1781700731.986988,
+    "ast_hash": "f8735fe0829f4acb65187d538207687b",
+    "semantic_hash": "f8735fe0829f4acb65187d538207687b"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/rules/csharp-idioms.md": {
+    "mtime": 1781700731.986103,
+    "ast_hash": "847da107fe2bf8f0270a7e0f583a87ad",
+    "semantic_hash": "847da107fe2bf8f0270a7e0f583a87ad"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/archive.md": {
+    "mtime": 1781700731.9722776,
+    "ast_hash": "3f8b0be15fa292875009726cbe5e846d",
+    "semantic_hash": "3f8b0be15fa292875009726cbe5e846d"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/add-doc.md": {
+    "mtime": 1781700731.971754,
+    "ast_hash": "db2820bb4192ec89a2bc0c9f160d2d4e",
+    "semantic_hash": "db2820bb4192ec89a2bc0c9f160d2d4e"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/opsx/explore.md": {
+    "mtime": 1781701135.6020591,
+    "ast_hash": "c5bdf374bfb2bb1902b3a4aacdc3b898",
+    "semantic_hash": "c5bdf374bfb2bb1902b3a4aacdc3b898"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/opsx/archive.md": {
+    "mtime": 1781701135.6033947,
+    "ast_hash": "18594057d0fa5e17fb78e48493553625",
+    "semantic_hash": "18594057d0fa5e17fb78e48493553625"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/opsx/apply.md": {
+    "mtime": 1781701135.602489,
+    "ast_hash": "449ed654939d2179ce62e0845707ab35",
+    "semantic_hash": "449ed654939d2179ce62e0845707ab35"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/opsx/sync.md": {
+    "mtime": 1781701135.602836,
+    "ast_hash": "7a91922fe8b344d562aa9b5dbeb970e6",
+    "semantic_hash": "7a91922fe8b344d562aa9b5dbeb970e6"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/commands/opsx/propose.md": {
+    "mtime": 1781701135.603907,
+    "ast_hash": "43622af941f4617cc53b12af14d6b355",
+    "semantic_hash": "43622af941f4617cc53b12af14d6b355"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/openspec-apply-change/SKILL.md": {
+    "mtime": 1781701135.599856,
+    "ast_hash": "ef62fef14cd5c347e2be60d2af4ea59f",
+    "semantic_hash": "ef62fef14cd5c347e2be60d2af4ea59f"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/openspec-explore/SKILL.md": {
+    "mtime": 1781701135.59905,
+    "ast_hash": "61496eebbad91c2af8b3e5bf7fc9d256",
+    "semantic_hash": "61496eebbad91c2af8b3e5bf7fc9d256"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/openspec-archive-change/SKILL.md": {
+    "mtime": 1781701135.6007283,
+    "ast_hash": "a853b3ce25149061a7f13f05b127350c",
+    "semantic_hash": "a853b3ce25149061a7f13f05b127350c"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/openspec-propose/SKILL.md": {
+    "mtime": 1781701135.6010754,
+    "ast_hash": "5fe13ada44751b3ff94f56c22c383749",
+    "semantic_hash": "5fe13ada44751b3ff94f56c22c383749"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/openspec-sync-specs/SKILL.md": {
+    "mtime": 1781701135.600328,
+    "ast_hash": "211bc14ef7cb2d1e24b6b73e878d8509",
+    "semantic_hash": "211bc14ef7cb2d1e24b6b73e878d8509"
+  },
+  "/Users/marco/Documents/repos/demo/.claude/skills/tdd/SKILL.md": {
+    "mtime": 1781700732.0017908,
+    "ast_hash": "b4dae6c3b9380f6fe0a7135a993413dc",
+    "semantic_hash": "b4dae6c3b9380f6fe0a7135a993413dc"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp/obj/Debug/net9.0/TodoApp.csproj.FileListAbsolute.txt": {
+    "mtime": 1781701719.104368,
+    "ast_hash": "0e8c08c58c4d56969f637996adf3073b",
+    "semantic_hash": "0e8c08c58c4d56969f637996adf3073b"
+  },
+  "/Users/marco/Documents/repos/demo/TodoApp.Tests/obj/Debug/net9.0/TodoApp.Tests.csproj.FileListAbsolute.txt": {
+    "mtime": 1781701731.0207157,
+    "ast_hash": "5e3be14a4de17205e1b87be351e71a5b",
+    "semantic_hash": "5e3be14a4de17205e1b87be351e71a5b"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/config.yaml": {
+    "mtime": 1781701135.6049204,
+    "ast_hash": "9e3e7672b387a282583011181ab35f9a",
+    "semantic_hash": "9e3e7672b387a282583011181ab35f9a"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/specs/task-persistence/spec.md": {
+    "mtime": 1781701939.404374,
+    "ast_hash": "7b1ce54725d398df57ac1a1549d371d1",
+    "semantic_hash": "7b1ce54725d398df57ac1a1549d371d1"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/specs/task-filtering/spec.md": {
+    "mtime": 1781701933.5917404,
+    "ast_hash": "4c9713d3d1801fbcc4dce21970e15582",
+    "semantic_hash": "4c9713d3d1801fbcc4dce21970e15582"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/specs/task-management/spec.md": {
+    "mtime": 1781701929.3102012,
+    "ast_hash": "bc6f75d41aa8bf8c220f77c90d9b9bb8",
+    "semantic_hash": "bc6f75d41aa8bf8c220f77c90d9b9bb8"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/specs/cli-interface/spec.md": {
+    "mtime": 1781701923.9265535,
+    "ast_hash": "9a5acdf628ba3c3dd6ba035aca52c01e",
+    "semantic_hash": "9a5acdf628ba3c3dd6ba035aca52c01e"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/.openspec.yaml": {
+    "mtime": 1781701354.1464732,
+    "ast_hash": "bbc27e4b9d9d82db2a61a43236c8d23e",
+    "semantic_hash": "bbc27e4b9d9d82db2a61a43236c8d23e"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/tasks.md": {
+    "mtime": 1781701847.628656,
+    "ast_hash": "ea97a6d6eaf1b36a26e2ace8acf5c021",
+    "semantic_hash": "ea97a6d6eaf1b36a26e2ace8acf5c021"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/design.md": {
+    "mtime": 1781701411.0428,
+    "ast_hash": "f6761f9bc5e36b311b724edb75c354e6",
+    "semantic_hash": "f6761f9bc5e36b311b724edb75c354e6"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/proposal.md": {
+    "mtime": 1781701384.7949502,
+    "ast_hash": "cedd884756ba4c755e50491a7666786e",
+    "semantic_hash": "cedd884756ba4c755e50491a7666786e"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/specs/task-persistence/spec.md": {
+    "mtime": 1781701438.602281,
+    "ast_hash": "3b48b8723641a16fb3d0d73b98b2ff40",
+    "semantic_hash": "3b48b8723641a16fb3d0d73b98b2ff40"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/specs/task-filtering/spec.md": {
+    "mtime": 1781701448.9163933,
+    "ast_hash": "76792798ec88298247fe7ce81afd3044",
+    "semantic_hash": "76792798ec88298247fe7ce81afd3044"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/specs/task-management/spec.md": {
+    "mtime": 1781701427.339095,
+    "ast_hash": "03396967e7fbbfa613ae3dce9dc0516d",
+    "semantic_hash": "03396967e7fbbfa613ae3dce9dc0516d"
+  },
+  "/Users/marco/Documents/repos/demo/openspec/changes/archive/2026-06-17-cli-todo-app/specs/cli-interface/spec.md": {
+    "mtime": 1781701463.0922952,
+    "ast_hash": "83f5252aeb9091dcf93d47f680295d39",
+    "semantic_hash": "83f5252aeb9091dcf93d47f680295d39"
+  }
+}

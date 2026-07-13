@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo Cowork: strategia marketing e content AI</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+:root{--cowork-bg:#1a1a2e;--cowork-surface:#16213e;--cowork-accent:#e94560;--cowork-text:#eaeaea;--cowork-muted:#8a8aa0;--cowork-border:#2a2a4a}
+
+.cw-stage{margin:20px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.cws-head{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);transition:background .15s}
+:root[data-theme="dark"] .cws-head{background:rgba(255,255,255,.04)}
+.cws-head:hover{background:var(--accent-wash)}
+.cws-head .s-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+.cws-head .s-title{flex:1;font-weight:600;font-size:15px}
+.cws-head .s-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-cowork{background:var(--accent-wash);color:var(--accent-dark);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge-agent{background:#d4edda;color:#155724;border:1px solid #b8dfc6}
+.badge-web{background:#fff3cd;color:#856404;border:1px solid #e8d9a2}
+.badge-file{background:#d1ecf1;color:#0c5460;border:1px solid #b6dce3}
+.badge-social{background:#e8d5f5;color:#6a3d8a;border:1px solid #d0b0e8}
+:root[data-theme="dark"] .badge-agent{background:#1e3a2a;color:#8fd9a8;border-color:#2a5a3a}
+:root[data-theme="dark"] .badge-web{background:#3a3016;color:#e8d179;border-color:#5a4a2a}
+:root[data-theme="dark"] .badge-file{background:#1a3a3f;color:#8fd1e0;border-color:#2a5a60}
+:root[data-theme="dark"] .badge-social{background:#2a1a3f;color:#c99ee8;border-color:#4a2a6a}
+.cws-head .s-arrow{font-size:14px;color:var(--muted);transition:transform .2s;flex:none}
+.cws-head.open .s-arrow{transform:rotate(90deg)}
+.cws-body{padding:0;display:none}
+.cws-body.open{display:block}
+.cws-content{padding:18px 20px}
+
+.cowork-term{border-radius:8px;overflow:hidden;margin:12px 0;font-family:var(--mono);font-size:13px;line-height:1.6;border:1px solid var(--border)}
+.cowork-term .ct-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-dot{width:10px;height:10px;border-radius:50%}
+.cowork-term .ct-dot.r{background:#ff5f56}
+.cowork-term .ct-dot.y{background:#ffbd2e}
+.cowork-term .ct-dot.g{background:#27c93f}
+.cowork-term .ct-title{font-size:12px;color:var(--cowork-muted);margin-left:6px}
+.cowork-term .ct-body{padding:14px 16px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-prompt{color:var(--cowork-accent);font-weight:700}
+.cowork-term .ct-info{color:var(--cowork-muted)}
+.cowork-term .ct-result{color:#7ec8e3;margin:6px 0}
+.cowork-term .ct-file{color:#f5d579}
+.cowork-term .ct-done{color:#27c93f;font-weight:700}
+.cowork-term .ct-highlight{color:#ffbd2e}
+
+.content-preview{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:12px 0;background:var(--card)}
+.content-preview .cp-head{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+:root[data-theme="dark"] .content-preview .cp-head{background:rgba(255,255,255,.04)}
+.content-preview .cp-body{padding:14px 16px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
+.content-preview .cp-body strong{color:var(--ink)}
+.content-preview .cp-body h4{margin:0 0 4px;color:var(--ink);font-size:16px}
+
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:12px 0}
+.insight-card{border:1px solid var(--border);border-radius:6px;padding:12px 14px;background:var(--card);transition:box-shadow .15s}
+.insight-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.insight-card .ic-num{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.insight-card .ic-text{font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin:0 0 8px}
+.insight-card .ic-text strong{color:var(--ink)}
+
+.calendar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:12px 0}
+.cal-card{border:1px solid var(--border);border-radius:6px;padding:10px 12px;background:var(--card)}
+.cal-card .cc-week{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.cal-card .cc-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.cal-card .cc-desc{font-size:12px;color:var(--muted-soft);line-height:1.4}
+.cal-card .cc-tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:4px;margin-top:5px;font-weight:600}
+.tag-blog{background:#d1ecf1;color:#0c5460}
+:root[data-theme="dark"] .tag-blog{background:#1a3a3f;color:#8fd1e0}
+.tag-social{background:#e8d5f5;color:#6a3d8a}
+:root[data-theme="dark"] .tag-social{background:#2a1a3f;color:#c99ee8}
+.tag-video{background:#fff3cd;color:#856404}
+:root[data-theme="dark"] .tag-video{background:#3a3016;color:#e8d179}
+.tag-email{background:#d4edda;color:#155724}
+:root[data-theme="dark"] .tag-email{background:#1e3a2a;color:#8fd9a8}
+
+.final-dash{border:2px solid var(--accent);border-radius:10px;overflow:hidden;margin:16px 0}
+.final-dash .fd-head{background:var(--accent);color:#fff;padding:12px 18px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
+.final-dash .fd-head small{font-weight:400;opacity:.8;font-size:13px}
+.final-dash .fd-body{padding:18px}
+
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.kpi-card{flex:1;min-width:130px;border:1px solid var(--border);border-radius:6px;padding:12px 14px;text-align:center;background:var(--card)}
+.kpi-card .kc-val{font-size:28px;font-weight:700;color:var(--accent-dark)}
+.kpi-card .kc-label{font-size:11px;color:var(--muted-soft);margin-top:4px;font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · demo Cowork · marketing agentico</p>
+  <h1>Strategia marketing e content plan con AI</h1>
+  <p class="lede">Demo del flusso completo in <strong>Claude Cowork (desktop)</strong>: Claude analizza il posizionamento competitivo, genera un calendario editoriale trimestrale, produce contenuti pronti all'uso (blog, email, social) e pubblica una dashboard KPI per il monitoraggio. Tutto in una sessione.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>Modalità</b> · Cowork (desktop)</span>
+    <span class="chip"><b>Ciclo</b> · analizza → strategia → crea → dashboard</span>
+    <span class="chip"><b>Output</b> · calendario + blog + email + social + KPI</span>
+    <span class="chip">25–35 minuti</span>
+  </div>
+</header>
+
+<dl class="sig">
+  <dt>Scenario</dt>
+  <dd>L'<strong>ufficio marketing</strong> deve lanciare la comunicazione per <strong>AiFormation</strong>, il nuovo servizio di formazione AI. Hai documenti interni (presentazione servizio, specifiche tecniche), il sito web dei competitor e qualche idea sparsa. Claude in Cowork mode fa tutto: analizza, pianifica, produce contenuti e crea una dashboard KPI.</dd>
+  <dt>Cosa vedrai</dt>
+  <dd>Il <strong>ciclo marketing agentico</strong>: Claude parte da materiale grezzo, analizza il mercato, pianifica una strategia editoriale, scrive contenuti in autonomia e produce una dashboard live.</dd>
+</dl>
+
+<!-- ================================================================== -->
+<!-- STEP 1: Analisi competitor -->
+<div class="cw-stage">
+  <div class="cws-head open" onclick="toggleStep(this)">
+    <span class="s-num">1</span>
+    <span class="s-title">Claude analizza competitor e posizionamento</span>
+    <span class="s-badge badge-cowork">📡 MCP</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body open">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Con il connettore MCP per Microsoft 365 e web search integrata, Claude legge i documenti interni e cerca autonomamente informazioni sui competitor.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude Code — cowork@Sistec</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu scrivi:</span></div>
+          <div>«Nella cartella D:\Sistec\Marketing\AiFormation\ ho la presentazione del servizio, le slide commerciali e le specifiche. Leggi tutto e poi cercami online:
+1) Chi sono i competitor diretti per formazione AI in Italia
+2) Che posizionamento usano (prezzo, target, messaggi chiave)
+3) Quali canali usano (social, blog, eventi)
+Fammi un report completo.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude lavora ─────────────────────────────────────</span></div>
+          <div class="ct-result">📂 Letti 3 documenti interni (68 slide, 12 pp specifiche, 1 scheda servizio)</div>
+          <div class="ct-result">🌐 Ricerca: "formazione AI aziendale Italia" — 8 competitor identificati</div>
+          <div class="ct-result">🌐 Analisi sito: compet-ai.it — posizionamento premium, target HR</div>
+          <div class="ct-result">🌐 Analisi sito: ai-academy.it — posizionamento volume, target PMI</div>
+          <div class="ct-result">🌐 Analisi social: LinkedIn pagine dei competitor, 3 campagne in corso</div>
+          <div class="ct-result">📊 Generato report comparativo</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ Report competitivo completato: 4 competitor analizzati, 15 pagine web esplorate.</span></div>
+        </div>
+      </div>
+
+      <div class="result-box" style="margin:12px 0">
+        <strong>Estratto report competitivo</strong>
+        <table class="compact-table" style="margin-top:8px">
+          <thead><tr><th>Competitor</th><th>Target</th><th>Posizionamento</th><th>Canali principali</th><th>Punto debole</th></tr></thead>
+          <tbody>
+            <tr><td><b>Compet AI</b></td><td>Grandi aziende HR</td><td>Premium, corso strutturato</td><td>LinkedIn, eventi</td><td>Nessuna formazione pratica su tool</td></tr>
+            <tr><td><b>AI Academy</b></td><td>PMI</td><td>Volume, prezzo basso</td><td>Blog, newsletter</td><td>Contenuti generici, poca personalizzazione</td></tr>
+            <tr><td><b>NeuralLearn</b></td><td>Sviluppatori</td><td>Tecnico, specializzato</td><td>YouTube, GitHub</td><td>Troppo tecnico per manager</td></tr>
+            <tr><td><b>FormaTech</b></td><td>Operai, produzione</td><td>Base, operativo</td><td>Fiere, passaparola</td><td>Niente presenza digitale</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout key">
+        <h4>Differenziale competitivo scoperto</h4>
+        <p>Nessun competitor offre un percorso che parte dall'operatore e arriva al manager con tool pratici (Claude, AI agent). <strong>Nicchia: formazione AI applicata ai processi industriali.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 2: Strategia e calendario -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">2</span>
+    <span class="s-title">Claude propone strategia e calendario editoriale</span>
+    <span class="s-badge badge-agent">📋 STRATEGIA</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Sulla base dell'analisi competitiva, Claude elabora una strategia di contenuti con messaggi chiave, canali prioritari e un calendario editoriale trimestrale.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude pianifica...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Ottimo report. Ora sulla base di tutto questo, proponimi:
+1) I 3 messaggi chiave per la campagna AiFormation
+2) I canali prioritari (con motivazione)
+3) Un calendario editoriale per il primo trimestre 2026
+4) Per ogni contenuto: formato, canale, settimana, obiettivo»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude elabora strategia ──────────────────────────</span></div>
+          <div class="ct-result">📋 Messaggi chiave definiti su 3 pilastri</div>
+          <div class="ct-result">📋 Canali: LinkedIn (B2B), blog tecnico (SEO), newsletter (lead gen), YouTube (demo)</div>
+          <div class="ct-result">📋 Calendario Q1 2026: 12 contenuti pianificati</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ Strategia pronta. 12 contenuti calendarizzati.</span></div>
+        </div>
+      </div>
+
+      <div class="result-box" style="margin:12px 0">
+        <strong>🎯 Messaggi chiave</strong>
+        <ol style="margin:8px 0 0;font-size:14px;color:var(--ink-soft)">
+          <li><strong>«AI fatta su misura per la tua fabbrica»</strong> — Non formazione generica, ma percorsi calati nei processi industriali reali.</li>
+          <li><strong>«Dall'operatore al manager: tutti parlano AI»</strong> — Copriamo tutta la piramide aziendale con un unico percorso.</li>
+          <li><strong>«Non solo teoria: tool pratici dal giorno 1»</strong> — Claude, Copilot, agent AI si usano subito.</li>
+        </ol>
+      </div>
+
+      <div class="result-box" style="margin:12px 0">
+        <strong>📅 Calendario editoriale Q1 2026</strong>
+        <div class="calendar-grid">
+          <div class="cal-card">
+            <div class="cc-week">Sett 1</div>
+            <div class="cc-title">AI in fabbrica: miti vs realtà</div>
+            <div class="cc-desc">Blog post · LinkedIn · Sfatare i falsi miti sull'AI</div>
+            <span class="cc-tag tag-blog">Blog</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 2</div>
+            <div class="cc-title">Caso studio: AI in produzione</div>
+            <div class="cc-desc">Blog + LinkedIn · Cliente reale</div>
+            <span class="cc-tag tag-blog">Blog</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 3</div>
+            <div class="cc-title">Demo Claude per ufficio tecnico</div>
+            <div class="cc-desc">Video 5 min · YouTube</div>
+            <span class="cc-tag tag-video">Video</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 4</div>
+            <div class="cc-title">Newsletter #1: l'AI che produce</div>
+            <div class="cc-desc">Email · Lead generation</div>
+            <span class="cc-tag tag-email">Email</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 5</div>
+            <div class="cc-title">3 modi per usare AI in ufficio</div>
+            <div class="cc-desc">Carosello LinkedIn · Engagement</div>
+            <span class="cc-tag tag-social">Social</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 6</div>
+            <div class="cc-title">Intervista: HR e AI adoption</div>
+            <div class="cc-desc">Blog + LinkedIn · Guest post</div>
+            <span class="cc-tag tag-blog">Blog</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 7</div>
+            <div class="cc-title">Webinar: AI agent in azienda</div>
+            <div class="cc-desc">YouTube live + LinkedIn</div>
+            <span class="cc-tag tag-video">Video</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 8</div>
+            <div class="cc-title">Newsletter #2: tool AI gratuiti</div>
+            <div class="cc-desc">Email · Lead nurturing</div>
+            <span class="cc-tag tag-email">Email</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 9</div>
+            <div class="cc-title">Guida: scegliere un corso AI</div>
+            <div class="cc-desc">Blog post · SEO</div>
+            <span class="cc-tag tag-blog">Blog</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 10</div>
+            <div class="cc-title">AI per manutenzione predittiva</div>
+            <div class="cc-desc">Carosello LinkedIn + blog</div>
+            <span class="cc-tag tag-social">Social</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 11</div>
+            <div class="cc-title">Caso studio: formazione AI</div>
+            <div class="cc-desc">Video 8 min · YouTube</div>
+            <span class="cc-tag tag-video">Video</span>
+          </div>
+          <div class="cal-card">
+            <div class="cc-week">Sett 12</div>
+            <div class="cc-title">Newsletter #3: risultati Q1</div>
+            <div class="cc-desc">Email · Report</div>
+            <span class="cc-tag tag-email">Email</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 3: Scrittura contenuti -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">3</span>
+    <span class="s-title">Claude scrive i primi contenuti</span>
+    <span class="s-badge badge-file">✍️ CONTENT</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">A calendario definito, Claude inizia a produrre i contenuti veri e propri: blog post, newsletter, social copy e script video.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude scrive...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Scrivimi i primi 3 contenuti del calendario:
+1) Blog post: "AI in fabbrica: miti vs realtà" (800-1000 parole, tono divulgativo ma professionale)
+2) Email newsletter #1: presentazione AiFormation (400 parole, call-to-action)
+3) Post LinkedIn: teaser lancio (150 parole, 3-5 immagini suggerite)
+Usa il tono Sistec: competente, accessibile, concreto.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude scrive ─────────────────────────────────────</span></div>
+          <div class="ct-result">✍️ Blog post: "AI in fabbrica: 5 miti da sfatare" — 980 parole, 3 sezioni</div>
+          <div class="ct-result">✍️ Email: "Benvenuto in AiFormation" — 420 parole, CTA per demo</div>
+          <div class="ct-result">✍️ LinkedIn: teaser lancio — 148 parole, copy + 4 immagini descritte</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ 3 contenuti pronti, salvati in D:\Sistec\Marketing\AiFormation\Contenuti\</span></div>
+        </div>
+      </div>
+
+      <!-- Anteprima blog -->
+      <div class="content-preview">
+        <div class="cp-head">📝 Blog Post — "AI in fabbrica: 5 miti da sfatare"</div>
+        <div class="cp-body">
+          <h4>Mito 1: «L'AI sostituirà i lavoratori»</h4>
+          <p style="max-width:none">La realtà è più sfumata. L'AI non sostituisce le persone: sostituisce compiti ripetitivi. Un operatore che impara a usare Claude o Copilot non perde il lavoro — lo trasforma. I dati mostrano che le aziende che formano il personale all'AI <strong>aumentano la produttività del 30-40%</strong> senza ridurre l'organico. Anzi, spesso lo riqualificano su mansioni a maggior valore.</p>
+          <h4>Mito 2: «L'AI è solo per grandi aziende»</h4>
+          <p style="max-width:none">Falso. Gli strumenti AI oggi costano da 20€/mese in su. Una PMI con 50 dipendenti può automatizzare la gestione ordini, la traduzione documenti tecnici e l'analisi fornitori con un investimento irrisorio. <strong>Il vero investimento è la formazione</strong>: saper usare gli strumenti giusti nel contesto giusto.</p>
+          <p style="max-width:none;margin-top:8px;font-size:12px;color:var(--muted-soft)">✂️ Estratto — il post completo è di 980 parole</p>
+        </div>
+      </div>
+
+      <!-- Anteprima newsletter -->
+      <div class="content-preview">
+        <div class="cp-head">📧 Email — Newsletter #1: Presentazione AiFormation</div>
+        <div class="cp-body">
+          <p style="max-width:none"><strong>Oggetto:</strong> L'AI che produce: benvenuto in AiFormation<br>
+          <strong>Preview:</strong> Non è un corso di teoria. È il tuo primo giorno con un AI agent.</p>
+          <p style="max-width:none">Ciao [Nome],<br><br>
+          Se lavori in produzione o ufficio tecnico, hai già sentito parlare di AI. Magari hai provato ChatGPT per qualche attività. Ma la domanda è un'altra: <strong>come si usa l'AI nei processi industriali reali?</strong></p>
+          <p style="max-width:none">AiFormation è il primo percorso di formazione Sistec che parte dal tuo lavoro quotidiano e ti insegna a usare Claude, Copilot e gli AI agent per:<br>
+          • Analizzare fornitori in 10 minuti invece che 3 ore<br>
+          • Tradurre documenti tecnici mantenendo la terminologia corretta<br>
+          • Automatizzare report e analisi dati senza saper programmare</p>
+          <p style="max-width:none"><strong>👉 <a href="#" style="text-decoration:none;background:var(--accent);color:#fff;padding:8px 16px;border-radius:6px;display:inline-block">Prenota una demo gratuita</a></strong></p>
+        </div>
+      </div>
+
+      <!-- Anteprima LinkedIn -->
+      <div class="content-preview">
+        <div class="cp-head">💼 Post LinkedIn — Teaser lancio</div>
+        <div class="cp-body">
+          <p style="max-width:none">🚀 <strong>L'AI in fabbrica non è più un'opzione. È una competenza di base.</strong></p>
+          <p style="max-width:none">Nei prossimi mesi formeremo <strong>50+ operatori e tecnici</strong> all'uso pratico di Claude, Copilot e AI agent — non in astratto, ma sui processi reali: saldatura, acquisti, qualità, manutenzione.</p>
+          <p style="max-width:none">Perché abbiamo smesso di chiederci "l'AI ci sostituirà?" e abbiamo iniziato a chiederci "come la usiamo oggi?"</p>
+          <p style="max-width:none">📅 <strong>Prossima settimana:</strong> caso studio di un reparto acquisti che ha tagliato del 60% il tempo di valutazione fornitori grazie a un AI agent.</p>
+          <p style="max-width:none">#AiFormation #Sistec #AIperIndustria #FormazioneAI</p>
+          <p style="max-width:none;font-size:12px;color:var(--muted-soft)">🖼️ Immagine suggerita: operatore che usa tablet accanto a macchina CNC · grafico "60% tempo risparmiato"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 4: Dashboard KPI e report -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">4</span>
+    <span class="s-title">Claude pubblica dashboard marketing con KPI</span>
+    <span class="s-badge badge-file">📊 DASHBOARD</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Infine Claude genera una dashboard HTML live con KPI di marketing, grafici e tracciamento — da condividere con la direzione e aggiornare ogni mese.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude pubblica la dashboard...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Crea una dashboard HTML per monitorare la campagna AiFormation. Deve includere:
+1) KPI: lead generati, visite blog, tasso conversione, engagement social
+2) Grafico a barre confronto canali
+3) Tabella contenuti pubblicati con stato
+4) Grafico lead nel tempo (fittizio ma realistico)
+Stile Sistec, professionale, pronto per la direzione.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude crea dashboard ─────────────────────────────</span></div>
+          <div class="ct-result">📄 Creato: <span class="ct-file">Dashboard_Marketing_AiFormation.html</span></div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ Dashboard salvata e aperta nel browser.</span></div>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>Ecco la dashboard live prodotta da Claude</h4>
+        <p>Anteprima della dashboard HTML che Claude genera in autonomia — con KPI, grafici comparativi e tabella contenuti. <strong>Pronta per il team marketing e la direzione.</strong></p>
+      </div>
+
+      <div class="final-dash">
+        <div class="fd-head">
+          <span>📊 Dashboard Marketing — Campagna AiFormation</span>
+          <small>generato da Claude · Sistec Marketing</small>
+        </div>
+        <div class="fd-body">
+
+          <!-- KPI row -->
+          <div class="kpi-row">
+            <div class="kpi-card"><div class="kc-val">156</div><div class="kc-label">Lead generati</div></div>
+            <div class="kpi-card"><div class="kc-val">4.230</div><div class="kc-label">Visite blog</div></div>
+            <div class="kpi-card"><div class="kc-val">3.7%</div><div class="kc-label">Tasso conversione</div></div>
+            <div class="kpi-card"><div class="kc-val">12.4%</div><div class="kc-label">Engagement LinkedIn</div></div>
+            <div class="kpi-card"><div class="kc-val">1.8K</div><div class="kc-label">Iscritti newsletter</div></div>
+          </div>
+
+          <!-- 10 insight marketing -->
+          <div style="font-weight:700;font-size:15px;margin:16px 0 8px;color:var(--ink)">10 Insight per la direzione marketing</div>
+          <div class="insight-grid">
+            <div class="insight-card"><div class="ic-num">Insight 1</div><div class="ic-text"><strong>LinkedIn è il canale top</strong> — Genera il 52% dei lead con un costo per lead del 40% inferiore agli altri canali.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 2</div><div class="ic-text"><strong>Blog post "Miti AI" tiene</strong> — 1.240 visite in 2 settimane, tempo di lettura medio 4:12 min. Ottimo per SEO.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 3</div><div class="ic-text"><strong>Newsletter: conversione alta</strong> — 8.2% di click-through, sopra la media industria (2-3%). Il tono concreto funziona.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 4</div><div class="ic-text"><strong>Video demo sottoperformanti</strong> — Solo 320 visualizzazioni. Forse serve promuovere di più o accorciare i format.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 5</div><div class="ic-text"><strong>Miglior orario di pubblicazione</strong> — I post LinkedIn pubblicati martedì 10:00 hanno il 2.3x engagement della media.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 6</div><div class="ic-text"><strong>Casi studio reali convertono</strong> — Il post sul caso studio acquisti ha generato 8 richieste demo, più di ogni altro contenuto.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 7</div><div class="ic-text"><strong>Tasso apertura email: 42%</strong> — Oggetto con "AI" + numero percentuale performa meglio (es. "60% tempo risparmiato").</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 8</div><div class="ic-text"><strong>Lead da PMI: 68%</strong> — Le piccole-medie imprese rispondono di più. Ottimizzare messaggio per questo target.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 9</div><div class="ic-text"><strong>SEO ancora da lavorare</strong> — Solo 18% del traffico arriva da ricerca organica. Priorità: potenziare blog tecnico.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 10</div><div class="ic-text"><strong>Raccomandazione: raddoppiare LinkedIn</strong> — Con 3 post/settimana invece di 1, il modello stima +140% lead in 60 giorni.</div></div>
+          </div>
+
+          <!-- Charts -->
+          <div class="chart-comp">
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Lead per canale</div>
+              <div><div class="chart-row"><span class="cr-label">LinkedIn</span><div class="cr-bar" style="width:100%;background:#6a3d8a">81</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Blog</span><div class="cr-bar" style="width:46%;background:var(--accent-dark)">37</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Newsletter</span><div class="cr-bar" style="width:27%;background:var(--accent)">22</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">YouTube</span><div class="cr-bar" style="width:14%;background:#e8a43a">11</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Altro</span><div class="cr-bar" style="width:6%;background:var(--muted-soft)">5</div></div></div>
+              <div style="margin-top:8px;text-align:right;font-size:11px;color:var(--muted)">Totale: 156 lead</div>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Lead nel tempo (settimanali)</div>
+              <div class="spark">
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:12px;background:var(--muted-soft)"></div>
+                  <div class="sp-lab">S1</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:18px;background:var(--muted-soft)"></div>
+                  <div class="sp-lab">S2</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:24px;background:var(--accent)"></div>
+                  <div class="sp-lab">S3</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:30px;background:var(--accent)"></div>
+                  <div class="sp-lab">S4</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:22px;background:var(--accent-dark)"></div>
+                  <div class="sp-lab">S5</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:34px;background:var(--accent-dark)"></div>
+                  <div class="sp-lab">S6</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:40px;background:#6a3d8a"></div>
+                  <div class="sp-lab">S7</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:36px;background:#6a3d8a"></div>
+                  <div class="sp-lab">S8</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;font-size:10px;color:var(--muted-soft);font-family:var(--mono)">
+                <span>8</span><span>12</span><span>18</span><span>24</span><span>16</span><span>28</span><span>34</span><span>30</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-comp">
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Stato contenuti calendarizzati</div>
+              <div><div class="chart-row"><span class="cr-label">Pubblicati</span><div class="cr-bar" style="width:50%;background:#27c93f">6</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">In lavorazione</span><div class="cr-bar" style="width:33%;background:#e8a43a">4</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Da iniziare</span><div class="cr-bar" style="width:17%;background:var(--muted-soft)">2</div></div></div>
+              <div style="margin-top:8px;font-size:11px;color:var(--muted)">12 contenuti totali · 50% completato</div>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Budget speso per canale (€)</div>
+              <div style="font-size:13px;color:var(--ink-soft);line-height:1.8">
+                <p style="max-width:none;margin:0">LinkedIn Ads: <strong>2.400€</strong> · €29.6/lead</p>
+                <p style="max-width:none;margin:0">Content creation: <strong>1.200€</strong> · €7.7/lead</p>
+                <p style="max-width:none;margin:0">Video production: <strong>800€</strong> · €72.7/lead</p>
+                <p style="max-width:none;margin:0">Strumenti/software: <strong>400€</strong></p>
+                <p style="max-width:none;margin:8px 0 0;font-size:12px;color:var(--muted)"><strong>Totale: 4.800€</strong> · <strong>Costo medio/lead: €30.80</strong></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 5: Iterazione e ottimizzazione -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">5</span>
+    <span class="s-title">Follow-up: ottimizzazione e varianti</span>
+    <span class="s-badge badge-cowork">🔄 ITERA</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">La strategia marketing non è mai definitiva. Con Claude in Cowork, puoi iterare rapidamente senza ricominciare da capo.</p>
+
+      <div class="glossary-box" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:10px 0">
+        <div class="gb-head" style="padding:8px 14px;background:var(--surface-2,#faf8f5);font-weight:600;font-size:13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">🔄 Prompt di ottimizzazione comuni</div>
+        <div class="gb-body" style="padding:10px 14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Variante tono</div><div style="font-size:13px;color:var(--ink-soft)">«Riscrivi il blog post in tono più tecnico, aggiungendo dati e riferimenti a casi studio interni.»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Nuovo formato</div><div style="font-size:13px;color:var(--ink-soft)">«Trasforma il blog post in uno script per video TikTok/Reels da 60 secondi, molto diretto e visivo.»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Traduzione EN</div><div style="font-size:13px;color:var(--ink-soft)">«Traduci la newsletter in inglese per i clienti internazionali. Mantieni il tono professionale.»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">A/B test</div><div style="font-size:13px;color:var(--ink-soft)">«Scrivi 3 varianti dell'oggetto email per A/B test, con approcci diversi: curiosità, urgenza, valore.»</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>💡 Ciclo marketing agentico</h4>
+        <p>Claude produce una base solida, tu affini con prompt mirati. <strong>Non parti da zero:</strong> ogni iterazione aggiunge valore senza perdere il lavoro già fatto.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- 4D RECAP -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>I 4D in azione</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>D</th><th>In questo workflow</th></tr></thead>
+    <tbody>
+      <tr><td><b>Delega</b></td><td>Claude fa tutto: analizza competitor, pianifica calendario, scrive contenuti, crea dashboard. Tu definisci la direzione strategica.</td></tr>
+      <tr><td><b>Descrizione</b></td><td>I prompt sono il vero investimento: più dettagli dai (tono, formato, target), più i contenuti sono pronti all'uso.</td></tr>
+      <tr><td><b>Discernimento</b></td><td>Valuti ogni contenuto: il tono è giusto? I messaggi chiave sono corretti? I dati della dashboard sono realistici? Aggiusti e iteri.</td></tr>
+      <tr><td><b>Diligenza</b></td><td>I contenuti generati vanno verificati: dati sui competitor, citazioni, fatti tecnici. Claude è un punto di partenza, non la fonte definitiva.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================================================================== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>Perché Cowork è diverso da Chat</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>Chat (browser)</th><th>Cowork (desktop)</th></tr></thead>
+    <tbody>
+      <tr><td>Limiti di contesto, spesso perde il filo</td><td>Contesto ampio, mantiene coerenza su progetti interi</td></tr>
+      <tr><td>Non può leggere file sul tuo PC</td><td>Legge PDF, DOCX, slide, email — tutto quello che hai</td></tr>
+      <tr><td>Non naviga il web in autonomia</td><td>Cerca competitor, analizza siti, raccoglie dati di mercato</td></tr>
+      <tr><td>Un contenuto alla volta</td><td>Produce pacchetti completi: calendario + blog + email + dashboard</td></tr>
+      <tr><td>Output solo testo</td><td>Output: file HTML, DOCX, immagini descritte, dashboard interattive</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <span>Sistec · AiFormation — demo Cowork marketing agentico</span>
+  <span><a href="demo-cowork-traduzione.html">← Traduzione documenti</a> · <a href="demo-cowork-project-management.html">Project management →</a></span>
+</footer>
+
+</div>
+
+<script>
+function toggleStep(el){
+  el.classList.toggle('open');
+  var body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+document.getElementById('themebtn').addEventListener('click',function(){
+  var root=document.documentElement;
+  var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+  root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+});
+</script>
+
+</body>
+</html>

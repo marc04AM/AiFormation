@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo Cowork: traduzione multi-documento EN→IT</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--cowork-bg:#1a1a2e;--cowork-surface:#16213e;--cowork-accent:#e94560;--cowork-text:#eaeaea;--cowork-muted:#8a8aa0;--cowork-border:#2a2a4a}
+
+.cw-stage{margin:20px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.cws-head{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);transition:background .15s}
+:root[data-theme="dark"] .cws-head{background:rgba(255,255,255,.04)}
+.cws-head:hover{background:var(--accent-wash)}
+.cws-head .s-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+.cws-head .s-title{flex:1;font-weight:600;font-size:15px}
+.cws-head .s-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-cowork{background:var(--accent-wash);color:var(--accent-dark);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge-file{background:#d1ecf1;color:#0c5460;border:1px solid #b6dce3}
+.badge-glossary{background:#d4edda;color:#155724;border:1px solid #b8dfc6}
+:root[data-theme="dark"] .badge-file{background:#1a3a3f;color:#8fd1e0;border-color:#2a5a60}
+:root[data-theme="dark"] .badge-glossary{background:#1e3a2a;color:#8fd9a8;border-color:#2a5a3a}
+.cws-head .s-arrow{font-size:14px;color:var(--muted);transition:transform .2s;flex:none}
+.cws-head.open .s-arrow{transform:rotate(90deg)}
+.cws-body{padding:0;display:none}
+.cws-body.open{display:block}
+.cws-content{padding:18px 20px}
+
+.cowork-term{border-radius:8px;overflow:hidden;margin:12px 0;font-family:var(--mono);font-size:13px;line-height:1.6;border:1px solid var(--border)}
+.cowork-term .ct-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-dot{width:10px;height:10px;border-radius:50%}
+.cowork-term .ct-dot.r{background:#ff5f56}
+.cowork-term .ct-dot.y{background:#ffbd2e}
+.cowork-term .ct-dot.g{background:#27c93f}
+.cowork-term .ct-title{font-size:12px;color:var(--cowork-muted);margin-left:6px}
+.cowork-term .ct-body{padding:14px 16px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-prompt{color:var(--cowork-accent);font-weight:700}
+.cowork-term .ct-info{color:var(--cowork-muted)}
+.cowork-term .ct-result{color:#7ec8e3;margin:4px 0}
+.cowork-term .ct-file{color:#f5d579}
+.cowork-term .ct-done{color:#27c93f;font-weight:700}
+.cowork-term .ct-warn{color:#ffbd2e}
+
+.doc-compare{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:12px 0}
+.doc-compare .dc-side{overflow:hidden}
+.doc-compare .dc-head{padding:8px 12px;font-weight:600;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em}
+.doc-compare .dc-en .dc-head{background:#1a3a6e;color:#fff}
+.doc-compare .dc-it .dc-head{background:#2a6e3a;color:#fff}
+.doc-compare .dc-body{padding:10px 12px;font-size:13.5px;line-height:1.65;background:var(--card);color:var(--ink-soft);min-height:100px}
+.doc-compare .dc-body strong{color:var(--ink)}
+.doc-compare .dc-body .hl-y{background:#fff3cd;padding:0 2px;border-radius:2px}
+:root[data-theme="dark"] .doc-compare .dc-body .hl-y{background:#3a3016}
+
+@media(max-width:700px){.doc-compare{grid-template-columns:1fr}}
+
+.doc-list{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.doc-list .dl-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--card);font-size:13px}
+.doc-list .dl-item .dl-icon{font-size:18px}
+.doc-list .dl-item .dl-name{font-weight:600;color:var(--ink)}
+.doc-list .dl-item .dl-size{font-family:var(--mono);font-size:11px;color:var(--muted-soft)}
+
+.glossary-box{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:10px 0}
+.glossary-box .gb-head{padding:8px 14px;background:var(--surface-2,#faf8f5);font-weight:600;font-size:13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.glossary-box .gb-body{padding:10px 14px}
+:root[data-theme="dark"] .glossary-box .gb-head{background:rgba(255,255,255,.04)}
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.glossary-grid .gg-item{font-size:13px;padding:3px 0}
+.glossary-grid .gg-item .gg-en{font-weight:600;color:var(--ink)}
+.glossary-grid .gg-item .gg-it{color:var(--ink-soft)}
+.glossary-grid .gg-item .gg-note{font-size:11px;color:var(--muted-soft);font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · demo Cowork · traduzione agentica</p>
+  <h1>Tradurre un intero progetto documentale EN→IT</h1>
+  <p class="lede">Demo del flusso completo in <strong>Claude Cowork</strong>: Claude legge 5 documenti inglesi (PDF, DOCX, email), li traduce in italiano mantenendo formattazione e terminologia tecnica, applica un glossario aziendale, e produce un pacchetto finale con report di qualità.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>Modalità</b> · Cowork (desktop)</span>
+    <span class="chip"><b>Ciclo</b> · leggi → traduci → glossario → pacchetto</span>
+    <span class="chip"><b>Output</b> · 5 documenti IT + report qualità</span>
+    <span class="chip">15–20 minuti</span>
+  </div>
+</header>
+
+<dl class="sig">
+  <dt>Scenario</dt>
+  <dd>L'ufficio qualità deve tradurre in italiano <strong>5 documenti tecnici</strong> per una nuova procedura aziendale: manuale operativo, scheda sicurezza, email di comunicazione, contratto e specifica tecnica. I file sono in inglese, sparsi tra cartella condivisa e email.</dd>
+  <dt>Cosa vedrai</dt>
+  <dd>Il flusso <strong>agente di traduzione</strong>: Claude raccoglie i file, li traduce uno per uno, applica coerenza terminologica e consegna un pacchetto ordinato.</dd>
+</dl>
+
+<!-- ===== STEP 1 ===== -->
+<div class="cw-stage">
+  <div class="cws-head open" onclick="toggleStep(this)">
+    <span class="s-num">1</span>
+    <span class="s-title">Claude legge i 5 documenti originali</span>
+    <span class="s-badge badge-cowork">📡 MCP</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body open">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Con il connettore MCP per Microsoft 365 e file system, Claude trova e legge tutti i documenti senza che tu li apra uno per uno.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude Code — cowork@Sistec</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu scrivi:</span></div>
+          <div>«Nella cartella D:\Sistec\Qualità\Procedura saldatura\ e nelle email del thread "Procedura saldatura EN" ci sono 5 documenti in inglese da tradurre. Leggili tutti e fammi l'elenco con titolo, tipo file, numero pagine e argomento.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude cerca e legge ─────────────────────────────</span></div>
+          <div class="ct-result">🔍 Scansione cartella D:\Sistec\Qualità\Procedura saldatura\ ...</div>
+          <div class="ct-result">📧 Cerca email con oggetto "Welding Procedure EN" ...</div>
+          <div class="ct-result">📄 Letto: <span class="ct-file">Manual_Welding_Procedure.docx</span> (14 pp)</div>
+          <div class="ct-result">📄 Letto: <span class="ct-file">Safety_Data_Sheet_EN.pdf</span> (6 pp)</div>
+          <div class="ct-result">📄 Letto: <span class="ct-file">Supplier_Agreement_EN.docx</span> (5 pp)</div>
+          <div class="ct-result">📎 Da email: <span class="ct-file">Technical_Spec_Laser_Weld.pdf</span> (8 pp)</div>
+          <div class="ct-result">📧 Da email: corpo email "New welding procedure — presentation"</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ Trovati 5 documenti · letti 3.250 token totali · ~35 pagine.</span></div>
+        </div>
+      </div>
+
+      <div class="doc-list">
+        <div class="dl-item"><span class="dl-icon">📄</span><div><div class="dl-name">Manual_Welding_Procedure.docx</div><div class="dl-size">14 pp · 4.200 token</div></div></div>
+        <div class="dl-item"><span class="dl-icon">📄</span><div><div class="dl-name">Safety_Data_Sheet_EN.pdf</div><div class="dl-size">6 pp · 1.800 token</div></div></div>
+        <div class="dl-item"><span class="dl-icon">📄</span><div><div class="dl-name">Supplier_Agreement_EN.docx</div><div class="dl-size">5 pp · 2.100 token</div></div></div>
+        <div class="dl-item"><span class="dl-icon">📄</span><div><div class="dl-name">Technical_Spec_Laser_Weld.pdf</div><div class="dl-size">8 pp · 2.600 token</div></div></div>
+        <div class="dl-item"><span class="dl-icon">📧</span><div><div class="dl-name">Email: "New welding procedure"</div><div class="dl-size">1 p · 420 token</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STEP 2 ===== -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">2</span>
+    <span class="s-title">Claude traduce i documenti con glossario aziendale</span>
+    <span class="s-badge badge-glossary">📖 GLOSSARIO</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Prima di tradurre, Claude analizza tutti i documenti per estrarre la terminologia tecnica. Poi applica un glossario coerente su tutti i file.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude traduce...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Traduci tutti e 5 i documenti in italiano. Regole:<br>
+          1) Mantieni esattamente la formattazione (grassetti, elenchi, titoli, tabelle)<br>
+          2) I termini tecnici vanno tradotti ma con l'originale EN tra parentesi alla prima occorrenza<br>
+          3) Nomi propri, acronimi e marchi restano in inglese<br>
+          4) Tono professionale, coerente su tutti i documenti<br>
+          5) Prima analizza tutti i testi e crea un glossario dei termini chiave»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude analizza la terminologia ───────────────────</span></div>
+          <div class="ct-result">📖 Analisi terminologica su 5 documenti...</div>
+          <div class="ct-result">   → Estratti 47 termini tecnici ricorrenti</div>
+          <div class="ct-result">   → Generato glossario provvisorio</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+        </div>
+      </div>
+
+      <!-- glossary preview -->
+      <div class="glossary-box">
+        <div class="gb-head">📖 Glossario terminologico generato da Claude</div>
+        <div class="gb-body">
+          <div class="glossary-grid">
+            <div class="gg-item"><span class="gg-en">welding procedure</span><br><span class="gg-it">procedura di saldatura</span></div>
+            <div class="gg-item"><span class="gg-en">heat-affected zone (HAZ)</span><br><span class="gg-it">zona termicamente alterata (HAZ)</span></div>
+            <div class="gg-item"><span class="gg-en">filler material</span><br><span class="gg-it">materiale d'apporto</span></div>
+            <div class="gg-item"><span class="gg-en">non-destructive testing</span><br><span class="gg-it">controllo non distruttivo (NDT)</span></div>
+            <div class="gg-item"><span class="gg-en">welding procedure specification (WPS)</span><br><span class="gg-it">specifica di procedura di saldatura (WPS)</span></div>
+            <div class="gg-item"><span class="gg-en">preheat temperature</span><br><span class="gg-it">temperatura di preriscaldo</span></div>
+            <div class="gg-item"><span class="gg-en">interpass temperature</span><br><span class="gg-it">temperatura tra passate</span></div>
+            <div class="gg-item"><span class="gg-en">shielding gas</span><br><span class="gg-it">gas di protezione</span></div>
+            <div class="gg-item"><span class="gg-en">weld defect</span><br><span class="gg-it">difetto di saldatura</span></div>
+            <div class="gg-item"><span class="gg-en">procedure qualification record (PQR)</span><br><span class="gg-it">certificato di qualifica di procedura (PQR)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <h4>💡 Coerenza terminologica</h4>
+        <p>Traducendo 5 documenti insieme, Claude si accorge se un termine ricorre in più file e lo traduce allo stesso modo ovunque. È il vantaggio del <strong>contesto unico</strong> rispetto a tradurre un file alla volta.</p>
+      </div>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude traduce...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-info">┌─ Traduzione in corso ──────────────────────────────</span></div>
+          <div class="ct-result">📝 Traduzione 1/5: <span class="ct-file">Manual_Welding_Procedure.docx</span> → <span class="ct-file">Manuale_Procedura_Saldatura.docx</span></div>
+          <div class="ct-result">   <span class="ct-done">✔ Fatto.</span> Formattazione preservata: 3 titoli, 2 tabelle, 12 elenchi</div>
+          <div class="ct-result">📝 Traduzione 2/5: <span class="ct-file">Safety_Data_Sheet_EN.pdf</span> → <span class="ct-file">Scheda_Dati_Sicurezza_IT.pdf</span></div>
+          <div class="ct-result">   <span class="ct-done">✔ Fatto.</span> Tabella dati chimici tradotta, unità di misura preservate</div>
+          <div class="ct-result">📝 Traduzione 3/5: <span class="ct-file">Supplier_Agreement_EN.docx</span> → <span class="ct-file">Contratto_Fornitore_IT.docx</span></div>
+          <div class="ct-result">   <span class="ct-done">✔ Fatto.</span> Clausole legali tradotte, note a piè di pagina preservate</div>
+          <div class="ct-result">📝 Traduzione 4/5: <span class="ct-file">Technical_Spec_Laser_Weld.pdf</span> → <span class="ct-file">Specifica_Tecnica_Saldatura_Laser.docx</span></div>
+          <div class="ct-result">   <span class="ct-done">✔ Fatto.</span> Specifiche numeriche e tolleranze preservate esattamente</div>
+          <div class="ct-result">📝 Traduzione 5/5: corpo email → <span class="ct-file">Comunicazione_Nuova_Procedura_Saldatura.txt</span></div>
+          <div class="ct-result">   <span class="ct-done">✔ Fatto.</span> Tono colloquiale professionale preservato</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ Tutti e 5 i documenti tradotti e salvati in D:\Sistec\Qualità\IT\</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STEP 3: Comparazione EN/IT ===== -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">3</span>
+    <span class="s-title">Vedi il risultato: originale vs traduzione</span>
+    <span class="s-badge badge-file">📄 ANTEPRIMA</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Ecco un estratto del <strong>Manuale Procedura di Saldatura</strong>: originale inglese e traduzione italiana affiancate. Nota come la formattazione (grassetti, elenchi) è identica e i termini tecnici hanno il riferimento EN tra parentesi.</p>
+
+      <div class="doc-compare">
+        <div class="dc-side dc-en">
+          <div class="dc-head">🇬🇧 Originale EN</div>
+          <div class="dc-body">
+            <strong>1.0 Scope</strong><br>
+            This welding procedure specification (WPS) defines the requirements for <strong>gas metal arc welding (GMAW)</strong> of carbon steel plates. All welding shall be performed by certified welders in accordance with <strong>ISO 15614-1</strong>.
+            <br><br>
+            <strong>1.1 Base Material</strong><br>
+            The base material shall be <strong>S275JR carbon steel</strong> according to EN 10025-2. Minimum thickness: 6 mm. Maximum thickness: 25 mm.
+            <br><br>
+            <strong>1.2 Filler Material</strong><br>
+            Use <strong>ER70S-6</strong> filler metal, diameter 1.2 mm. The shielding gas shall be <strong>Ar + 20% CO₂</strong> at a flow rate of 16–20 L/min.
+          </div>
+        </div>
+        <div class="dc-side dc-it">
+          <div class="dc-head">🇮🇹 Traduzione IT</div>
+          <div class="dc-body">
+            <strong>1.0 Campo di applicazione</strong><br>
+            La presente specifica di procedura di saldatura (WPS) definisce i requisiti per la <strong>saldatura ad arco con gas metallo (GMAW)</strong> di lamiere in acciaio al carbonio. Tutte le saldature devono essere eseguite da saldatori certificati secondo la <strong>ISO 15614-1</strong>.
+            <br><br>
+            <strong>1.1 Materiale base</strong><br>
+            Il materiale base deve essere <strong>acciaio al carbonio S275JR</strong> secondo EN 10025-2. Spessore minimo: 6 mm. Spessore massimo: 25 mm.
+            <br><br>
+            <strong>1.2 Materiale d'apporto</strong><br>
+            Utilizzare metallo d'apporto <strong>ER70S-6</strong>, diametro 1,2 mm. Il gas di protezione (shielding gas) deve essere <strong>Ar + 20% CO₂</strong> con portata di 16–20 L/min.
+          </div>
+        </div>
+      </div>
+
+      <p style="max-width:none;color:var(--ink-soft);margin-top:12px"><strong>Cosa notare:</strong> formato identico (titoli, grassetti, numeri), termini tecnici tradotti con EN tra parentesi alla prima occorrenza, acronimi (GMAW, WPS, ISO) preservati, unità di misura (mm, L/min) non tradotte.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STEP 4: Report qualità ===== -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">4</span>
+    <span class="s-title">Report di qualità e pacchetto finale</span>
+    <span class="s-badge badge-file">📊 REPORT</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Al termine, Claude produce anche un report di qualità che documenta ogni scelta traduttiva e segnala eventuali ambiguità.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude finalizza...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Ora fammi un report qualità della traduzione: elenca i 5 file tradotti, quanti token per ciascuno, termini tecnici gestiti con glossario, e segnala eventuali punti ambigui che andrebbero verificati da un esperto.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude genera report ──────────────────────────────</span></div>
+          <div class="ct-result">📊 Creato: <span class="ct-file">Report_Qualità_Traduzione.md</span></div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ Pacchetto completo salvato in D:\Sistec\Qualità\IT\</span></div>
+        </div>
+      </div>
+
+      <div class="result-box" style="margin:12px 0">
+        <strong>Report qualità — estratto</strong>
+        <table class="compact-table" style="margin-top:6px">
+          <thead><tr><th>File</th><th>Token EN</th><th>Token IT</th><th>Diff %</th><th>Termini glossario</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>Manuale_Procedura_Saldatura.docx</td><td>4.200</td><td>4.580</td><td>+9%</td><td>18</td><td>—</td></tr>
+            <tr><td>Scheda_Dati_Sicurezza_IT.pdf</td><td>1.800</td><td>1.920</td><td>+7%</td><td>11</td><td>⚠ Verificare valori limite esposizione (normativa IT)</td></tr>
+            <tr><td>Contratto_Fornitore_IT.docx</td><td>2.100</td><td>2.310</td><td>+10%</td><td>7</td><td>⚠ Verificare clausole con ufficio legale IT</td></tr>
+            <tr><td>Specifica_Tecnica_Saldatura_Laser.docx</td><td>2.600</td><td>2.780</td><td>+7%</td><td>15</td><td>—</td></tr>
+            <tr><td>Comunicazione_Nuova_Procedura_Saldatura.txt</td><td>420</td><td>450</td><td>+7%</td><td>4</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p style="max-width:none;margin:8px 0 0;font-size:13px;color:var(--ink-soft)"><strong>Struttura pacchetto:</strong> Documenti/IT/ ╿ Manuale_Procedura_Saldatura.docx ╿ Scheda_Dati_Sicurezza_IT.pdf ╿ Contratto_Fornitore_IT.docx ╿ Specifica_Tecnica_Saldatura_Laser.docx ╿ Comunicazione_Nuova_Procedura_Saldatura.txt ╿ Report_Qualità_Traduzione.md</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STEP 5: Follow-up ===== -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">5</span>
+    <span class="s-title">Follow-up: correzioni e ottimizzazioni</span>
+    <span class="s-badge badge-cowork">🔄 ITERA</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">La traduzione non è mai perfetta al primo tentativo. Con Claude in Cowork, correggi con prompt mirati senza ripartire da zero.</p>
+
+      <div class="glossary-box">
+        <div class="gb-head">Prompt di correzione comuni</div>
+        <div class="gb-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Su un documento specifico</div><div style="font-size:13px;color:var(--ink-soft)">«Nel Manuale_Procedura_Saldatura.docx, paragrafo 3.2, "weld bead" è stato tradotto "cordone di saldatura" ma in officina si dice "corda". Correggi solo quello.»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Globale su tutti i file</div><div style="font-size:13px;color:var(--ink-soft)">«In tutti i documenti, sostituisci "gas di protezione" con "gas schermante" — è il termine che usiamo nelle procedure interne.»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Aggiungere note</div><div style="font-size:13px;color:var(--ink-soft)">«In ogni documento, alla prima occorrenza di ISO 15614-1, aggiungi nota a piè di pagina: "equivalente alla UNI EN ISO 15614-1".»</div></div>
+            <div><div style="font-weight:600;font-size:13px;margin-bottom:4px">Cambio formato output</div><div style="font-size:13px;color:var(--ink-soft)">«Il contratto tradotto deve essere in PDF, non DOCX. Mantieni la stessa impaginazione.»</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>💡 Ciclo agentico in azione</h4>
+        <p>Non serve ricominciare: dai un prompt di correzione mirato, Claude applica la modifica solo dove serve e verifica il risultato. <strong>Correggi nel prompt, non nel file.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4D RECAP ===== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>I 4D in questo workflow</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>D</th><th>Nella demo di traduzione</th></tr></thead>
+    <tbody>
+      <tr><td><b>Delega</b></td><td>Claude trova 5 file sparsi, li traduce tutti, crea glossario e report qualità. Tu non apri un file.</td></tr>
+      <tr><td><b>Descrizione</b></td><td>Le regole precise nel prompt (formattazione, glossario, tono) determinano la qualità del risultato.</td></tr>
+      <tr><td><b>Discernimento</b></td><td>Leggi il report qualità, verifichi le segnalazioni, decidi se le traduzioni sono pronte o servono correzioni.</td></tr>
+      <tr><td><b>Diligenza</b></td><td>Documento tradotto ≠ documento legalmente valido. Claude segnala dove serve verifica umana (contratto, normativa IT).</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <span>Sistec · AiFormation — demo Cowork traduzione multi-documento</span>
+  <span><a href="demo-cowork-fornitori.html">← Valutazione fornitori</a> · <a href="demo-cowork-marketing.html">Strategia marketing →</a></span>
+</footer>
+
+</div>
+
+<script>
+function toggleStep(el){
+  el.classList.toggle('open');
+  var body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+document.getElementById('themebtn').addEventListener('click',function(){
+  var root=document.documentElement;
+  var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+  root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+});
+</script>
+</body>
+</html>

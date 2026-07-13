@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo Cowork: project management agentico</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+:root{--cowork-bg:#1a1a2e;--cowork-surface:#16213e;--cowork-accent:#e94560;--cowork-text:#eaeaea;--cowork-muted:#8a8aa0;--cowork-border:#2a2a4a}
+
+.cw-stage{margin:20px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.cws-head{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);transition:background .15s}
+:root[data-theme="dark"] .cws-head{background:rgba(255,255,255,.04)}
+.cws-head:hover{background:var(--accent-wash)}
+.cws-head .s-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+.cws-head .s-title{flex:1;font-weight:600;font-size:15px}
+.cws-head .s-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-cowork{background:var(--accent-wash);color:var(--accent-dark);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge-plan{background:#d4edda;color:#155724;border:1px solid #b8dfc6}
+.badge-risk{background:#fff3cd;color:#856404;border:1px solid #e8d9a2}
+.badge-file{background:#d1ecf1;color:#0c5460;border:1px solid #b6dce3}
+.badge-meeting{background:#e8d5f5;color:#6a3d8a;border:1px solid #d0b0e8}
+:root[data-theme="dark"] .badge-plan{background:#1e3a2a;color:#8fd9a8;border-color:#2a5a3a}
+:root[data-theme="dark"] .badge-risk{background:#3a3016;color:#e8d179;border-color:#5a4a2a}
+:root[data-theme="dark"] .badge-file{background:#1a3a3f;color:#8fd1e0;border-color:#2a5a60}
+:root[data-theme="dark"] .badge-meeting{background:#2a1a3f;color:#c99ee8;border-color:#4a2a6a}
+.cws-head .s-arrow{font-size:14px;color:var(--muted);transition:transform .2s;flex:none}
+.cws-head.open .s-arrow{transform:rotate(90deg)}
+.cws-body{padding:0;display:none}
+.cws-body.open{display:block}
+.cws-content{padding:18px 20px}
+
+.cowork-term{border-radius:8px;overflow:hidden;margin:12px 0;font-family:var(--mono);font-size:13px;line-height:1.6;border:1px solid var(--border)}
+.cowork-term .ct-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-dot{width:10px;height:10px;border-radius:50%}
+.cowork-term .ct-dot.r{background:#ff5f56}
+.cowork-term .ct-dot.y{background:#ffbd2e}
+.cowork-term .ct-dot.g{background:#27c93f}
+.cowork-term .ct-title{font-size:12px;color:var(--cowork-muted);margin-left:6px}
+.cowork-term .ct-body{padding:14px 16px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-prompt{color:var(--cowork-accent);font-weight:700}
+.cowork-term .ct-info{color:var(--cowork-muted)}
+.cowork-term .ct-result{color:#7ec8e3;margin:6px 0}
+.cowork-term .ct-file{color:#f5d579}
+.cowork-term .ct-done{color:#27c93f;font-weight:700}
+.cowork-term .ct-warn{color:#ffbd2e}
+
+.content-preview{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:12px 0;background:var(--card)}
+.content-preview .cp-head{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+:root[data-theme="dark"] .content-preview .cp-head{background:rgba(255,255,255,.04)}
+.content-preview .cp-body{padding:14px 16px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
+.content-preview .cp-body strong{color:var(--ink)}
+.content-preview .cp-body h4{margin:0 0 4px;color:var(--ink);font-size:16px}
+
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:12px 0}
+.risk-card{border:1px solid var(--border);border-radius:6px;padding:12px 14px;background:var(--card);transition:box-shadow .15s;border-left:4px solid var(--border)}
+.risk-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.risk-card.high{border-left-color:#bf432c}
+.risk-card.med{border-left-color:#b7791f}
+.risk-card.low{border-left-color:#2f7d5b}
+.risk-card .rc-id{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 2px}
+.risk-card .rc-risk{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.risk-card .rc-mit{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+.risk-card .rc-tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:4px;margin-top:5px;font-weight:600}
+.tag-high{background:#f8d7da;color:#721c24}
+.tag-med{background:#fff3cd;color:#856404}
+.tag-low{background:#d4edda;color:#155724}
+:root[data-theme="dark"] .tag-high{background:#3e1a1a;color:#e88}
+:root[data-theme="dark"] .tag-med{background:#3a3016;color:#e8d179}
+:root[data-theme="dark"] .tag-low{background:#1e3a2a;color:#8fd9a8}
+
+.gantt-mini{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:12px 0;background:var(--card)}
+.gantt-mini .gm-head{display:flex;padding:6px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted-soft)}
+.gantt-mini .gm-head .gm-task{flex:0 0 200px;padding-left:10px}
+.gantt-mini .gm-head .gm-months{flex:1;display:flex}
+.gantt-mini .gm-head .gm-months span{flex:1;text-align:center}
+.gantt-mini .gm-row{display:flex;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;align-items:center}
+.gantt-mini .gm-row:last-child{border-bottom:none}
+.gantt-mini .gm-row .gm-task{flex:0 0 200px;padding-left:10px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gantt-mini .gm-row .gm-months{flex:1;display:flex;gap:2px;padding:0 4px}
+.gantt-mini .gm-row .gm-bar{height:18px;border-radius:3px;font-size:9px;color:#fff;display:flex;align-items:center;padding:0 4px;font-weight:600;font-family:var(--mono);white-space:nowrap;overflow:hidden}
+
+.final-dash{border:2px solid var(--accent);border-radius:10px;overflow:hidden;margin:16px 0}
+.final-dash .fd-head{background:var(--accent);color:#fff;padding:12px 18px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
+.final-dash .fd-head small{font-weight:400;opacity:.8;font-size:13px}
+.final-dash .fd-body{padding:18px}
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.kpi-card{flex:1;min-width:130px;border:1px solid var(--border);border-radius:6px;padding:12px 14px;text-align:center;background:var(--card)}
+.kpi-card .kc-val{font-size:28px;font-weight:700;color:var(--accent-dark)}
+.kpi-card .kc-label{font-size:11px;color:var(--muted-soft);margin-top:4px;font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · demo Cowork · project management agentico</p>
+  <h1>Gestione progetto: da note sparse a dashboard complete</h1>
+  <p class="lede">Demo del flusso completo in <strong>Claude Cowork (desktop)</strong>: Claude parte da email, appunti e verbali sparsi, costruisce WBS e cronogramma, analizza i rischi, genera report per la direzione e pubblica una dashboard di progetto live.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>Modalità</b> · Cowork (desktop)</span>
+    <span class="chip"><b>Ciclo</b> · raccogli → pianifica → analizza → report</span>
+    <span class="chip"><b>Output</b> · WBS + Gantt + risk matrix + dashboard</span>
+    <span class="chip">20–30 minuti</span>
+  </div>
+</header>
+
+<dl class="sig">
+  <dt>Scenario</dt>
+  <dd>Sei il <strong>project manager</strong> dell'iniziativa <strong>AiFormation</strong>. Hai appunti sparsi, email col team, un verbale del kickoff e idee non strutturate. Claude ti aiuta a trasformare tutto in un piano di progetto solido: WBS, cronogramma, analisi rischi, report e dashboard.</dd>
+  <dt>Cosa vedrai</dt>
+  <dd>Il <strong>ciclo PM agentico</strong>: Claude raccoglie il materiale, struttura il progetto, identifica rischi e produce deliverable pronti per lo steering committee.</dd>
+</dl>
+
+<!-- ================================================================== -->
+<!-- STEP 1: Raccolta e struttura -->
+<div class="cw-stage">
+  <div class="cws-head open" onclick="toggleStep(this)">
+    <span class="s-num">1</span>
+    <span class="s-title">Claude raccoglie materiale e costruisce la WBS</span>
+    <span class="s-badge badge-cowork">📡 MCP</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body open">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Con il connettore MCP per Microsoft 365, Claude legge email, chat Teams, verbali e documenti senza che tu apra nulla.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude Code — cowork@Sistec</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu scrivi:</span></div>
+          <div>«Nel progetto AiFormation ho materiale sparso: email del kickoff, chat Teams con decisioni, verbali riunioni in D:\Sistec\PM\AiFormation\ e la presentazione approvata dalla direzione. Leggi tutto e costruiscimi:
+1) La WBS (Work Breakdown Structure) — elenco di tutte le attività raggruppate per fase
+2) Una stima giorni/uomo per ogni attività
+3) Le dipendenze tra attività
+Fammi un documento strutturato.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude raccoglie e struttura ──────────────────────</span></div>
+          <div class="ct-result">📧 Lette 12 email nel thread "Progetto AiFormation — kickoff"</div>
+          <div class="ct-result">💬 Letta chat Teams "PM AiFormation" (34 messaggi)</div>
+          <div class="ct-result">📄 Letto verbale: Kickoff_2026-06-15.docx (4 pp)</div>
+          <div class="ct-result">📄 Letta presentazione: AiFormation_Project_Charter.pptx (18 slide)</div>
+          <div class="ct-result">📄 Letto file: Risorse_disponibili.xlsx</div>
+          <div class="ct-result">📊 Generata WBS con 4 fasi, 18 attività, 3 milestone</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ WBS completata. Totale stimato: 285 giorni/uomo.</span></div>
+        </div>
+      </div>
+
+      <div class="result-box" style="margin:12px 0">
+        <strong>📋 WBS — AiFormation</strong>
+        <table class="compact-table" style="margin-top:8px">
+          <thead><tr><th>Cod.</th><th>Attività</th><th>Gg/uomo</th><th>Dipende da</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td><b>1.0</b></td><td><b>Setup fondazioni</b></td><td><b>—</b></td><td>—</td><td>Fase 1</td></tr>
+            <tr><td>1.1</td><td style="padding-left:20px">Definizione requisiti formativi</td><td>20</td><td>—</td><td>Coinvolge HR + direzione</td></tr>
+            <tr><td>1.2</td><td style="padding-left:20px">Assessment competenze interne</td><td>15</td><td>1.1</td><td>Questionario a 50 operatori</td></tr>
+            <tr><td>1.3</td><td style="padding-left:20px">Selezione tool AI (Claude, Copilot, ecc.)</td><td>10</td><td>1.1</td><td>Prove tecniche con 3 fornitori</td></tr>
+            <tr><td>1.4</td><td style="padding-left:20px">Setup infrastruttura IT</td><td>25</td><td>1.3</td><td>Licenze, account, sicurezza</td></tr>
+            <tr><td style="border-top:1px solid var(--border)"><b>2.0</b></td><td style="border-top:1px solid var(--border)"><b>Percorso operatore</b></td><td><b>—</b></td><td>—</td><td>Fase 2</td></tr>
+            <tr><td>2.1</td><td style="padding-left:20px">Progettazione modulo base AI</td><td>30</td><td>1.2, 1.4</td><td>Contenuti, esercizi, demo</td></tr>
+            <tr><td>2.2</td><td style="padding-left:20px">Erogazione pilota (10 operatori)</td><td>25</td><td>2.1</td><td>2 settimane full immersion</td></tr>
+            <tr><td>2.3</td><td style="padding-left:20px">Revisione contenuti post-pilota</td><td>10</td><td>2.2</td><td>Feedback raccolti</td></tr>
+            <tr><td style="border-top:1px solid var(--border)"><b>3.0</b></td><td style="border-top:1px solid var(--border)"><b>Percorso tecnico/manager</b></td><td><b>—</b></td><td>—</td><td>Fase 3</td></tr>
+            <tr><td>3.1</td><td style="padding-left:20px">Progettazione modulo AI agent</td><td>35</td><td>2.1</td><td>Agent, automation, MCP</td></tr>
+            <tr><td>3.2</td><td style="padding-left:20px">Casi studio interni (acquisti, qualità)</td><td>20</td><td>1.3</td><td>Documentazione workflow reali</td></tr>
+            <tr><td>3.3</td><td style="padding-left:20px">Erogazione modulo manager</td><td>20</td><td>3.1, 3.2</td><td>5 mezze giornate</td></tr>
+            <tr><td style="border-top:1px solid var(--border)"><b>4.0</b></td><td style="border-top:1px solid var(--border)"><b>Go-live e scaling</b></td><td><b>—</b></td><td>—</td><td>Fase 4</td></tr>
+            <tr><td>4.1</td><td style="padding-left:20px">Erogazione full a tutti i reparti</td><td>50</td><td>2.3, 3.3</td><td>45 persone in 4 gruppi</td></tr>
+            <tr><td>4.2</td><td style="padding-left:20px">Monitoraggio e KPI</td><td>15</td><td>4.1</td><td>Survey a 30-60-90 giorni</td></tr>
+            <tr><td>4.3</td><td style="padding-left:20px">Report finale direzione</td><td>10</td><td>4.2</td><td>ROI, impatto, lesson learned</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--accent)"><td colspan="2"><b>TOTALE</b></td><td><b>285 gg/u</b></td><td colspan="2"><b>Risorse: 3 FTE · durata: 6 mesi</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 2: Cronogramma -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">2</span>
+    <span class="s-title">Claude genera il cronogramma (Gantt)</span>
+    <span class="s-badge badge-plan">📊 PIANO</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Sulla base della WBS, Claude crea un cronogramma con milestone, sequenze temporali e barre Gantt.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude pianifica...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Con la WBS che hai creato, costruiscimi un cronogramma su 6 mesi (lug-dic 2026). Per ogni attività: data inizio, data fine, durata in settimane. Segna le milestone come traguardi. Evidenzia il percorso critico.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude costruisce il Gantt ────────────────────────</span></div>
+          <div class="ct-result">📊 Generato cronogramma: 6 mesi, 18 attività, 4 fasi, 3 milestone</div>
+          <div class="ct-result">🔴 Percorso critico identificato: 1.1 → 1.2 → 2.1 → 2.2 → 2.3 → 4.1</div>
+          <div class="ct-result">📁 Creato: <span class="ct-file">Cronogramma_AiFormation.xlsx</span> (foglio Gantt + calendario)</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ Cronogramma pronto. Durata: 24 settimane. Fine prevista: 31/12/2026.</span></div>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>Gantt generato da Claude</h4>
+        <p>Anteprima del cronogramma. Le barre mostrano la sequenza delle attività su 6 mesi. <strong>🔴 = percorso critico</strong> (attività che non possono slittare senza allungare il progetto).</p>
+      </div>
+
+      <div class="gantt-mini">
+        <div class="gm-head">
+          <span class="gm-task">Attività</span>
+          <div class="gm-months">
+            <span>Lug</span><span>Ago</span><span>Set</span><span>Ott</span><span>Nov</span><span>Dic</span>
+          </div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="color:var(--muted-soft);font-size:11px">Fase 1 · Setup</span>
+          <div class="gm-months"></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">1.1 Requisiti formativi</span>
+          <div class="gm-months"><div class="gm-bar" style="width:16%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">1.2 Assessment competenze</span>
+          <div class="gm-months"><div class="gm-bar" style="width:14%;margin-left:16%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">1.3 Selezione tool AI</span>
+          <div class="gm-months"><div class="gm-bar" style="width:10%;margin-left:16%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">1.4 Setup infrastruttura</span>
+          <div class="gm-months"><div class="gm-bar" style="width:20%;margin-left:26%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row" style="background:var(--accent-wash)">
+          <span class="gm-task" style="font-size:11px">🏁 Milestone: Setup completato</span>
+          <div class="gm-months" style="color:var(--accent-dark);font-size:11px;font-weight:600">🔸 Metà agosto</div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="color:var(--muted-soft);font-size:11px">Fase 2 · Percorso operatore</span>
+          <div class="gm-months"></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">2.1 Progettazione modulo base</span>
+          <div class="gm-months"><div class="gm-bar" style="width:22%;margin-left:30%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">2.2 Erogazione pilota</span>
+          <div class="gm-months"><div class="gm-bar" style="width:16%;margin-left:52%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">2.3 Revisione post-pilota</span>
+          <div class="gm-months"><div class="gm-bar" style="width:10%;margin-left:68%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row" style="background:var(--accent-wash)">
+          <span class="gm-task" style="font-size:11px">🏁 Milestone: Pilota validato</span>
+          <div class="gm-months" style="color:var(--accent-dark);font-size:11px;font-weight:600">🔸 Metà ottobre</div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="color:var(--muted-soft);font-size:11px">Fase 3 · Percorso tecnico</span>
+          <div class="gm-months"></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">3.1 Progettazione AI agent</span>
+          <div class="gm-months"><div class="gm-bar" style="width:24%;margin-left:52%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">3.2 Casi studio interni</span>
+          <div class="gm-months"><div class="gm-bar" style="width:14%;margin-left:56%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">3.3 Erogazione manager</span>
+          <div class="gm-months"><div class="gm-bar" style="width:14%;margin-left:76%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row" style="background:var(--accent-wash)">
+          <span class="gm-task" style="font-size:11px">🏁 Milestone: Tutti formati</span>
+          <div class="gm-months" style="color:var(--accent-dark);font-size:11px;font-weight:600">🔸 Fine novembre</div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="color:var(--muted-soft);font-size:11px">Fase 4 · Go-live</span>
+          <div class="gm-months"></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">4.1 Erogazione full</span>
+          <div class="gm-months"><div class="gm-bar" style="width:30%;margin-left:78%;background:var(--accent-dark)">🔴</div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">4.2 Monitoraggio KPI</span>
+          <div class="gm-months"><div class="gm-bar" style="width:14%;margin-left:108%;background:var(--accent)"></div></div>
+        </div>
+        <div class="gm-row">
+          <span class="gm-task" style="padding-left:20px">4.3 Report finale</span>
+          <div class="gm-months"><div class="gm-bar" style="width:10%;margin-left:120%;background:var(--accent)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 3: Risk analysis -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">3</span>
+    <span class="s-title">Claude analizza i rischi del progetto</span>
+    <span class="s-badge badge-risk">⚠️ RISCHI</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Claude analizza il piano e identifica i rischi con mitigazioni, probabilità e impatto.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude analizza i rischi...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Sul piano che hai costruito, analizza i rischi. Per ciascuno: descrizione, probabilità (alta/media/bassa), impatto, mitigazione proposta. Classificali per priorità e crea una risk matrix.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude valuta i rischi ────────────────────────────</span></div>
+          <div class="ct-result">⚠️ Identificati 10 rischi su 4 categorie (tecnici, organizzativi, risorse, esterni)</div>
+          <div class="ct-result">📊 Risk matrix generata: 2 critici, 4 medi, 4 bassi</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ Risk assessment completato. 10 rischi, 2 critici con mitigazione immediata.</span></div>
+        </div>
+      </div>
+
+      <div class="risk-grid">
+        <div class="risk-card high">
+          <div class="rc-id">R-01 · Critico</div>
+          <div class="rc-risk">Resistenza degli operatori all'AI</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Coinvolgere 2 "campioni" per reparto nel pilota, comunicazione interna che l'AI supporta, non sostituisce.</div>
+          <span class="cc-tag tag-high">Prob: Alta · Imp: Alto</span>
+        </div>
+        <div class="risk-card high">
+          <div class="rc-id">R-02 · Critico</div>
+          <div class="rc-risk">Slittamento setup IT (dipende da IT esterno)</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Bloccare le date IT a giugno, avere un fornitore di backup per le licenze, ambiente sandbox già a luglio.</div>
+          <span class="cc-tag tag-high">Prob: Media · Imp: Alto</span>
+        </div>
+        <div class="risk-card med">
+          <div class="rc-id">R-03 · Medio</div>
+          <div class="rc-risk">Contenuti formativi non adatti al target</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Assessment iniziale obbligatorio, modulo pilota con revisione prima del full rollout.</div>
+          <span class="cc-tag tag-med">Prob: Media · Imp: Medio</span>
+        </div>
+        <div class="risk-card med">
+          <div class="rc-id">R-04 · Medio</div>
+          <div class="rc-risk">Disponibilità limitata del personale (produzione)</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Pianificare le sessioni nei turni meno impegnativi, moduli brevi (2h), registrazioni per recupero.</div>
+          <span class="cc-tag tag-med">Prob: Alta · Imp: Basso</span>
+        </div>
+        <div class="risk-card med">
+          <div class="rc-id">R-05 · Medio</div>
+          <div class="rc-risk">Obsolescenza rapida dei tool AI</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Aggiornamento semestrale dei moduli, abbonamento flessibile non vincolato a un solo fornitore.</div>
+          <span class="cc-tag tag-med">Prob: Bassa · Imp: Alto</span>
+        </div>
+        <div class="risk-card low">
+          <div class="rc-id">R-06 · Basso</div>
+          <div class="rc-risk">Costi licenze superiori al previsto</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Preventivi bloccati a giugno, budget con riserva del 15%.</div>
+          <span class="cc-tag tag-low">Prob: Bassa · Imp: Medio</span>
+        </div>
+        <div class="risk-card low">
+          <div class="rc-id">R-07 · Basso</div>
+          <div class="rc-risk">Turnover dei formatori interni</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Formare 3 formatori invece di 1, tutta la documentazione su wiki-LLM.</div>
+          <span class="cc-tag tag-low">Prob: Bassa · Imp: Medio</span>
+        </div>
+        <div class="risk-card low">
+          <div class="rc-id">R-08 · Basso</div>
+          <div class="rc-risk">Scarsa adesione ai questionari di feedback</div>
+          <div class="rc-mit"><strong>Mitigazione:</strong> Feedback integrato nell'ultima sessione, non via email. Sondaggio anonimo.</div>
+          <span class="cc-tag tag-low">Prob: Bassa · Imp: Basso</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 4: Report e dashboard -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">4</span>
+    <span class="s-title">Claude genera report per steering e dashboard</span>
+    <span class="s-badge badge-file">📊 REPORT</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Infine Claude produce un report executive per la direzione e una dashboard HTML live con KPI di progetto.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude produce i deliverable finali...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Ottimo. Ora:
+1) Scrivi un report per lo steering committee: stato progetto, WBS, rischi critici, raccomandazioni (1 pagina, tono executive)
+2) Crea una dashboard HTML con KPI: % completamento, rischi per fase, budget, risorse, milestone
+3) Prepara una matrice delle comunicazioni: chi riceve cosa e con che frequenza»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude produce ─────────────────────────────────────</span></div>
+          <div class="ct-result">📄 Report steering: <span class="ct-file">Report_Steering_AiFormation.docx</span></div>
+          <div class="ct-result">📊 Dashboard: <span class="ct-file">Dashboard_PM_AiFormation.html</span></div>
+          <div class="ct-result">📋 Matrice comunicazioni: <span class="ct-file">Matrice_Comunicazioni.xlsx</span></div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-done">✔ 3 deliverable pronti nella cartella D:\Sistec\PM\AiFormation\Deliverable\</span></div>
+        </div>
+      </div>
+
+      <!-- Anteprima report steering -->
+      <div class="content-preview">
+        <div class="cp-head">📋 Report Steering Committee — estratto</div>
+        <div class="cp-body">
+          <h4>Progetto AiFormation · Stato al 15/07/2026</h4>
+          <p style="max-width:none"><strong>Avanzamento:</strong> 12% · in linea col piano (fase setup)</p>
+          <p style="max-width:none"><strong>Rischio principale:</strong> R-02 (setup IT). Abbiamo concordato con IT l'anticipo al 1° luglio. Sandbox già operativa.</p>
+          <p style="max-width:none"><strong>Prossima milestone:</strong> Setup completato (metà agosto) — passaggio obbligato per iniziare la progettazione moduli.</p>
+          <p style="max-width:none"><strong>Raccomandazione:</strong> Nominare i 2 "campioni" per reparto entro luglio, così partecipano al pilota di settembre.</p>
+          <p style="max-width:none;font-size:12px;color:var(--muted-soft)">✂️ Estratto — il report completo è di 1 pagina</p>
+        </div>
+      </div>
+
+      <div class="content-preview">
+        <div class="cp-head">📊 Matrice delle comunicazioni</div>
+        <div class="cp-body">
+          <table class="compact-table" style="margin-top:8px">
+            <thead><tr><th>Destinatario</th><th>Cosa riceve</th><th>Frequenza</th><th>Formato</th></tr></thead>
+            <tbody>
+              <tr><td>Steering Committee</td><td>Stato avanzamento, rischi, decisioni</td><td>Mensile</td><td>Report 1 pag + dashboard</td></tr>
+              <tr><td>Team di progetto</td><td>Attività settimanali, blocchi</td><td>Settimanale</td><td>Email + Teams</td></tr>
+              <tr><td>HR</td><td>Avanzamento formazione, feedback</td><td>Quindicinale</td><td>Report breve</td></tr>
+              <tr><td>IT</td><td>Ticket, tempistiche, criticità</td><td>Ad hoc / sett.</td><td>Teams + ticket system</td></tr>
+              <tr><td>Direzione</td><td>Risultati, ROI, impatto</td><td>Trimestrale</td><td>Presentazione</td></tr>
+              <tr><td>Tutta l'azienda</td><td>Newsletter progetto, milestone</td><td>Mensile</td><td>Email / bacheca</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>Dashboard di progetto generata da Claude</h4>
+        <p>Anteprima con KPI, stato rischi, avanzamento per fase e grafico milestone.</p>
+      </div>
+
+      <div class="final-dash">
+        <div class="fd-head">
+          <span>📊 Dashboard PM — Progetto AiFormation</span>
+          <small>generato da Claude · Sistec PMO</small>
+        </div>
+        <div class="fd-body">
+          <div class="kpi-row">
+            <div class="kpi-card"><div class="kc-val">12%</div><div class="kc-label">Avanzamento</div></div>
+            <div class="kpi-card"><div class="kc-val">6/24</div><div class="kc-label">Settimane completate</div></div>
+            <div class="kpi-card"><div class="kc-val">2</div><div class="kc-label">Rischi critici aperti</div></div>
+            <div class="kpi-card"><div class="kc-val">90%</div><div class="kc-label">Budget disponibile</div></div>
+            <div class="kpi-card"><div class="kc-val">3</div><div class="kc-label">FTE assegnati</div></div>
+          </div>
+
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin:16px 0">
+            <div style="flex:1;min-width:200px">
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Rischi per fase</div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Setup</span><div class="cr-bar" style="width:40%;background:#b7791f">2</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Percorso operatore</span><div class="cr-bar" style="width:60%;background:#bf432c">3</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Percorso tecnico</span><div class="cr-bar" style="width:40%;background:#b7791f">2</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Go-live</span><div class="cr-bar" style="width:60%;background:#2f7d5b">3</div></div></div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Avanzamento per fase</div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Setup</span><div class="cr-bar" style="width:45%;background:var(--accent-dark)">45%</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Percorso operatore</span><div class="cr-bar" style="width:8%;background:var(--accent)">8%</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Percorso tecnico</span><div class="cr-bar" style="width:2%;background:var(--muted-soft)">2%</div></div></div>
+              <div><div class="chart-row"><span class="cr-label" style="width:110px">Go-live</span><div class="cr-bar" style="width:0%;background:var(--muted-soft)">0%</div></div></div>
+            </div>
+          </div>
+
+          <div style="font-weight:700;font-size:15px;margin:16px 0 8px;color:var(--ink)">Stato milestone</div>
+          <table class="compact-table">
+            <thead><tr><th>Milestone</th><th>Data prevista</th><th>Stato</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td>Setup completato</td><td>18/08/2026</td><td><span class="badge badge-mid" style="background:#fff3cd;color:#856404">🟡 In corso</span></td><td>Attività 1.1 completata, 1.2 in corso</td></tr>
+              <tr><td>Pilota validato</td><td>15/10/2026</td><td><span class="badge badge-ok" style="background:#d1ecf1;color:#0c5460">🔵 Pianificato</span></td><td>Dipende da setup IT</td></tr>
+              <tr><td>Tutti formati</td><td>30/11/2026</td><td><span class="badge badge-ok" style="background:#d1ecf1;color:#0c5460">🔵 Pianificato</span></td><td>—</td></tr>
+              <tr><td>Progetto chiuso</td><td>31/12/2026</td><td><span class="badge badge-ok" style="background:#d1ecf1;color:#0c5460">🔵 Pianificato</span></td><td>Report finale + lesson learned</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 5: Verbali e follow-up -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">5</span>
+    <span class="s-title">Follow-up: verbali, action item, varianti</span>
+    <span class="s-badge badge-meeting">📝 RIUNIONI</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Durante il progetto, Claude ti aiuta con i task quotidiani del PM: verbali, action item, comunicazioni.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude supporta il PM...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Prompt utili per il giorno per giorno:</span></div>
+          <div style="margin-top:4px">
+            <div class="ct-result">📝 «Ho la trascrizione della riunione di oggi. Estrai action item, responsabile e scadenza. Fammi il verbale in formato standard Sistec.»</div>
+            <div class="ct-result">📊 «Aggiorna la dashboard con i dati di questa settimana: % completamento passato da 12% a 18%, rischio R-02 chiuso, budget speso 12%»</div>
+            <div class="ct-result">📧 «Scrivi una comunicazione a tutti i partecipanti: aggiornamento sul progetto, milestone raggiunta, prossimi passi. Tono positivo, concreto.»</div>
+            <div class="ct-result">📋 «Fammi il timesheet della settimana per il team: ore spese per attività, confronto con lo stimato, scostamenti.»</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-preview">
+        <div class="cp-head">📝 Verbale riunione — generato da Claude (estratto)</div>
+        <div class="cp-body">
+          <h4>Riunione: Review Setup AiFormation · 14/07/2026</h4>
+          <p style="max-width:none"><strong>Presenti:</strong> M. Manfrin (PM), L. Rossi (IT), G. Bianchi (HR), F. Verdi (Produzione)</p>
+          <p style="max-width:none"><strong>Decisioni:</strong></p>
+          <ul style="font-size:13.5px;color:var(--ink-soft)">
+            <li><strong>✅</strong> Tool AI selezionati: Claude Pro + Copilot M365 — approvati</li>
+            <li><strong>✅</strong> Pilota anticipato alla prima settimana di settembre (era ottobre)</li>
+            <li><strong>⚠️</strong> Da verificare: copertura assicurativa per dati sensibili su cloud</li>
+          </ul>
+          <p style="max-width:none"><strong>Action item:</strong></p>
+          <table class="compact-table" style="margin-top:4px">
+            <thead><tr><th>#</th><th>Cosa</th><th>Chi</th><th>Scadenza</th></tr></thead>
+            <tbody>
+              <tr><td>AI-01</td><td>Attivare licenze Claude Pro (5 posti)</td><td>L. Rossi</td><td>18/07</td></tr>
+              <tr><td>AI-02</td><td>Inviare survey assessment a 50 operatori</td><td>G. Bianchi</td><td>21/07</td></tr>
+              <tr><td>AI-03</td><td>Verificare policy dati con ufficio legale</td><td>M. Manfrin</td><td>25/07</td></tr>
+              <tr><td>AI-04</td><td>Identificare 2 campioni per reparto</td><td>F. Verdi</td><td>28/07</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>💡 Ciclo PM agentico</h4>
+        <p>Claude non sostituisce il PM: automatizza la parte strutturale (WBS, Gantt, rischi, verbali) e libera tempo per le decisioni, le relazioni con gli stakeholder e la gestione del team. <strong>Tu guidi, Claude produce.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- 4D RECAP -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>I 4D in azione</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>D</th><th>In questo workflow</th></tr></thead>
+    <tbody>
+      <tr><td><b>Delega</b></td><td>Claude fa la parte strutturale: WBS, Gantt, risk matrix, report, verbali. Tu mantieni il controllo strategico e le relazioni.</td></tr>
+      <tr><td><b>Descrizione</b></td><td>I prompt sono precisi e contestualizzati: "leggi i materiali in X", "costruisci WBS con stime", "analizza rischi". Ogni prompt produce un deliverable.</td></tr>
+      <tr><td><b>Discernimento</b></td><td>Valuti le stime (285 gg/uomo sono realistici?), i rischi (manca qualcosa?), il cronogramma (le dipendenze sono giuste?). Aggiusti e iteri.</td></tr>
+      <tr><td><b>Diligenza</b></td><td>I dati sensibili (budget, risorse, persone) rimangono nei file aziendali. Claude lavora su documenti autorizzati via MCP, mai su dati condivisi con terzi.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================================================================== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>Perché Cowork è diverso da Chat per il PM</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>Chat (browser)</th><th>Cowork (desktop)</th></tr></thead>
+    <tbody>
+      <tr><td>Devi caricare file uno per uno</td><td>Claude legge cartelle intere, email, chat Teams</td></tr>
+      <tr><td>Output in chat, devi copiare</td><td>Crea file Excel, Word, HTML — salvati nel progetto</td></tr>
+      <tr><td>Non tiene traccia delle versioni</td><td>I deliverable sono file veri, versionabili</td></tr>
+      <tr><td>Perde il contesto su progetti grandi</td><td>Contesto ampio, mantiene coerenza su WBS intera</td></tr>
+      <tr><td>Un deliverable alla volta</td><td>Produce pacchetti: piano + rischi + report + dashboard</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <span>Sistec · AiFormation — demo PM agentico</span>
+  <span><a href="demo-cowork-marketing.html">← Strategia marketing</a> · <a href="claude-101.html">Claude 101 →</a></span>
+</footer>
+
+</div>
+
+<script>
+function toggleStep(el){
+  el.classList.toggle('open');
+  var body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+document.getElementById('themebtn').addEventListener('click',function(){
+  var root=document.documentElement;
+  var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+  root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+});
+</script>
+
+</body>
+</html>

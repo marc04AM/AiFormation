@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo Cowork: valutazione fornitori laser con Claude</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ---- Cowork demo specific ---- */
+:root{--cowork-bg:#1a1a2e;--cowork-surface:#16213e;--cowork-accent:#e94560;--cowork-text:#eaeaea;--cowork-muted:#8a8aa0;--cowork-border:#2a2a4a}
+
+.cw-stage{margin:20px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.cws-head{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);transition:background .15s}
+:root[data-theme="dark"] .cws-head{background:rgba(255,255,255,.04)}
+.cws-head:hover{background:var(--accent-wash)}
+.cws-head .s-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700}
+.cws-head .s-title{flex:1;font-weight:600;font-size:15px}
+.cws-head .s-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:10px;font-weight:600}
+.badge-cowork{background:var(--accent-wash);color:var(--accent-dark);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge-agent{background:#d4edda;color:#155724;border:1px solid #b8dfc6}
+.badge-web{background:#fff3cd;color:#856404;border:1px solid #e8d9a2}
+.badge-file{background:#d1ecf1;color:#0c5460;border:1px solid #b6dce3}
+:root[data-theme="dark"] .badge-agent{background:#1e3a2a;color:#8fd9a8;border-color:#2a5a3a}
+:root[data-theme="dark"] .badge-web{background:#3a3016;color:#e8d179;border-color:#5a4a2a}
+:root[data-theme="dark"] .badge-file{background:#1a3a3f;color:#8fd1e0;border-color:#2a5a60}
+.cws-head .s-arrow{font-size:14px;color:var(--muted);transition:transform .2s;flex:none}
+.cws-head.open .s-arrow{transform:rotate(90deg)}
+.cws-body{padding:0;display:none}
+.cws-body.open{display:block}
+.cws-content{padding:18px 20px}
+
+/* ---- terminal/cowork interface ---- */
+.cowork-term{border-radius:8px;overflow:hidden;margin:12px 0;font-family:var(--mono);font-size:13px;line-height:1.6;border:1px solid var(--border)}
+.cowork-term .ct-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-dot{width:10px;height:10px;border-radius:50%}
+.cowork-term .ct-dot.r{background:#ff5f56}
+.cowork-term .ct-dot.y{background:#ffbd2e}
+.cowork-term .ct-dot.g{background:#27c93f}
+.cowork-term .ct-title{font-size:12px;color:var(--cowork-muted);margin-left:6px}
+.cowork-term .ct-body{padding:14px 16px;background:var(--cowork-bg);color:var(--cowork-text)}
+.cowork-term .ct-prompt{color:var(--cowork-accent);font-weight:700}
+.cowork-term .ct-info{color:var(--cowork-muted)}
+.cowork-term .ct-result{color:#7ec8e3;margin:6px 0}
+.cowork-term .ct-file{color:#f5d579}
+.cowork-term .ct-done{color:#27c93f;font-weight:700}
+
+/* ---- mini dashboard preview ---- */
+.dash-preview{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:12px 0;background:var(--card)}
+.dash-preview .dp-head{padding:10px 16px;background:var(--surface-2,#faf8f5);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;font-family:var(--mono)}
+:root[data-theme="dark"] .dash-preview .dp-head{background:rgba(255,255,255,.04)}
+.dash-preview .dp-body{padding:16px}
+
+/* ---- chart grid for the 10 insights ---- */
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:12px 0}
+.insight-card{border:1px solid var(--border);border-radius:6px;padding:12px 14px;background:var(--card);transition:box-shadow .15s}
+.insight-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.insight-card .ic-num{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.insight-card .ic-text{font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin:0 0 8px}
+.insight-card .ic-text strong{color:var(--ink)}
+
+/* ---- bar chart (inline SVG) ---- */
+.chart-row{display:flex;align-items:center;gap:8px;margin:3px 0;font-size:12.5px}
+.chart-row .cr-label{width:90px;flex:none;text-align:right;font-family:var(--mono);color:var(--ink-soft)}
+.chart-row .cr-bar{height:18px;border-radius:3px;transition:width .4s;min-width:4px;display:flex;align-items:center;padding:0 6px;color:#fff;font-size:11px;font-weight:600;font-family:var(--mono)}
+.chart-comp{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0}
+@media(max-width:640px){.chart-comp{grid-template-columns:1fr}}
+
+/* ---- mini sparkline ---- */
+.spark{display:flex;align-items:flex-end;gap:3px;height:44px;margin:8px 0}
+.spark .sp-bar{width:16px;border-radius:2px 2px 0 0;min-height:4px;transition:height .3s}
+.spark .sp-lab{font-size:9px;text-align:center;font-family:var(--mono);color:var(--muted-soft);margin-top:2px}
+.final-dash{border:2px solid var(--accent);border-radius:10px;overflow:hidden;margin:16px 0}
+.final-dash .fd-head{background:var(--accent);color:#fff;padding:12px 18px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
+.final-dash .fd-head small{font-weight:400;opacity:.8;font-size:13px}
+.final-dash .fd-body{padding:18px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · demo Cowork · automazione agentica</p>
+  <h1>Da Teams a Excel + dashboard: valutazione fornitori laser</h1>
+  <p class="lede">Demo che mostra il ciclo completo in <strong>Claude Cowork (desktop)</strong>: Claude legge le email da Teams, cerca online, crea un file Excel comparativo e pubblica una pagina HTML con 10 insight e grafici. Tutto in una sessione.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>Modalità</b> · Cowork (desktop)</span>
+    <span class="chip"><b>Ciclo</b> · leggi → cerca → struttura → crea</span>
+    <span class="chip"><b>Output</b> · Excel + HTML + grafici</span>
+    <span class="chip">20–30 minuti</span>
+  </div>
+</header>
+
+<dl class="sig">
+  <dt>Scenario</dt>
+  <dd>Devi valutare 3 fornitori di laser CO₂ 500W. Hai <strong>5 email su Teams</strong> (conversazioni col collega acquisti + allegati), <strong>nessun dato strutturato</strong>. Claude in Cowork mode fa tutto: legge Teams, cerca siti web, produce file pronti.</dd>
+  <dt>Cosa vedrai</dt>
+  <dd>Il <strong>ciclo agentico</strong> applicato a un caso reale da ufficio — ogni step mostra cosa fa Claude, cosa gli chiedi tu, e cosa produce.</dd>
+</dl>
+
+<!-- ================================================================== -->
+<!-- STEP 1: Lettura email Teams -->
+<div class="cw-stage">
+  <div class="cws-head open" onclick="toggleStep(this)">
+    <span class="s-num">1</span>
+    <span class="s-title">Claude legge le email da Teams tramite MCP</span>
+    <span class="s-badge badge-cowork">📡 MCP</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body open">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Con il <strong>connettore MCP per Microsoft 365</strong> (o Graph API), Claude può leggere email, Teams chat e file direttamente dal tuo account — senza che tu debba copia-incollare nulla.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude Code — cowork@Sistec</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu scrivi:</span></div>
+          <div>«Cercami tutte le email e chat Teams degli ultimi 30 giorni che parlano di fornitori di laser CO₂ 500W per robot. Leggi anche gli allegati. Fammi un riassunto.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude inizia a lavorare ─────────────────────────────</span></div>
+          <div class="ct-result">📡 Connessione a Microsoft Graph API...</div>
+          <div class="ct-result">📧 Trovate 6 email nella cartella "Fornitori laser 2026"</div>
+          <div class="ct-result">💬 Letta chat Teams "Acquisti — laser robot" (23 messaggi)</div>
+          <div class="ct-result">📎 Letto allegato: Preventivo_LaserTech_2026.pdf</div>
+          <div class="ct-result">📎 Letto allegato: OptiLasers_Quote_DE.pdf</div>
+          <div class="ct-result">📎 Letto allegato: IndPhotons_Scheda_Tecnica.pdf</div>
+          <div><span class="ct-info">└──────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px"><span class="ct-prompt">▸</span> Claude riassume: «Ho trovato 3 fornitori. Ecco i dati principali estratti da email e allegati...»</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <h4>🔌 Cosa serve</h4>
+        <p>Un server MCP per Microsoft 365 (Graph API) configurato in <code>.mcp.json</code>. Claude si autentica col tuo account e può leggere/ cercare email, chat, file. <strong>Lui legge, tu non devi copiare nulla.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 2: Ricerca siti web -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">2</span>
+    <span class="s-title">Claude cerca i siti web dei fornitori</span>
+    <span class="s-badge badge-web">🌐 WEB</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Una volta estratti i dati base, Claude cerca autonomamente informazioni aggiornate sui siti ufficiali e fonti pubbliche.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude cerca online...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Il tuo prompt successivo:</span></div>
+          <div>«Ora cercami i siti web di ciascun fornitore. Per ognuno: prodotti principali, referenze pubblicate, certificazioni, anni di attività. Cerca anche recensioni o casi studio.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude cerca su web ─────────────────────────────</span></div>
+          <div class="ct-result">🌐 Ricerca: "LaserTech Srl laser CO₂ industriale"</div>
+          <div class="ct-result">   → lasertech.it — 15 anni, certificazioni ISO 9001, 3 casi studio automotive</div>
+          <div class="ct-result">🌐 Ricerca: "OptiLasers GmbH CO₂ laser industrial"</div>
+          <div class="ct-result">   → optimlasers.de — 8 anni, focus su export EU, no referenze italiane</div>
+          <div class="ct-result">🌐 Ricerca: "Industrial Photonics laser CO₂ Fanuc integration"</div>
+          <div class="ct-result">   → indphotonics.com — 22 anni, partner certificato Fanuc, 7 case study, ISO 9001+14001</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ Completato: 3 siti analizzati, 12 pagine esplorate.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 3: Crea Excel comparativo -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">3</span>
+    <span class="s-title">Claude crea il file Excel di confronto</span>
+    <span class="s-badge badge-file">📊 EXCEL</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Con tutti i dati raccolti, Claude genera un file Excel strutturato con formule e formattazione condizionale.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude genera il file...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Con tutti i dati che hai, crea un file Excel con 3 fogli: 1) Confronto fornitori 2) Analisi costi a 5 anni 3) Riepilogo con valutazione pesata. Usa formattazione condizionale: verde per il migliore, rosso per il peggiore.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude genera ─────────────────────────────────────</span></div>
+          <div class="ct-result">📁 Creato: <span class="ct-file">Confronto_Fornitori_Laser.xlsx</span></div>
+          <div class="ct-result">   • Foglio 1: Tabella comparativa (prezzo, SLA, garanzia, referenze, extra)</div>
+          <div class="ct-result">   • Foglio 2: Costo totale a 5 anni (acquisto + manutenzione + fermo macchina stimato)</div>
+          <div class="ct-result">   • Foglio 3: Valutazione pesata (pesi: SLA 40%, costo 25%, garanzia 20%, referenze 15%)</div>
+          <div class="ct-result">   • Formattazione condizionale applicata 🟢🟡🔴</div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ File salvato in D:\Sistec\Acquisti\Confronto_Fornitori_Laser.xlsx</span></div>
+        </div>
+      </div>
+
+      <div class="result-box" style="margin:12px 0;">
+        <strong>Anteprima Foglio 3 — Valutazione pesata</strong>
+        <table class="compact-table" style="margin-top:8px">
+          <thead><tr><th>Criterio</th><th>Peso</th><th>A · LaserTech</th><th>B · OptiLasers</th><th>C · Ind. Photonics</th></tr></thead>
+          <tbody>
+            <tr><td>SLA + supporto locale</td><td>40%</td><td style="background:#fff3cd">7/10 → 2.80</td><td style="background:#f8d7da">4/10 → 1.60</td><td style="background:#d4edda">10/10 → 4.00</td></tr>
+            <tr><td>Costo totale (5 anni)</td><td>25%</td><td style="background:#d4edda">8/10 → 2.00</td><td style="background:#fff3cd">6/10 → 1.50</td><td style="background:#f8d7da">5/10 → 1.25</td></tr>
+            <tr><td>Garanzia</td><td>20%</td><td style="background:#fff3cd">7/10 → 1.40</td><td style="background:#f8d7da">3/10 → 0.60</td><td style="background:#d4edda">10/10 → 2.00</td></tr>
+            <tr><td>Referenze + track record</td><td>15%</td><td style="background:#fff3cd">6/10 → 0.90</td><td style="background:#f8d7da">3/10 → 0.45</td><td style="background:#d4edda">9/10 → 1.35</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--accent)"><td><b>TOTALE</b></td><td><b>100%</b></td><td style="background:#fff3cd"><b>7.10 / 10</b></td><td style="background:#f8d7da"><b>4.15 / 10</b></td><td style="background:#d4edda"><b>8.60 / 10</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- STEP 4: Claude pubblica pagina HTML con 10 insight + grafici -->
+<div class="cw-stage">
+  <div class="cws-head" onclick="toggleStep(this)">
+    <span class="s-num">4</span>
+    <span class="s-title">Claude crea pagina HTML: 10 insight + grafici</span>
+    <span class="s-badge badge-file">📄 HTML</span>
+    <span class="s-arrow">▸</span>
+  </div>
+  <div class="cws-body">
+    <div class="cws-content">
+      <p style="max-width:none;color:var(--ink-soft)">Infine Claude genera una pagina HTML completa con 10 messaggi di sintesi e grafici — pronta da condividere con la direzione.</p>
+
+      <div class="cowork-term">
+        <div class="ct-bar">
+          <span class="ct-dot r"></span><span class="ct-dot y"></span><span class="ct-dot g"></span>
+          <span class="ct-title">Claude pubblica la dashboard...</span>
+        </div>
+        <div class="ct-body">
+          <div><span class="ct-prompt">❯</span> <span class="ct-info"># Tu chiedi:</span></div>
+          <div>«Crea una pagina HTML con 10 insight chiave sui fornitori, con grafici comparativi (barre, radar). Deve essere bella, professionale, pronta per essere condivisa con la direzione. Usa lo stile Sistec.»</div>
+          <div style="margin-top:8px"><span class="ct-info">┌─ Claude crea ──────────────────────────────────────</span></div>
+          <div class="ct-result">📄 Creato: <span class="ct-file">Report_Fornitori_Laser_Direzione.html</span></div>
+          <div><span class="ct-info">└────────────────────────────────────────────────────</span></div>
+          <div style="margin-top:8px;"><span class="ct-done">✔ Aperto nel browser.</span></div>
+        </div>
+      </div>
+
+      <div class="callout key">
+        <h4>Ecco cosa produce Claude — la dashboard live</h4>
+        <p>Qui sotto vedi l'<strong>anteprima</strong> di ciò che Claude genera in autonomia. Tutti i grafici e le insight sono creati da lui, in HTML puro, senza plugin.</p>
+      </div>
+
+      <!-- ========== FINAL DASHBOARD PREVIEW ========== -->
+      <div class="final-dash">
+        <div class="fd-head">
+          <span>📊 Report Valutazione Fornitori Laser CO₂ 500W</span>
+          <small>generato da Claude · Sistec Acquisti</small>
+        </div>
+        <div class="fd-body">
+
+          <!-- overview scores -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+            <div style="flex:1;min-width:120px;border:1px solid var(--border);border-radius:6px;padding:10px 14px;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#27c93f">8.6</div>
+              <div style="font-size:11px;color:var(--muted-soft)">Ind. Photonics ⭐</div>
+            </div>
+            <div style="flex:1;min-width:120px;border:1px solid var(--border);border-radius:6px;padding:10px 14px;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#e8a43a">7.1</div>
+              <div style="font-size:11px;color:var(--muted-soft)">LaserTech</div>
+            </div>
+            <div style="flex:1;min-width:120px;border:1px solid var(--border);border-radius:6px;padding:10px 14px;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#e94a4a">4.2</div>
+              <div style="font-size:11px;color:var(--muted-soft)">OptiLasers</div>
+            </div>
+          </div>
+
+          <!-- 10 INSIGHTS -->
+          <div style="font-weight:700;font-size:15px;margin:16px 0 8px;color:var(--ink)">10 Insight chiave</div>
+          <div class="insight-grid">
+            <div class="insight-card"><div class="ic-num">Insight 1</div><div class="ic-text"><strong>Ind. Photonics vince su SLA</strong> — 2h risposta, 12h sostituzione, magazzino Italia. Il migliore per continuità produttiva.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 2</div><div class="ic-text"><strong>OptiLasers è il più economico</strong> ma il costo nascosto (training + spedizione) lo porta a 11.700€, solo 1.100€ sotto LaserTech.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 3</div><div class="ic-text"><strong>Garanzia: 36 vs 24 vs 12 mesi</strong> — Industrial Photonics offre 3 anni, il doppio di LaserTech e il triplo di OptiLasers.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 4</div><div class="ic-text"><strong>Integrazione Fanuc già pronta</strong> — Solo Ind. Photonics è partner certificato Fanuc. Zero costi di integrazione.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 5</div><div class="ic-text"><strong>Referenze: 7 vs 3 vs 0</strong> — Industrial Photonics ha 7 clienti verificabili. OptiLasers ha solo testimonianze sul sito.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 6</div><div class="ic-text"><strong>Costo 5 anni: la forbice si riduce</strong> — Considerando manutenzione e fermi, la differenza tra C e A scende a ~700€/anno.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 7</div><div class="ic-text"><strong>LaserTech: il compromesso migliore</strong> — Se il budget è rigido sotto 13.000€, è l'opzione più bilanciata: prezzo OK, SLA decente, contact person noto.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 8</div><div class="ic-text"><strong>Nessun fornitore locale</strong> — Tutti e 3 hanno sede fuori regione. Industrial Photonics ha magazzino in Italia (Vicenza).</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 9</div><div class="ic-text"><strong>OptiLasers rischioso per fermo macchina</strong> — SLA 48h da Germania: un guasto = 2 giorni di fermo. A 500€/ora sono 24.000€ di stop non assicurato.</div></div>
+            <div class="insight-card"><div class="ic-num">Insight 10</div><div class="ic-text"><strong>Raccomandazione: Industrial Photonics</strong> — Costo iniziale più alto (14.200€), ma il costo totale a 5 anni è competitivo e i rischi operativi sono i più bassi.</div></div>
+          </div>
+
+          <!-- CHARTS -->
+          <div class="chart-comp">
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Punteggio per criterio</div>
+              <div><div class="chart-row"><span class="cr-label">SLA</span><div class="cr-bar" style="width:100%;background:var(--accent-dark)">10</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Costo (5y)</span><div class="cr-bar" style="width:50%;background:var(--accent)">5</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Garanzia</span><div class="cr-bar" style="width:100%;background:var(--accent-dark)">10</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">Esperienza</span><div class="cr-bar" style="width:90%;background:var(--accent)">9</div></div></div>
+              <div style="margin-top:8px;text-align:right;font-size:11px;color:var(--muted)">Industrial Photonics</div>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Costo totale 5 anni (k€)</div>
+              <div class="spark">
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:28px;background:var(--accent)"></div>
+                  <div class="sp-lab">LaserTech</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:24px;background:#f8d7da"></div>
+                  <div class="sp-lab">OptiLasers</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;flex:1">
+                  <div class="sp-bar" style="height:32px;background:var(--accent-dark)"></div>
+                  <div class="sp-lab">Ind.Photon.</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-around;font-size:11px;color:var(--muted-soft);font-family:var(--mono)">
+                <span>78.5k</span><span style="color:#f8d7da">72.3k</span><span>83.1k</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-comp">
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Confronto punteggi totali</div>
+              <div><div class="chart-row"><span class="cr-label">Ind. Photonics</span><div class="cr-bar" style="width:86%;background:#27c93f">8.6</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">LaserTech</span><div class="cr-bar" style="width:71%;background:#e8a43a">7.1</div></div></div>
+              <div><div class="chart-row"><span class="cr-label">OptiLasers</span><div class="cr-bar" style="width:42%;background:#e94a4a">4.2</div></div></div>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px;margin:0 0 8px">Rapporto qualità/prezzo</div>
+              <div style="font-size:13px;color:var(--ink-soft);line-height:1.6">
+                <p style="max-width:none;margin:0">Ind. Photonics: <strong>0.61 pt/k€</strong> (8.6 / 14.2k)</p>
+                <p style="max-width:none;margin:0">LaserTech: <strong>0.55 pt/k€</strong> (7.1 / 12.8k)</p>
+                <p style="max-width:none;margin:0">OptiLasers: <strong>0.36 pt/k€</strong> (4.2 / 11.7k)</p>
+                <p style="max-width:none;margin:8px 0 0;font-size:12px;color:var(--muted)">Più alto = miglior valore per euro speso</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- 4D RECAP -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>I 4D in azione</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>D</th><th>In questo workflow</th></tr></thead>
+    <tbody>
+      <tr><td><b>Delega</b></td><td>Claude fa tutto: legge Teams, cerca sul web, crea file. Tu decidi cosa fare in ogni step.</td></tr>
+      <tr><td><b>Descrizione</b></td><td>Prompt chiari: "cerca email su X", "crea Excel con 3 fogli", "fai pagina HTML con grafici". Più sei preciso, meglio è.</td></tr>
+      <tr><td><b>Discernimento</b></td><td>Valuti ogni output: i dati estratti dalle email sono corretti? La raccomandazione ha senso? Aggiusti il prompt e ripeti.</td></tr>
+      <tr><td><b>Diligenza</b></td><td>Claude ha accesso a email e dati aziendali → usi un server MCP autorizzato, non condividi dati sensibili con terzi.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================================================================== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§</span><h2>Perché Cowork è diverso da Chat</h2></div>
+  <table class="compact-table">
+    <thead><tr><th>Chat (browser)</th><th>Cowork (desktop)</th></tr></thead>
+    <tbody>
+      <tr><td>Devi copia-incollare tutto</td><td>Claude legge file, email, database direttamente</td></tr>
+      <tr><td>Non può creare file sul tuo PC</td><td>Crea Excel, HTML, PDF — salvati dove vuoi</td></tr>
+      <tr><td>Non naviga il web</td><td>Cerca online, analizza siti, scarica documenti</td></tr>
+      <tr><td>Un passo alla volta</td><td>Esegue sequenze multi-step in autonomia</td></tr>
+      <tr><td>Output solo testo</td><td>Output: file, grafici, codice, report completi</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <span>Sistec · AiFormation — demo Cowork valutazione fornitori</span>
+  <span><a href="demo-cowork-marketing.html">Strategia marketing →</a> · <a href="claude-101.html">← Claude 101</a></span>
+</footer>
+
+</div>
+
+<script>
+function toggleStep(el){
+  el.classList.toggle('open');
+  var body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+document.getElementById('themebtn').addEventListener('click',function(){
+  var root=document.documentElement;
+  var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+  root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+});
+</script>
+
+</body>
+</html>
