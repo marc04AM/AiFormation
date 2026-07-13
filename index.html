@@ -511,6 +511,260 @@ non richiede un progetto infrastrutturale: richiede formazione. Il referente per
   delle skill; al più si conserva una skill con l'invocazione automatica disattivata
   (<code>model-invocation=false</code>) per i pochi casi che devono restare a scatenamento esplicito.</p>
 
+  <figure class="cw-figure">
+    <div class="plate-cap"><b>Interattivo</b><span>Esplora la cartella <code>.claude</code>: cosa vive nel progetto
+      (condiviso, committato) e cosa vive in <code>~/.claude</code> (personale, mai committato). Clicca un file o
+      una cartella per i dettagli. Struttura secondo la <a href="https://code.claude.com/docs/en/claude-directory" target="_blank" rel="noopener">documentazione ufficiale di Claude Code</a>.</span></div>
+    <div class="cw" id="cx" style="padding:14px 16px 16px">
+      <div class="cw-head">
+        <div>
+          <div class="cw-title">Esplora la cartella .claude</div>
+          <div class="cw-sub">Configurazione di progetto (condivisa col team) vs. globale (personale)</div>
+        </div>
+        <div class="cx-tabs">
+          <button type="button" data-root="project">Progetto</button>
+          <button type="button" data-root="global">Globale (~/)</button>
+        </div>
+      </div>
+      <div class="cx-body">
+        <div class="cx-tree cw-scroll" id="cxTree" role="tree" aria-label="Struttura .claude"></div>
+        <div class="cw-detail" id="cxDetail"></div>
+      </div>
+      <div class="cx-legend" id="cxLegend"></div>
+    </div>
+  </figure>
+  <script>
+  (function(){
+    "use strict";
+    var root=document.getElementById('cx'); if(!root) return;
+    function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    var BADGE={
+      committed:{cls:"cx-b-committed",lab:"committato — condiviso via git"},
+      gitignored:{cls:"cx-b-gitignored",lab:"gitignored — escluso da git"},
+      local:{cls:"cx-b-local",lab:"locale — mai in git"},
+      autogen:{cls:"cx-b-autogen",lab:"scritto da Claude in automatico"}
+    };
+    var TREE={
+      project:{label:"tuo-progetto/",children:[
+        {id:"claude-md",label:"CLAUDE.md",type:"file",c:"#6A9BCC",badge:"committed",
+          one:"Istruzioni di progetto, caricate a ogni sessione",
+          desc:"Convenzioni, comandi build e contesto architetturale. Il file più importante che puoi scrivere: dà a Claude le stesse assunzioni della squadra.",
+          tip:"Restaci sotto le 200 righe: sposta il resto in una skill o in una regola path-scoped (§6.4), così si carica solo quando serve.",
+          ex:"# Convenzioni di progetto\n\n## Comandi\n- Build: `npm run build`\n- Test: `npm test`\n\n## Regole\n- Export nominali, mai default\n- Test accanto al sorgente: foo.ts -> foo.test.ts"},
+        {id:"mcp-json",label:".mcp.json",type:"file",c:"#9B7BC4",badge:"committed",
+          one:"Server MCP di progetto, condivisi con la squadra",
+          desc:"Configura i server MCP (accesso a tool esterni: DB, API, browser) usati da tutto il team. I server solo tuoi vanno in ~/.claude.json, scope utente.",
+          tip:"Usa riferimenti a variabili d'ambiente per i secret — mai un token in chiaro nel file."},
+        {id:"worktreeinclude",label:".worktreeinclude",type:"file",c:"#8FA876",badge:"committed",
+          one:"File gitignored da copiare nei nuovi worktree",
+          desc:"I worktree sono checkout puliti: file non tracciati come .env non ci sono di default. Qui elenchi (sintassi .gitignore) cosa copiare comunque."},
+        {id:"dot-claude",label:".claude/",type:"folder",c:"#cc785c",
+          one:"Configurazione di progetto: regole, skill, subagent, hook",
+          desc:"Tutto ciò che Claude Code legge specifico per questo progetto. Con git, quasi tutto va committato — poche eccezioni (settings.local.json) sono gitignored in automatico.",
+          children:[
+            {id:"settings-json",label:"settings.json",type:"file",c:"#73726C",badge:"committed",
+              one:"Permessi, hook e configurazione — applicati, non solo suggeriti",
+              desc:"A differenza di CLAUDE.md (che Claude legge come guida), qui permessi e hook sono fatti rispettare a prescindere. Sovrascrive ~/.claude/settings.json.",
+              ex:"{\n  \"permissions\": {\n    \"allow\": [\"Bash(npm test *)\"],\n    \"deny\": [\"Bash(rm -rf *)\"]\n  },\n  \"hooks\": {\n    \"PostToolUse\": [{\n      \"matcher\": \"Edit|Write\",\n      \"hooks\": [{\"type\":\"command\",\"command\":\"prettier --write\"}]\n    }]\n  }\n}"},
+            {id:"settings-local-json",label:"settings.local.json",type:"file",c:"#73726C",badge:"gitignored",
+              one:"Override personali per questo progetto",
+              desc:"Stesso schema di settings.json, ma non committato. Usalo per permessi o default diversi dai tuoi rispetto alla squadra."},
+            {id:"rules",label:"rules/",type:"folder",c:"#9B7BC4",
+              one:"Istruzioni per topic, caricate anche in base al path del file",
+              desc:"Una regola senza frontmatter paths: si carica all'avvio come CLAUDE.md. Una con paths: si carica solo quando Claude legge un file che combacia col glob.",
+              tip:"Quando CLAUDE.md supera le 200 righe, comincia a spezzarlo qui.",
+              children:[
+                {id:"rule-testing",label:"testing.md",type:"file",c:"#9B7BC4",badge:"committed",
+                  one:"Convenzioni di test, scoped ai file di test",
+                  desc:"paths: **/*.test.ts — si carica solo quando Claude legge un file di test.",
+                  ex:"---\npaths:\n  - \"**/*.test.ts\"\n---\n\n# Regole di test\n- Nomi descrittivi: \"should X when Y\"\n- Mock delle dipendenze esterne, non dei moduli interni"},
+                {id:"rule-api",label:"api-design.md",type:"file",c:"#9B7BC4",badge:"committed",
+                  one:"Convenzioni API, scoped al codice backend",
+                  desc:"paths: src/api/**/*.ts — si carica solo quando Claude lavora sulle route API."}
+              ]},
+            {id:"skills",label:"skills/",type:"folder",c:"#D4A843",
+              one:"Comportamenti riusabili, invocati per nome o dal modello",
+              desc:"Ogni skill è una cartella con SKILL.md più eventuali file di supporto self-contained. Vedi §6.1–6.4 per cosa è, e cosa non è, una skill.",
+              children:[
+                {id:"skill-review",label:"security-review/",type:"folder",c:"#D4A843",
+                  one:"Una skill: SKILL.md + file di supporto",
+                  children:[
+                    {id:"skill-review-md",label:"SKILL.md",type:"file",c:"#D4A843",badge:"committed",
+                      one:"Entry point: trigger, invocabilità, istruzioni",
+                      desc:"disable-model-invocation: true — solo tu la invochi con /security-review; Claude non la scatena mai da solo.",
+                      ex:"---\ndescription: Revisiona le modifiche per vulnerabilità di sicurezza\ndisable-model-invocation: true\nargument-hint: <branch-o-path>\n---\n\n!`git diff $ARGUMENTS`\n\nAnalizza le modifiche sopra per injection, problemi di auth, secret hardcoded.\nUsa checklist.md in questa cartella per la checklist completa."},
+                    {id:"skill-checklist",label:"checklist.md",type:"file",c:"#D4A843",badge:"committed",
+                      one:"File di supporto, letto su richiesta",
+                      desc:"Claude conosce il percorso della skill e legge questo file solo quando gli serve davvero, non a ogni invocazione."}
+                  ]}
+                ]},
+            {id:"commands",label:"commands/",type:"folder",c:"#788C5D",
+              one:"Comandi mono-file — deprecati a favore delle skill",
+              desc:"Un file commands/deploy.md crea /deploy come farebbe una skill in skills/deploy/SKILL.md. Le skill però permettono di impacchettare file di supporto: per i casi nuovi usa quelle.",
+              children:[
+                {id:"cmd-example",label:"fix-issue.md",type:"file",c:"#788C5D",badge:"committed",
+                  one:"Invocato come /fix-issue <numero>"}
+              ]},
+            {id:"output-styles",label:"output-styles/",type:"folder",c:"#5AA7A7",
+              one:"Stili di output condivisi col team (rari)",
+              desc:"Gli stili sono perlopiù personali e vivono in ~/.claude/output-styles/. Mettine uno qui solo se la squadra condivide una modalità, es. una modalità review."},
+            {id:"agents",label:"agents/",type:"folder",c:"#C46686",
+              one:"Subagent con finestra di contesto propria (§8)",
+              desc:"Ogni file .md definisce un subagent: system prompt, tool consentiti, opzionalmente un modello suo. Gira in un contesto separato — non sporca la conversazione principale.",
+              children:[
+                {id:"agent-reviewer",label:"code-reviewer.md",type:"file",c:"#C46686",badge:"committed",
+                  one:"Subagent per code review isolata, sola lettura",
+                  desc:"description determina quando Claude lo delega da solo; tools: lo limita a Read, Grep, Glob — può ispezionare, mai modificare.",
+                  ex:"---\nname: code-reviewer\ndescription: Revisiona il codice per correttezza e sicurezza\ntools: Read, Grep, Glob\n---\n\nSei un senior reviewer. Controlla: logica, sicurezza, manutenibilità.\nOgni segnalazione deve includere una correzione concreta."}
+              ]},
+            {id:"workflows",label:"workflows/",type:"folder",c:"#C46686",
+              one:"Script di workflow dinamici, orchestrano più subagent",
+              desc:"Ogni file .js è un workflow: uno script che il runtime esegue per far partire e coordinare molti subagent. Si salvano da /workflows, non si scrivono a mano da zero."},
+            {id:"agent-memory",label:"agent-memory/",type:"folder",c:"#C46686",badge:"autogen",
+              one:"Memoria persistente dei subagent — diversa dalla tua",
+              desc:"I subagent con memory: project nel frontmatter hanno qui una cartella dedicata. Separata dalla memoria automatica della sessione principale (~/.claude/projects/).",
+              children:[
+                {id:"agent-memory-sub",label:"<nome-agente>/",type:"folder",c:"#C46686",
+                  children:[
+                    {id:"agent-memory-md",label:"MEMORY.md",type:"file",c:"#C46686",badge:"autogen",
+                      one:"Il subagent la scrive e mantiene da solo",
+                      desc:"Caricata nel system prompt del subagent a ogni avvio. Non la scrivi tu: il subagent la legge e la aggiorna da solo."}
+                  ]}
+              ]}
+          ]}
+      ]},
+      global:{label:"~/",children:[
+        {id:"claude-json",label:".claude.json",type:"file",c:"#73726C",badge:"local",
+          one:"Stato app e preferenze UI",
+          desc:"Tema, sessione OAuth, decisioni di trust per progetto, i tuoi MCP personali. Gestito perlopiù da /config, non a mano."},
+        {id:"global-dot-claude",label:".claude/",type:"folder",c:"#cc785c",
+          one:"La tua configurazione personale, in ogni progetto",
+          desc:"Il corrispettivo globale della .claude/ di progetto. Vale ovunque, non è mai committata in nessun repository.",
+          children:[
+            {id:"global-claude-md",label:"CLAUDE.md",type:"file",c:"#6A9BCC",badge:"local",
+              one:"Preferenze personali, in ogni progetto",
+              desc:"Caricata insieme al CLAUDE.md di progetto a ogni sessione; in caso di conflitto vince il progetto. Tienila su stile di risposta, formato commit, convenzioni personali.",
+              ex:"# Preferenze globali\n- Risposte concise\n- Formato conventional commits\n- Mostra il comando per verificare le modifiche"},
+            {id:"global-settings",label:"settings.json",type:"file",c:"#73726C",badge:"local",
+              one:"Default personali per tutti i progetti",
+              desc:"Stesse chiavi del settings.json di progetto. Il progetto sovrascrive qui le chiavi in comune — a differenza di CLAUDE.md, che si somma invece di sovrascrivere."},
+            {id:"keybindings",label:"keybindings.json",type:"file",c:"#73726C",badge:"local",
+              one:"Scorciatoie da tastiera personalizzate",
+              desc:"Si apre o crea con /keybindings. Ctrl+C, Ctrl+D, Ctrl+M e Caps Lock restano riservati e non si possono rimappare."},
+            {id:"themes",label:"themes/",type:"folder",c:"#5AA7A7",
+              one:"Temi colore custom, elencati in /theme"},
+            {id:"global-projects",label:"projects/",type:"folder",c:"#E8A45C",badge:"autogen",
+              one:"Memoria automatica: gli appunti di Claude, per progetto",
+              desc:"Claude accumula da solo note tra una sessione e l'altra — comandi build, insight di debug, note di architettura — senza che tu scriva nulla. Attiva di default; si disattiva con /memory.",
+              children:[
+                {id:"memory-dir",label:"<progetto>/memory/",type:"folder",c:"#E8A45C",
+                  children:[
+                    {id:"memory-md",label:"MEMORY.md",type:"file",c:"#E8A45C",badge:"autogen",
+                      one:"Indice caricato a ogni sessione (max 200 righe / 25KB)",
+                      desc:"Claude lo crea e aggiorna mentre lavora: punta ai file di topic per il dettaglio. Puoi modificarlo o cancellarlo, ma Claude continuerà ad aggiornarlo."},
+                    {id:"memory-topic",label:"debugging.md",type:"file",c:"#E8A45C",badge:"autogen",
+                      one:"File di topic, letto solo quando il compito è pertinente",
+                      desc:"Esempio di file che Claude crea quando MEMORY.md diventa troppo lungo. Non lo scrivi mai tu: Claude lo rilegge solo quando il compito attuale è collegato."}
+                  ]}
+              ]},
+            {id:"global-rules",label:"rules/",type:"folder",c:"#9B7BC4",
+              one:"Regole personali, valide in ogni progetto",
+              desc:"Come le regole di progetto, ma per convenzioni che vuoi ovunque: stile personale, formato dei commit."},
+            {id:"global-skills",label:"skills/",type:"folder",c:"#D4A843",
+              one:"Skill personali, disponibili ovunque",
+              desc:"Skill che ti costruisci per te stesso, valide in ogni progetto. Stessa struttura delle skill di progetto."},
+            {id:"global-commands",label:"commands/",type:"folder",c:"#788C5D",
+              one:"Comandi personali mono-file — deprecati"},
+            {id:"global-output-styles",label:"output-styles/",type:"folder",c:"#5AA7A7",
+              one:"Stili di output personali",
+              desc:"Aggiungono una sezione al system prompt e, di default, tolgono le istruzioni base per il coding: usali per adattare Claude Code oltre la programmazione (teaching, review...)."},
+            {id:"global-agents",label:"agents/",type:"folder",c:"#C46686",
+              one:"Subagent personali, disponibili in ogni progetto"},
+            {id:"global-workflows",label:"workflows/",type:"folder",c:"#C46686",
+              one:"Workflow personali, disponibili in ogni progetto"},
+            {id:"global-agent-memory",label:"agent-memory/",type:"folder",c:"#C46686",badge:"autogen",
+              one:"Memoria persistente per subagent con memory: user"}
+          ]}
+      ]}
+    };
+    var DEFAULT_EXPANDED=["dot-claude","rules","skills","skill-review","commands","agents","agent-memory",
+      "agent-memory-sub","global-dot-claude","global-projects","memory-dir"];
+    var nodes={}, roots={project:[],global:[]};
+    function flatten(list, parentId, rootKey){
+      list.forEach(function(n){
+        nodes[n.id]={n:n,parentId:parentId,root:rootKey};
+        roots[rootKey].push(n.id);
+        if(n.children) flatten(n.children, n.id, rootKey);
+      });
+    }
+    flatten(TREE.project.children, null, "project");
+    flatten(TREE.global.children, null, "global");
+
+    var activeRoot="project", selectedId="claude-md", expanded={};
+    DEFAULT_EXPANDED.forEach(function(id){ expanded[id]=true; });
+
+    var elTree=document.getElementById('cxTree'), elDetail=document.getElementById('cxDetail'),
+        elLegend=document.getElementById('cxLegend'), tabBtns=root.querySelectorAll('.cx-tabs button');
+
+    Object.keys(BADGE).forEach(function(k){
+      var s=document.createElement('span');
+      s.innerHTML='<i class="'+BADGE[k].cls+'"></i>'+esc(BADGE[k].lab);
+      elLegend.appendChild(s);
+    });
+
+    function renderTree(){
+      var html='';
+      function walk(list, depth){
+        list.forEach(function(n){
+          var isFolder=n.type==="folder", isOpen=!!expanded[n.id], isSel=n.id===selectedId;
+          html+='<div class="cx-node'+(isSel?' sel':'')+'" data-id="'+n.id+'" style="padding-left:'+(depth*14)+'px" role="treeitem" aria-selected="'+isSel+'">';
+          html+='<span class="cx-arrow"'+(isFolder?' data-toggle="'+n.id+'"':'')+'>'+(isFolder?(isOpen?'▾':'▸'):'')+'</span>';
+          html+='<span class="cx-ico" style="background:'+n.c+'"></span>';
+          html+='<span class="cx-name">'+esc(n.label)+'</span>';
+          if(n.badge) html+='<span class="cx-dot '+BADGE[n.badge].cls+'" title="'+esc(BADGE[n.badge].lab)+'"></span>';
+          html+='</div>';
+          if(isFolder && isOpen && n.children) walk(n.children, depth+1);
+        });
+      }
+      walk(TREE[activeRoot].children, 0);
+      elTree.innerHTML=html;
+      Array.prototype.forEach.call(elTree.querySelectorAll('.cx-node'),function(el){
+        el.addEventListener('click',function(e){
+          var id=el.getAttribute('data-id');
+          if(e.target.hasAttribute('data-toggle')){ expanded[id]=!expanded[id]; renderTree(); return; }
+          selectedId=id;
+          if(nodes[id].n.type==="folder" && !expanded[id]){ expanded[id]=true; }
+          renderTree(); renderDetail();
+        });
+      });
+    }
+
+    function renderDetail(){
+      var rec=nodes[selectedId]; if(!rec){ elDetail.innerHTML='<div class="d-empty">Seleziona un file o una cartella.</div>'; return; }
+      var n=rec.n, h='';
+      h+='<div class="d-h"><i style="background:'+n.c+'"></i>'+esc(n.label)+'</div>';
+      if(n.badge) h+='<div class="d-tok">'+esc(BADGE[n.badge].lab)+'</div>';
+      if(n.one) h+='<p class="d-desc"><b>'+esc(n.one)+'</b></p>';
+      if(n.desc) h+='<p class="d-desc">'+n.desc+'</p>';
+      if(n.tip) h+='<div class="d-box d-tip"><b>💡 Consiglio</b><br>'+n.tip+'</div>';
+      if(n.ex) h+='<pre style="margin-top:10px">'+esc(n.ex)+'</pre>';
+      elDetail.innerHTML=h;
+    }
+
+    Array.prototype.forEach.call(tabBtns,function(btn){
+      btn.classList.toggle('on', btn.getAttribute('data-root')===activeRoot);
+      btn.addEventListener('click',function(){
+        var r=btn.getAttribute('data-root'); if(r===activeRoot) return;
+        activeRoot=r; selectedId=TREE[r].children[0].id;
+        Array.prototype.forEach.call(tabBtns,function(b){ b.classList.toggle('on', b===btn); });
+        renderTree(); renderDetail();
+      });
+    });
+
+    renderTree(); renderDetail();
+  })();
+  </script>
+
   <h3>6.1 Cosa <em>è</em> una skill</h3>
   <p>Una skill <strong>non è un comando da terminale</strong> — non è <code>git merge</code>. È un
   <strong>comportamento atteso</strong>. La sua <code>description</code> dichiara <em>quando</em> va usata, e Claude la
