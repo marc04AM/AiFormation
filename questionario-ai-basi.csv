@@ -1,0 +1,20 @@
+Question,Answer Key,Points,Type,Option 1,Option 2,Option 3,Option 4,Option 5
+Hai già usato un assistente AI (ChatGPT, Claude, Copilot, Gemini)?,,,Multiple choice,Mai,Qualche volta per curiosità,Saltuariamente (qualche volta al mese),Regolarmente (almeno una volta a settimana),Tutti i giorni
+Per cosa hai usato principalmente l'AI?,,,Checkboxes,Non l'ho mai usato,Scrivere testi (email, articoli, post),Riassumere documenti,Programmazione / codice,Ricerca / studio
+,,,,"Traduzioni","Analisi dati","Brainstorming / idee","Altro"
+Quanto ti senti sicuro nell'uso dell'AI? (1 = per nulla, 5 = molto),,,Linear scale,1,2,3,4,5
+Cosa significa LLM?,"Large Language Model",1,Multiple choice,Large Language Model,Long Logic Memory,Low Level Machine,Non lo so
+Come funziona un LLM?,"Costruisce la risposta parola per parola prevedendo la parola più probabile",1,Multiple choice,Cerca in un database gigante,Costruisce parola per parola prevedendo la successiva,È un motore di ricerca potenziato,Non lo so
+Cosa sono le allucinazioni di un LLM?,"Inventa informazioni che sembrano vere ma non lo sono",1,Multiple choice,Il modello si blocca,Inventa cose che sembrano vere,Il modello è troppo lento,Non lo so
+Un LLM ha memoria illimitata in una conversazione?,"No, ricorda solo la conversazione corrente con limiti",1,Multiple choice,"Sì, ricorda tutto per sempre","No, solo la conversazione corrente","No, dimentica dopo pochi messaggi",Non lo so
+Quali sono i tre modelli di LLM citati (taglie)?,"Haiku, Sonnet, Opus",1,Multiple choice,"Small, Medium, Large","Haiku, Sonnet, Opus","Lite, Pro, Ultra",Non lo so
+Cosa sono i Projects?,"Cartelle di lavoro con conversazioni, documenti e istruzioni",1,Multiple choice,Dei file che si caricano nell'LLM,"Cartelle di lavoro con conversazioni e regole",Dei modelli specializzati,Non lo so
+Cosa sono le Skills?,"Ricette pronte per compiti specifici",1,Multiple choice,Dei comandi tecnici,"Ricette pronte per compiti specifici",Dei plugin per Office,Non lo so
+Quando inizi una conversazione con un LLM cosa dovresti dargli?,"Chi è lui, cosa deve fare, come comportarsi",1,Multiple choice,Solo la domanda,"Chi è, cosa fare, come comportarsi",Un documento di 100 pagine,Non lo so
+Puoi caricare documenti (PDF, Word, testo) in una conversazione?,"Sì, li legge e li usa per rispondere",1,Multiple choice,"Sì, li legge e li usa",No accetta solo testo scritto,Solo PDF,Non lo so
+L'LLM è bravo a fare calcoli matematici precisi?,"No, è meglio usare una calcolatrice",1,Multiple choice,Sì è infallibile,"No, meglio usare una calcolatrice",Dipende dal modello,Non lo so
+In quali app Microsoft 365 si può usare l'LLM?,,,Checkboxes,Word,Excel,Outlook,Teams,PowerPoint
+Secondo te qual è il principale vantaggio dell'AI per il tuo lavoro?,,,Paragraph,,,,
+Qual è la tua principale preoccupazione o dubbio sull'uso dell'AI?,,,Paragraph,,,,
+Cosa ti piacerebbe imparare a fare con l'AI?,,,Paragraph,,,,
+In base alle tue risposte come valuteresti il tuo livello?,,,Multiple choice,"Principiante – mai usato","Base – capisco i concetti","Intermedio – uso regolare","Avanzato – uso strategico con Projects e Skills"
