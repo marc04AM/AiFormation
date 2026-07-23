@@ -18,7 +18,7 @@
 
 <dl class="sig" aria-label="firma del documento">
   <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · AI expert and early adopter, Developer</dd>
-  <dt>Versione</dt><dd>1.0 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
+  <dt>Versione</dt><dd>1.1 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
   <dt>Ultima revisione</dt><dd>2026-07-23 · revisionato da Marco Manfrin @Sistec</dd>
 </dl>
 
@@ -66,48 +66,43 @@
   <p>Esiste già una demo funzionante in <code>sistec-llm-wiki</code>. La struttura della cartella dimostra il pattern
     in azione:</p>
 
-  <pre><span class="c">// struttura della demo</span>
+  <pre><span class="c">// struttura della demo (reale)</span>
 sistec-llm-wiki/
-├── raw/                          <span class="c">// documenti grezzi, chiunque può aggiungerne</span>
-│   ├── verbale-2026-03-15.md
-│   ├── specifica-atlas-v2.pdf
-│   └── decisione-auth-marco.md
-├── wiki/                         <span class="c">// conoscenza canonicalizzata per tipo</span>
+├── raw/                          <span class="c">// fonti immutabili: chiunque può aggiungerne, nessuno le modifica</span>
+│   ├── assets/                   <span class="c">// immagini e allegati</span>
+│   └── 2026-06-17-kickoff-progetto-atlas.md
+├── wiki/                         <span class="c">// pagine generate e mantenute dall'LLM</span>
+│   ├── overview.md               <span class="c">// sintesi globale: stato e contesto in evoluzione</span>
 │   ├── concetti/
-│   │   ├── strangler-fig-pattern.md
-│   │   └── auth-jwt-rotation.md
 │   ├── decisioni/
-│   │   └── adozione-claude-2026.md
-│   ├── fonti/
-│   │   └── karpathy-llm-wiki-gist.md
+│   ├── fonti/                    <span class="c">// un riassunto 1:1 per ogni fonte in raw/</span>
 │   ├── organizzazioni/
-│   │   └── sistec.md
 │   ├── persone/
-│   │   ├── marco-manfrin.md
-│   │   └── davide-conti.md
 │   └── progetti/
-│       └── progetto-atlas.md
-├── CLAUDE                        <span class="c">// configurazione per l'AI che fa ingest</span>
-├── index                         <span class="c">// indice generato dall'ingest</span>
-└── log                           <span class="c">// log delle operazioni di ingest</span></pre>
+├── CLAUDE.md                     <span class="c">// LO SCHEMA: convenzioni + operazioni (ingest/query/lint)</span>
+├── index.md                      <span class="c">// catalogo di tutto il wiki, aggiornato a ogni ingest</span>
+└── log.md                        <span class="c">// registro cronologico append-only</span></pre>
 
-  <p>Il flusso è lineare:</p>
+  <p>Il flusso è lineare, e tutta la configurazione sta in <strong>un unico file</strong>: il <code>CLAUDE.md</code>
+    della cartella, che definisce ruoli, convenzioni (frontmatter, wikilink, nomi file) e le tre operazioni —
+    <b>ingest</b>, <b>query</b>, <b>lint</b>. Chi lancia Claude Code o opencode lì dentro parte già configurato:
+    niente skill, niente codice.</p>
   <ol class="steps">
-    <li><b>Deposito.</b> Chiunque mette un documento grezzo in <code>raw/</code> — verbali, specifiche, decisioni,
-      appunti. Nessun formato imposto: markdown, PDF, txt.</li>
-    <li><b>Ingest.</b> L'AI legge i nuovi file, estrae le entità (persone, progetti, decisioni, concetti, fonti,
-      organizzazioni) e le relazioni tra loro, e popola <code>wiki/</code> con file canonicalizzati per tipo.</li>
-    <li><b>Indicizzazione.</b> L'AI aggiorna <code>index</code> con la mappa delle entità e dei collegamenti, creando
-      un grafo di conoscenza navigabile.</li>
-    <li><b>Retrieval.</b> Alla domanda di un operatore, l'AI naviga il grafo: parte dalle entità menzionate, segue i
-      collegamenti alle fonti, e risponde con provenienza citata.</li>
+    <li><b>Deposito.</b> Chiunque mette una fonte in <code>raw/</code> — verbali, specifiche, decisioni,
+      appunti. Nessun formato imposto: markdown, PDF, txt, immagini in <code>raw/assets/</code>.</li>
+    <li><b>Ingest.</b> Su richiesta dell'operatore, l'AI esegue l'operazione definita in <code>CLAUDE.md</code>:
+      legge la fonte, scrive il riassunto in <code>wiki/fonti/</code>, aggiorna le pagine sintetiche toccate
+      (persone, progetti, decisioni, concetti, organizzazioni), aggiorna <code>index.md</code> e appende a
+      <code>log.md</code>.</li>
+    <li><b>Retrieval.</b> Alla domanda di un operatore, l'AI parte da <code>index.md</code>, entra nelle pagine
+      rilevanti, segue i wikilink e risponde con provenienza citata.</li>
   </ol>
 
   <div class="callout">
     <h4>La vista a grafo</h4>
-    <p>La demo genera una visualizzazione a grafo dove ogni entità è un nodo (es. <code>progetto-atlas</code>,
-      <code>marco-manfrin</code>, <code>strangler-fig-pattern</code>) e le relazioni sono archi. Il retrieval naviga
-      questi collegamenti per rispondere con contesto e provenienza.</p>
+    <p>La cartella è anche un vault <b>Obsidian</b>: i wikilink <code>[[...]]</code> tra le pagine danno gratis la
+      vista a grafo, dove ogni entità è un nodo (es. <code>progetto-atlas</code>, <code>marco-manfrin</code>) e le
+      relazioni sono archi. Il retrieval naviga gli stessi collegamenti per rispondere con contesto e provenienza.</p>
   </div>
 </section>
 
@@ -135,7 +130,7 @@ sistec-llm-wiki/
       <!-- ingest -->
       <rect x="282" y="40" width="200" height="80" rx="10" fill="var(--reuse)" fill-opacity="0.12" stroke="var(--reuse)"/>
       <text x="382" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--reuse)">Ingest</text>
-      <text x="382" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">raw/ → wiki/ + index</text>
+      <text x="382" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">raw/ → wiki/ + index.md</text>
       <text x="382" y="112" text-anchor="middle" font-size="10" fill="var(--slate-soft)">estrazione entità e relazioni</text>
       <line x1="482" y1="80" x2="534" y2="80" stroke="var(--reuse)" stroke-width="2" marker-end="url(#arS)"/>
 
@@ -157,7 +152,7 @@ sistec-llm-wiki/
       <!-- AI agent consuming -->
       <rect x="536" y="208" width="200" height="52" rx="10" fill="none" stroke="var(--line-strong)"/>
       <text x="636" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Claude Code</text>
-      <text x="636" y="250" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">legge wiki/ + index per contesto</text>
+      <text x="636" y="250" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">legge wiki/ + index.md per contesto</text>
 
       <line x1="482" y1="234" x2="536" y2="234" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arS)"/>
     </svg>
@@ -176,17 +171,19 @@ sistec-llm-wiki/
     OneDrive lo propaga a tutti i sottoscrittori. <strong>Niente da progettare</strong>: funziona già.</p>
 
   <h3>3.2 Ingest — l'estrazione della conoscenza</h3>
-  <p>L'ingest è eseguito da un agente AI (Claude Code o opencode) che:</p>
+  <p>L'ingest è eseguito da un agente AI (Claude Code o opencode) secondo l'operazione definita nel
+    <code>CLAUDE.md</code> della wiki. Quando l'operatore aggiunge una fonte in <code>raw/</code> e chiede di
+    processarla, l'agente:</p>
   <ol class="steps">
-    <li><b>Scansiona</b> <code>raw/</code> per i file nuovi o modificati (dall'ultimo log).</li>
-    <li><b>Legge</b> ogni documento e <b>identifica</b> le entità: persone, progetti, organizzazioni, concetti tecnici,
-      decisioni, e le fonti che li citano.</li>
-    <li><b>Canonicalizza</b> ogni entità in un file <code>.md</code> dentro <code>wiki/&lt;tipo&gt;/</code> con frontmatter
-      strutturato (nome, tipo, relazioni, fonti, riassunto).</li>
-    <li><b>Aggiorna</b> le entità esistenti: se un nuovo documento aggiunge informazioni su una persona o un progetto,
-      il file canonicalizzato viene esteso (non sovrascritto).</li>
-    <li><b>Costruisce</b> l'indice e il grafo delle relazioni.</li>
-    <li><b>Logga</b> l'operazione.</li>
+    <li><b>Legge</b> la fonte per intero (testo più eventuali immagini in <code>raw/assets/</code>).</li>
+    <li><b>Discute</b> con l'operatore i takeaway chiave prima di scrivere — l'umano resta nel loop.</li>
+    <li><b>Scrive il riassunto</b> in <code>wiki/fonti/AAAA-MM-GG-titolo.md</code>.</li>
+    <li><b>Aggiorna le pagine sintetiche</b> toccate — progetti, persone, organizzazioni, decisioni, concetti —
+      creando quelle mancanti, con frontmatter YAML e wikilink incrociati. Una fonte può toccare 5-15 pagine.
+      Le pagine esistenti vengono estese, non sovrascritte.</li>
+    <li><b>Segnala le contraddizioni</b> con un blocco ⚠️, senza mai cancellare l'informazione precedente.</li>
+    <li><b>Aggiorna</b> <code>index.md</code> (e <code>overview.md</code> se il quadro generale cambia) e
+      <b>appende</b> una riga a <code>log.md</code>.</li>
   </ol>
 
   <h3>3.3 Retrieval — il consumo della conoscenza</h3>
@@ -195,10 +192,10 @@ sistec-llm-wiki/
     <thead><tr><th>Modalità</th><th>Come</th><th>Quando</th></tr></thead>
     <tbody>
       <tr><td><b>Diretta (umana)</b></td><td>un operatore chiede all'AI via chat: «chi ha lavorato al progetto Atlas?»
-        L'AI legge <code>wiki/progetti/progetto-atlas.md</code>, segue i link alle persone, e risponde.</td><td>domande
-        puntuali, esplorazione libera</td></tr>
+        L'AI parte da <code>index.md</code>, legge <code>wiki/progetti/progetto-atlas.md</code>, segue i wikilink
+        alle persone, e risponde con citazioni.</td><td>domande puntuali, esplorazione libera</td></tr>
       <tr><td><b>Da agente (Claude Code)</b></td><td>Claude Code, durante una sessione di lavoro su un repo, legge
-        <code>wiki/</code> e <code>index</code> per contestualizzare le sue azioni: capire le decisioni pregresse,
+        <code>wiki/</code> e <code>index.md</code> per contestualizzare le sue azioni: capire le decisioni pregresse,
         le architetture, i perché.</td><td>sviluppo attivo, codice</td></tr>
     </tbody>
   </table></div>
@@ -207,62 +204,44 @@ sistec-llm-wiki/
 <!-- ========== 4 ========== -->
 <section>
   <div class="sec-head"><span class="sec-no">§4</span><h2>Proposta di sviluppo: da demo a produzione</h2></div>
-  <p>La demo <code>sistec-llm-wiki</code> dimostra che il pattern funziona. Per portarla a produzione servono alcuni
-    accorgimenti. La proposta si articola in <strong>tre fasi</strong>.</p>
+  <p>La demo <code>sistec-llm-wiki</code> dimostra che il pattern funziona — e che <strong>non c'è niente da
+    costruire</strong>. Il <code>CLAUDE.md</code> della wiki è già la configurazione completa: convenzioni
+    (frontmatter YAML, wikilink, nomi file) e le tre operazioni — <b>ingest</b>, <b>query</b>, <b>lint</b> —
+    specificate passo per passo. Niente skill, niente regole path-scoped, niente hook o wrapper: l'operatore chiede
+    in linguaggio naturale («processa il verbale che ho messo in raw/», «chi ha lavorato ad Atlas?») e l'agente
+    esegue l'operazione corrispondente. La proposta si articola in <strong>tre fasi</strong>.</p>
 
-  <h3>Fase 1 — Standardizzazione e scalabilità (2 settimane)</h3>
-  <p>La demo è manuale. La fase 1 rende il processo ripetibile e misurabile.</p>
-  <ol class="steps">
-    <li><b>Skill di ingest.</b> Creare una skill Claude Code (<code>skills/wiki-ingest/SKILL.md</code>) che, invocata
-      con <code>/ingest</code>, scandisce <code>raw/</code>, esegue l'ingest e aggiorna <code>wiki/</code> e
-      <code>index</code>. L'operatore la lancia dopo aver aggiunto documenti.</li>
-    <li><b>Template di frontmatter.</b> Definire uno schema YAML condiviso per i file canonicalizzati in
-      <code>wiki/</code>: <code>type</code>, <code>name</code>, <code>aliases</code>, <code>related</code>,
-      <code>sources</code>, <code>summary</code>, <code>last_updated</code>. Ogni entità segue lo stesso schema.</li>
-    <li><b>Skill di query.</b> Creare una skill <code>/wiki</code> che risponde a domande sulla knowledge base
-      leggendo <code>wiki/</code> e <code>index</code> e navigando il grafo. Con <code>disable-model-invocation: true</code>
-      — la invoca solo l'operatore.</li>
-    <li><b>Log e audit.</b> Strutturare il <code>log</code> in formato timestamp + entità processate + esito, per
-      tracciare cosa è stato indicizzato e quando.</li>
-  </ol>
-
-  <div class="callout">
-    <h4>Skill di ingest — esempio</h4>
-    <pre><span class="c">// .claude/skills/wiki-ingest/SKILL.md</span>
----
-description: Ingestisce nuovi documenti nella wiki-LLM
-argument-hint: [optional: file-specifico]
----
-
-<span class="c">// 1. Trova i file nuovi/modificati in raw/ dall'ultimo log</span>
-<span class="c">// 2. Per ciascuno: leggi, estrai entità, canonicalizza in wiki/</span>
-<span class="c">// 3. Aggiorna index con le nuove entità e relazioni</span>
-<span class="c">// 4. Scrivi log</span>
-
-Leggi <code>log</code> per la timestamp dell'ultimo ingest.
-Trova i file in <code>raw/</code> più recenti di quella data.
-Per ogni file:
-  - Identifica persone, progetti, organizzazioni, concetti, decisioni
-  - Per ogni entità: aggiorna o crea <code>wiki/&lt;tipo&gt;/&lt;nome&gt;.md</code>
-  - Aggiungi le relazioni incrociate
-Rigenera <code>index</code>.
-Scrivi <code>log</code> con la nuova timestamp.</pre>
+  <div class="callout key">
+    <h4>Perché niente skill</h4>
+    <p>Una skill di ingest o di query duplicherebbe in un secondo posto ciò che il <code>CLAUDE.md</code> della wiki
+      già specifica — due copie della stessa procedura da tenere allineate. Il <code>CLAUDE.md</code> viene caricato
+      automaticamente da qualunque agente lanciato nella cartella: la specifica lì dentro <strong>basta</strong>.
+      E si co-evolve: quando il collaudo trova una convenzione migliore, si aggiorna lo schema (voce
+      <code>schema</code> nel log), non del codice.</p>
   </div>
 
-  <h3>Fase 2 — Integrazione col ciclo agentico (2 settimane)</h3>
-  <p>La wiki-LLM diventa parte del contesto di lavoro quotidiano di Claude Code.</p>
+  <h3>Fase 1 — Condivisione e collaudo (1 settimana)</h3>
+  <p>La demo è locale. La fase 1 la rende condivisa e ne collauda lo schema.</p>
   <ol class="steps">
-    <li><b>Regola path-scoped.</b> In <code>.claude/rules/wiki-knowledge.md</code>, con <code>paths: wiki/**</code>:
-      quando Claude Code legge un file in <code>wiki/</code>, carica una regola che gli spiega come interpretare il
-      frontmatter, le relazioni e le fonti — niente da reinventare a ogni sessione.</li>
-    <li><b>Memoria automatica.</b> I file in <code>wiki/</code> possono essere referenziati dalla memoria automatica
-      di Claude Code (<code>MEMORY.md</code>), ma il consiglio è di tenerli separati: la memoria è per note
-      procedurali (comandi build, errori noti), la wiki per la conoscenza stabile.</li>
-    <li><b>Hook di ingest automatico.</b> Opzionale: un hook <code>PostToolUse</code> su <code>Write</code> in
-      <code>raw/</code> lancia automaticamente l'ingest dopo l'aggiunta di un documento. Utile per i power-user,
-      ma attenti al context rot se l'ingest è verboso.</li>
-    <li><b>REPL integrativo.</b> Un alias o script che lancia opencode nella cartella della wiki con un prompt
-      preimpostato: «Sei il custode della wiki aziendale. Rispondi alle domande usando i file in wiki/ e index.»</li>
+    <li><b>Sync.</b> Spostare la cartella su OneDrive (o NAS) condiviso del team. Ogni operatore autorizzato la
+      sincronizza in locale. Niente da progettare: funziona già.</li>
+    <li><b>Pilota.</b> 2-3 operatori la usano davvero: depositano fonti in <code>raw/</code>, chiedono l'ingest,
+      interrogano la wiki. Le domande che falliscono rivelano i buchi.</li>
+    <li><b>Affinamento dello schema.</b> Ogni attrito emerso nel collaudo si risolve aggiornando il
+      <code>CLAUDE.md</code>: convenzioni più chiare, struttura per tipo più precisa, operazioni più robuste.</li>
+  </ol>
+
+  <h3>Fase 2 — Ingest da Microsoft 365 (2 settimane)</h3>
+  <p>La conoscenza aziendale vive già in Teams, OneNote e OneDrive. La fase 2 la porta nella wiki con un MCP server
+    e una <strong>nuova operazione nel <code>CLAUDE.md</code></strong> — non una skill (vedi <a href="#s8">§8</a>
+    per il dettaglio completo).</p>
+  <ol class="steps">
+    <li><b>Server MCP.</b> Configurare <code>@softeria/ms-365-mcp-server</code> in <code>.mcp.json</code> nella
+      cartella della wiki. Autenticazione OAuth2 gestita dal server, token locali.</li>
+    <li><b>Operazione sync-m365.</b> Aggiungere al <code>CLAUDE.md</code> una quarta operazione che orchestra i
+      tool MCP: estrae messaggi Teams, pagine OneNote e file OneDrive e li deposita in <code>raw/</code>.</li>
+    <li><b>Filtri.</b> Definire quali team, canali e notebook sono rilevanti — il grosso del lavoro è evitare
+      il rumore.</li>
   </ol>
 
   <h3>Fase 3 — Adozione e governo (continua)</h3>
@@ -270,15 +249,14 @@ Scrivi <code>log</code> con la nuova timestamp.</pre>
   <ol class="steps">
     <li><b>Canonicalizzatore dedicato.</b> Una persona (o un ruolo a rotazione) revisiona periodicamente i documenti
       in <code>raw/</code> e la qualità dell'ingest: le entità sono corrette? Le relazioni sono aggiornate? Le fonti
-      sono citate? L'AI fa il grosso, ma un occhio umano mantiene la qualità.</li>
+      sono citate? L'AI fa il grosso, ma un occhio umano mantiene la qualità. L'operazione <b>lint</b> del
+      <code>CLAUDE.md</code> è lo strumento: produce il report di salute su cui il canonicalizzatore decide.</li>
     <li><b>Retro-ingest dei progetti esistenti.</b> I repository git dei progetti Sistec (commessa 5309 FAEL, ecc.)
       hanno già <code>openspec/changes/archive/</code> con proposte e design che contengono decisioni. Un'operazione
       una tantum di retro-ingest popola <code>wiki/</code> con la conoscenza già scritta.</li>
-    <li><b>Metriche d'uso.</b> Tracciare quante query al giorno, quanti documenti nuovi in <code>raw/</code>, quante
-      entità in <code>wiki/</code>. Il valore della wiki cresce con la sua dimensione e il suo uso.</li>
-    <li><b>CLAUDE.md nella wiki.</b> Mettere un <code>CLAUDE.md</code> nella cartella della wiki con le istruzioni
-      per l'agente: come fare ingest, come rispondere, che formato usare. Chiunque lanci opencode lì dentro parte
-      già configurato.</li>
+    <li><b>Metriche d'uso.</b> Il <code>log.md</code> append-only è già la fonte: ogni voce ha prefisso parsabile
+      (<code>## [AAAA-MM-GG] tipo | descrizione</code>), quindi contare ingest e query al giorno è un
+      <code>grep</code>. Il valore della wiki cresce con la sua dimensione e il suo uso.</li>
   </ol>
 
   <div class="callout key">
@@ -349,9 +327,9 @@ Scrivi <code>log</code> con la nuova timestamp.</pre>
 
   <div class="callout">
     <h4>Il flusso completo</h4>
-    <p>Un operatore lavora su un progetto. Usa le skill (via marketplace) per eseguire compiti ripetibili — ingest
-      wiki, code review, commit. Quando serve contesto, consulta la wiki-LLM: decisioni pregresse, architetture,
-      persone di riferimento. La conoscenza che produce (una decisione architetturale, un'appunto tecnico) finisce
+    <p>Un operatore lavora su un progetto. Usa le skill (via marketplace) per eseguire compiti ripetibili — code
+      review, commit, scaffolding. Quando serve contesto, consulta la wiki-LLM: decisioni pregresse, architetture,
+      persone di riferimento. La conoscenza che produce (una decisione architetturale, un appunto tecnico) finisce
       in <code>raw/</code> e da lì nella wiki. Il ciclo si chiude: la wiki alimenta il lavoro, il lavoro alimenta
       la wiki.</p>
   </div>
@@ -376,10 +354,11 @@ Scrivi <code>log</code> con la nuova timestamp.</pre>
     <code>usato-da</code> verso i progetti, e rispone: «Progetto Atlas e Gestione Mescole. Vedi
     <code>wiki/progetti/progetto-atlas.md</code> per i dettagli.»</p>
 
-  <h3>6.4 Ingest automatico dopo una riunione</h3>
-  <p>Dopo un incontro tecnico, un partecipante scrive appunti in <code>raw/verbale-2026-07-22.md</code>. Lancia
-    <code>/ingest</code> (skill), l'AI processa il verbale, estrae le entità (decisioni, persone, concetti), aggiorna
-    i file canonicalizzati in <code>wiki/</code>. I colleghi possono subito interrogare la wiki sulle decisioni prese.</p>
+  <h3>6.4 Ingest dopo una riunione</h3>
+  <p>Dopo un incontro tecnico, un partecipante scrive appunti in <code>raw/2026-07-22-verbale-riunione.md</code> e
+    chiede all'agente di processarli. L'AI esegue l'operazione di ingest del <code>CLAUDE.md</code>: discute i
+    takeaway, scrive il riassunto in <code>wiki/fonti/</code>, aggiorna le pagine di decisioni, persone e concetti
+    toccate. I colleghi possono subito interrogare la wiki sulle decisioni prese.</p>
 
   <h3>6.5 Retro-ingest da openspec</h3>
   <p>I repository dei progetti Sistec hanno <code>openspec/changes/archive/</code> con decine di proposte e design
@@ -402,19 +381,19 @@ Scrivi <code>log</code> con la nuova timestamp.</pre>
     <tbody>
       <tr>
         <td><span class="tag t-ok">Fase 1</span></td>
-        <td>Standardizzazione: skill di ingest, template frontmatter, skill di query, log strutturato</td>
-        <td>2 settimane</td>
-        <td>demo <code>sistec-llm-wiki</code> funzionante, repository condiviso</td>
+        <td>Condivisione e collaudo: cartella su OneDrive/NAS, pilota con 2-3 operatori, affinamento del <code>CLAUDE.md</code></td>
+        <td>1 settimana</td>
+        <td>demo <code>sistec-llm-wiki</code> funzionante</td>
       </tr>
       <tr>
         <td><span class="tag t-ok">Fase 2</span></td>
-        <td>Integrazione agente: regola path-scoped, memoria, hook ingest, REPL wiki</td>
+        <td>Ingest M365: server MCP, operazione <code>sync-m365</code> nel <code>CLAUDE.md</code>, filtri team/canali/notebook</td>
         <td>2 settimane</td>
         <td>Fase 1 completata, Claude Code installato sugli operatori pilota</td>
       </tr>
       <tr>
         <td><span class="tag t-ok">Fase 3</span></td>
-        <td>Adozione: canonicalizzatore, retro-ingest progetti, metriche, CLAUDE.md wiki</td>
+        <td>Adozione: canonicalizzatore, retro-ingest progetti, metriche dal log</td>
         <td>continua</td>
         <td>Fase 2 completata, adesione del team</td>
       </tr>
@@ -423,14 +402,14 @@ Scrivi <code>log</code> con la nuova timestamp.</pre>
 
   <div class="callout key">
     <h4>Primo passo concreto</h4>
-    <p>La Fase 1 non richiede autorizzazioni speciali: la demo esiste già. Basta scrivere la skill di ingest (un
-      file <code>.md</code> in <code>.claude/skills/</code>) e definire i template. Si può partire subito, anche
-      su un repository personale per collaudo. Il costo è zero infrastruttura e un pomeriggio di lavoro.</p>
+    <p>La Fase 1 non richiede autorizzazioni speciali né sviluppo: la demo esiste già e il <code>CLAUDE.md</code>
+      con convenzioni e operazioni è già scritto. Basta spostare la cartella su OneDrive condiviso e far partire
+      il pilota. Il costo è zero infrastruttura e zero codice.</p>
   </div>
 </section>
 
 <!-- ========== 8 ========== -->
-<section>
+<section id="s8">
   <div class="sec-head"><span class="sec-no">§8</span><h2>Ingest da Microsoft 365 via MCP</h2></div>
   <p>Finora la wiki-LLM si basa su file depositati manualmente in <code>raw/</code>. Ma la conoscenza aziendale
     esiste già — nei messaggi Teams, nei notebook OneNote, nei documenti OneDrive. Con un <strong>MCP server per
@@ -486,11 +465,12 @@ npx @softeria/ms-365-mcp-server --preset onedrive</pre>
 
   <h3>8.2 Flusso di ingest M365 → wiki</h3>
 
-  <p>La skill <code>/sync-m365</code> orchesta i tool MCP in sequenza e deposita il risultato in <code>raw/</code>:</p>
+  <p>L'operazione <b>sync-m365</b> — una sezione in più nel <code>CLAUDE.md</code> della wiki, accanto a ingest,
+    query e lint — orchestra i tool MCP in sequenza e deposita il risultato in <code>raw/</code>:</p>
 
   <figure>
     <div class="plate-cap"><b>Fig 3</b><span>Flusso di ingest da Microsoft 365: i tool MCP estraggono contenuto,
-      la skill lo converte in markdown in <code>raw/</code>, poi l'ingest standard lo canonicalizza in <code>wiki/</code>.</span></div>
+      l'agente lo converte in markdown in <code>raw/</code>, poi l'ingest standard lo canonicalizza in <code>wiki/</code>.</span></div>
     <div class="plate-body">
     <svg class="dgm" viewBox="0 0 860 260" role="img" aria-label="Flusso ingest M365">
       <defs>
@@ -511,7 +491,7 @@ npx @softeria/ms-365-mcp-server --preset onedrive</pre>
       <line x1="400" y1="100" x2="444" y2="100" stroke="var(--accent-dark)" stroke-width="1.8" marker-end="url(#arM)"/>
 
       <rect x="446" y="60" width="160" height="80" rx="10" fill="var(--ok)" fill-opacity="0.10" stroke="var(--ok)"/>
-      <text x="526" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ok)">Skill /sync-m365</text>
+      <text x="526" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ok)">Op. sync-m365</text>
       <text x="526" y="116" text-anchor="middle" font-size="10.5" fill="var(--slate)">converte in .md</text>
       <text x="526" y="133" text-anchor="middle" font-size="10" fill="var(--slate-soft)">scrive in raw/</text>
       <line x1="606" y1="100" x2="650" y2="100" stroke="var(--accent-dark)" stroke-width="1.8" marker-end="url(#arM)"/>
@@ -527,12 +507,12 @@ npx @softeria/ms-365-mcp-server --preset onedrive</pre>
     <div class="legend">
       <span><i class="sw" style="background:var(--signal);border-color:var(--signal)"></i> sorgenti M365</span>
       <span><i class="sw" style="background:var(--reuse);border-color:var(--reuse)"></i> MCP server</span>
-      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> skill Claude Code</span>
+      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> operazione CLAUDE.md</span>
       <span><i class="sw" style="border-color:var(--line-strong)"></i> deposito</span>
     </div>
   </figure>
 
-  <p>La skill <code>/sync-m365</code> segue questa sequenza:</p>
+  <p>L'operazione segue questa sequenza:</p>
   <ol class="steps">
     <li><b>Teams — canali.</b> Per ogni team di progetto (<code>Progetto Atlas</code>, <code>FAEL</code>, ecc.),
       elenca i canali, poi per ogni canale legge i messaggi dell'ultima settimana. Scrive in
@@ -545,35 +525,28 @@ npx @softeria/ms-365-mcp-server --preset onedrive</pre>
     <li><b>OneDrive.</b> Per ogni cartella condivisa di progetto, elenca i file nuovi, scarica .docx/.pdf,
       converte in markdown. Scrive in <code>raw/onedrive/&lt;progetto&gt;-&lt;file&gt;.md</code>.</li>
     <li><b>Segnala completamento.</b> Restituisce all'operatore un riepilogo: quanti messaggi, pagine e file
-      processati, pronti per <code>/ingest</code>.</li>
+      processati, pronti per l'ingest standard.</li>
   </ol>
 
   <div class="callout">
-    <h4>Skill /sync-m365 — esempio</h4>
-    <pre><span class="c">// .claude/skills/sync-m365/SKILL.md</span>
----
-description: Sincronizza Teams, OneNote e OneDrive nella wiki-LLM
-argument-hint: [optional: team/channel filter]
-disable-model-invocation: true
----
+    <h4>Operazione sync-m365 — sezione da aggiungere al CLAUDE.md</h4>
+    <pre><span class="c">// CLAUDE.md della wiki — sotto «Operazioni», dopo ingest/query/lint</span>
 
-<span class="c">// Usa i tool MCP ms365 per estrarre contenuto da:</span>
-<span class="c">// - Messaggi dei canali Teams (list-channel-messages)</span>
-<span class="c">// - Pagine OneNote (get-onenote-page-content)</span>
-<span class="c">// - File OneDrive (download-onedrive-file-content)</span>
-<span class="c">// Converte ogni elemento in markdown e lo scrive in raw/&lt;sorgente&gt;/</span>
-<span class="c">// Restituisce il conteggio degli elementi processati.</span>
+### 4. Sync M365 (acquisizione da Teams, OneNote, OneDrive)
 
-Lista i team usando <code>list-joined-teams</code>.
-Se ARGUMENTS contiene un filtro (es. "Atlas"), limita a quel team.
-Per ogni team: elenca canali, poi messaggi degli ultimi 7 giorni.
-  - Salta i messaggi già processati (confronta timestamp con ultimo sync).
-  - Scrive in <code>raw/teams/&lt;team&gt;-&lt;canale&gt;.md</code>.
-Per OneNote: elenca notebook, sezioni, pagine nuove.
-  - Scrive in <code>raw/onenote/&lt;notebook&gt;-&lt;pagina&gt;.md</code>.
-Per OneDrive: elenca file nuovi in cartelle condivise.
-  - Scarica .docx, converte in markdown, scrive in <code>raw/onedrive/&lt;file&gt;.md</code>.
-Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
+Quando l'umano chiede di sincronizzare da Microsoft 365
+(eventualmente con un filtro, es. «solo il team Atlas»):
+
+1. Lista i team con <code>list-joined-teams</code>; applica il filtro se presente.
+2. Per ogni team: elenca canali, poi messaggi degli ultimi 7 giorni.
+   - Salta i messaggi già processati (confronta timestamp con ultimo sync nel log).
+   - Scrivi in <code>raw/teams/&lt;team&gt;-&lt;canale&gt;.md</code>.
+3. Per OneNote: elenca notebook, sezioni, pagine nuove.
+   - Scrivi in <code>raw/onenote/&lt;notebook&gt;-&lt;pagina&gt;.md</code>.
+4. Per OneDrive: elenca file nuovi in cartelle condivise.
+   - Scarica .docx, converti in markdown, scrivi in <code>raw/onedrive/&lt;file&gt;.md</code>.
+5. Appendi una riga a <code>log.md</code> (tipo: sync-m365).
+6. Riepiloga: «Processati X messaggi, Y pagine, Z file. Procedo con l'ingest?»</pre>
   </div>
 
   <h3>8.3 Retrieval live via MCP</h3>
@@ -601,11 +574,11 @@ Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
   </div>
 
   <h3>8.4 Nella roadmap</h3>
-  <p>L'integrazione M365 si inserisce come sotto-attività della <strong>Fase 2</strong> (integrazione agente):
-    dopo la skill di ingest standard, si aggiunge la skill <code>/sync-m365</code> e il server MCP.
+  <p>L'integrazione M365 è la <strong>Fase 2</strong> della roadmap: si configura il server MCP in
+    <code>.mcp.json</code> e si aggiunge l'operazione <b>sync-m365</b> al <code>CLAUDE.md</code>.
     Il grosso del lavoro è definire i filtri (quali team/canali/notebook sono rilevanti) per evitare rumore.
-    Una volta a regime, <code>/sync-m365</code> si lancia in pochi secondi e prepara i nuovi contenuti per
-    <code>/ingest</code>.</p>
+    Una volta a regime, la sincronizzazione si chiede in linguaggio naturale («sincronizza il team Atlas»)
+    e prepara i nuovi contenuti per l'ingest standard.</p>
 
   <div class="callout">
     <h4>Autenticazione</h4>
@@ -684,7 +657,7 @@ Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
 
 <footer>
   <span>Sistec · wiki-LLM · pattern Karpathy · proposta di sviluppo · 9 § · 3 figure</span>
-  <span>autorità: LLM-wiki (Karpathy) · documentazione Claude Code · sistec-llm-wiki · 2026-07-23 · v1.0</span>
+  <span>autorità: LLM-wiki (Karpathy) · documentazione Claude Code · sistec-llm-wiki · 2026-07-23 · v1.1</span>
 </footer>
 </div>
 
