@@ -5,13 +5,17 @@
 <header class="sheet">
   <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
   <p class="eyebrow">Sistec · audit skill · marketplace interno · 2026-07</p>
-  <h1>Audit delle skill Sistec: integrate nel marketplace e rifiutate</h1>
-  <p class="lede">Validazione di 20 file <code>src/</code> contro il filtro a tre domande:
-    <strong>6 skill integrate</strong> nel marketplace Sistec, <strong>14 scartate</strong> con motivazione.
-    Ogni skill integrata è stata de-coupled dal workspace privato e resa riusabile.</p>
+  <h1>Audit delle skill Sistec: cosa entra nel marketplace e cosa no, e perché</h1>
+  <p class="lede">Da marzo 2025 a oggi, nell'ambiente <code>src/</code> di Sistec si sono accumulati
+    <strong>20 file</strong> — comandi, script, framework. Alcuni sono skill preziose e riusabili;
+    altri sono nati per esigenze contingenti e oggi sono rumore. Questo documento è l'esito della
+    validazione: <strong>6 skill integrate</strong> nel marketplace, <strong>14 scartate</strong>
+    con la motivazione scritta per ciascuna, e il <strong>filtro a tre domande</strong> che ha
+    deciso ogni caso.</p>
   <div class="meta">
     <span class="chip"><span class="dot"></span><b>skill</b> · marketplace</span>
     <span class="chip">6 integrate · 14 scartate</span>
+    <span class="chip">validato con skill-creator</span>
     <span class="chip">2026-07</span>
   </div>
 </header>
@@ -20,196 +24,445 @@
   <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · AI expert and early adopter, Developer</dd>
   <dt>Versione</dt><dd>1.0 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
   <dt>Ultima revisione</dt><dd>2026-07-23 · revisionato da Marco Manfrin @Sistec</dd>
-  <dt>Documento a monte</dt><dd><a href="SKILL-AUDIT.md"><b>SKILL-AUDIT.md</b></a> — l'audit sorgente completo con esito per ogni file</dd>
+  <dt>Documento a monte</dt><dd><a href="SKILL-AUDIT.md"><b>SKILL-AUDIT.md</b></a> — l'audit sorgente completo, con esito per ciascuno dei 20 file, i difetti trasversali corretti e le note sul cluster cross-solution</dd>
 </dl>
 
 <div class="callout key">
-  <h4>Contesto</h4>
-  <p>Il marketplace Sistec è <strong>interno</strong>. La specificità di dominio (schema <code>language_spv</code>,
-    <code>Sistec.Core</code>, convenzioni HMI) <strong>non</strong> squalifica un file — anzi, è il valore
-    specifico che una skill porta al team. I <strong>command sono deprecati</strong> a favore delle skill:
-    la forma giusta è skill esplicita con <code>disable-model-invocation: true</code> dove l'operazione va
-    invocata a mano.</p>
+  <h4>Contesto — il marketplace è interno a Sistec</h4>
+  <p>Il marketplace delle skill è un repository git interno, branch <code>main</code> protetto, accesso via PR.
+    A differenza di un marketplace pubblico, la <strong>specificità di dominio Sistec</strong> (lo schema
+    <code>language_spv</code> per le traduzioni HMI, le convenzioni <code>Sistec.Core</code>, i pattern di
+    sviluppo delle soluzioni .NET per automazione industriale) <strong>non squalifica</strong> un file —
+    anzi, è il motivo per cui una skill esiste: incapsula conoscenza di dominio che un LLM generico non ha.</p>
+  <p>Nota importante: i <strong>command sono deprecati</strong> in Claude Code a favore delle skill. La forma
+    corretta per un'operazione che un umano invoca esplicitamente è una skill con
+    <code>disable-model-invocation: true</code>. Tutti i file <code>src/</code> in formato command sono
+    stati giudicati come potenziali skill, non come command.</p>
 </div>
 
 <!-- ========== 1 ========== -->
 <section>
   <div class="sec-head"><span class="sec-no">§1</span><h2>Il filtro — le tre domande che decidono</h2></div>
-  <p>Un file merita una skill nel marketplace <strong>solo</strong> se passa tutte e tre:</p>
-
-  <ol class="steps">
-    <li><b>Lo fa già, meglio, uno strumento deterministico?</b> (git, linter/analyzer, <code>docker compose</code>,
-      uno script). Se sì, un'approssimazione LLM ha <strong>valore negativo</strong>: aggiunge non-determinismo
-      e rischio, zero guadagno.</li>
-    <li><b>È solo plan-mode / TodoWrite / comportamento nativo travestito?</b> Se sì, è ridondante — Claude
-      lo fa già senza skill.</li>
-    <li><b>Claude farebbe materialmente peggio SENZA?</b> Deve esserci <strong>giudizio semantico</strong> reale
-      che solo un LLM porta: interpretare un output, tradurre intento, refactor semantico.</li>
-  </ol>
+  <p>Il cuore dell'audit è un filtro a tre domande. Un file merita di diventare una skill nel marketplace
+    <strong>solo</strong> se passa tutte e tre. Se anche una sola risposta è «no» o «forse», il file
+    viene scartato.</p>
 
   <div class="callout">
-    <h4>Il pattern che vince</h4>
-    <p>Uno <strong>script deterministico</strong> raccoglie dati, poi <strong>l'LLM interpreta/decide</strong>
-      (es. <code>dpi-anchor-fix</code>, <code>network-probe</code>). Oppure l'LLM fa un lavoro
-      <strong>puramente semantico</strong> che nessun tool sa fare (es. <code>maintain-manual</code>,
-      <code>translate</code>, <code>reconcile-solutions</code>).</p>
+    <h4>Domanda 1 — «Lo fa già, meglio, uno strumento deterministico?»</h4>
+    <p>Git, linter, analyzer, <code>docker compose</code>, uno script PowerShell. Se per quel compito esiste
+      già un tool deterministico che dà risposte certe, un'approssimazione LLM ha <strong>valore
+      negativo</strong>: aggiunge non-determinismo, consuma contesto, e azzera il vantaggio di uno strumento
+      che invece produce lo stesso risultato ogni volta. La risposta «sì» squalifica immediatamente.</p>
+  </div>
+
+  <div class="callout">
+    <h4>Domanda 2 — «È solo plan-mode / TodoWrite / comportamento nativo travestito?»</h4>
+    <p>Claude Code ha funzionalità native: la plan mode per analizzare senza scrivere,
+      <span class="kbd">/clear</span> per resettare il contesto, i tool di default (Read, Grep, Glob).
+      Se un file cerca di insegnare a Claude ciò che Claude sa già fare, è ridondante — e peggio,
+      rischia di <strong>peggiorare</strong> il comportamento nativo con istruzioni approssimative.</p>
+  </div>
+
+  <div class="callout">
+    <h4>Domanda 3 — «Claude farebbe materialmente peggio SENZA?»</h4>
+    <p>La domanda decisiva. La skill deve portare <strong>giudizio semantico</strong> — qualcosa che
+      solo un LLM può fare: interpretare un output ambiguo, tradurre un intento in codice, applicare
+      conoscenza di dominio a un contesto specifico. Se togli la skill e Claude se la cava comunque
+      (magari con un prompt un po' più lungo), la skill non merita il marketplace.</p>
+  </div>
+
+  <p>Il filtro nasce da un'osservazione pratica: nei mesi di utilizzo di Claude Code in Sistec, molti
+    comandi e script sono stati scritti per <strong>compensare</strong> presunti limiti dell'LLM, ma
+    in realtà cercavano di risolvere con un prompt ciò che un altro tool faceva già in modo certo.
+    Il filtro rovescia la prospettiva: invece di partire da «cosa posso insegnare a Claude?», si
+    parte da «cosa solo Claude può fare qui?».</p>
+
+  <div class="callout">
+    <h4>Il pattern che vince — due strade</h4>
+    <p>Dall'audit emergono due pattern ricorrenti che superano il filtro:</p>
+    <p><b>1. Bundla + interpreta.</b> Uno script deterministico raccoglie dati grezzi (es. sonda la
+      configurazione DPI delle form, o scandisce le NIC di rete); l'LLM <strong>interpreta</strong>
+      il risultato e decide l'azione migliore. Il valore LLM è nel giudizio, non nella raccolta.</p>
+    <p><b>2. Puro semantico.</b> Un lavoro che nessun tool deterministico sa fare: tradurre testo
+      HMI da IT a EN rispettando le chiavi esatte del database, manutenere un .docx preservando
+      commenti e revisioni, portare l'intento di una feature tra due codebase divergenti.</p>
+    <p>Il punto comune: l'LLM non sostituisce un tool — fa ciò che il tool <strong>non può</strong> fare.</p>
   </div>
 </section>
 
 <!-- ========== 2 ========== -->
 <section>
-  <div class="sec-head"><span class="sec-no">§2</span><h2>Skill integrate nel marketplace (🟢)</h2></div>
-  <p>Sei skill hanno superato il filtro. Cinque sono nuove, una è una fusione. Ciascuna è stata de-coupled dal
-    workspace privato e resa riusabile.</p>
+  <div class="sec-head"><span class="sec-no">§2</span><h2>Skill integrate — le sei che hanno superato il filtro</h2></div>
+  <p>Sei file di <code>src/</code> sono diventati skill nel marketplace. Cinque sono skill nuove; una è il
+    risultato di una <strong>fusione</strong> tra due file, dove solo una parte del secondo è stata recuperata.
+    Ognuna è stata <strong>de-coupled</strong> dal workspace privato di chi l'ha scritta: i path assoluti
+    (<code>C:\Users\Sistec 23\…</code>) sono diventati relativi o referenziano
+    <code>$env:CLAUDE_PLUGIN_ROOT</code>, le direttive proprietarie sono state riscritte in regole chiare,
+    e gli engine deterministici (.ps1) sono stati bundlati come <code>assets/</code> del plugin.</p>
 
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Skill</th><th>Cosa fa</th><th>Perché è passata</th><th>Destinazione</th></tr></thead>
+    <thead><tr><th>File <code>src/</code> originale</th><th>Skill nel marketplace</th></tr></thead>
     <tbody>
-      <tr>
-        <td><b>dpi-anchor-fix</b></td>
-        <td>Rileva e corregge il bug DPI/anchor nelle form .NET 8</td>
-        <td>Script deterministico rileva il bug; l'LLM interpreta il verdetto e sceglie la configurazione
-          sicura sotto gate. Pattern «bundla + interpreta».</td>
-        <td><code>hmi-developer/dpi-anchor-fix</code></td>
-      </tr>
-      <tr>
-        <td><b>network-probe</b></td>
-        <td>Sonda NIC/IP/salute rete e diagnostica</td>
-        <td>Script sonda la macchina; l'LLM diagnostica link-flap, conflitti IP, driver. Stesso pattern
-          «bundla + interpreta».</td>
-        <td><code>device-spy/network-probe</code></td>
-      </tr>
-      <tr>
-        <td><b>maintain-manual</b></td>
-        <td>Manutiene un file .docx esistente (commenti, tracked-changes, immagini)</td>
-        <td>Know-how python-docx puro: nessun tool deterministico sa gestire i canali nascosti di commenti
-          e revisioni. Puro valore LLM riusabile.</td>
-        <td><code>technical-writer/maintain-manual</code></td>
-      </tr>
-      <tr>
-        <td><b>translate</b></td>
-        <td><code>MissingTranslations.csv</code> → <code>INSERT language_spv</code></td>
-        <td>Regola chiave-esatta (<code>#</code>) + inferenza IT/EN dal call-site. Solo un LLM può
-          interpretare il contesto di chiamata per tradurre correttamente. Semplificata con connessione
-          DB diretta.</td>
-        <td><code>hmi-developer/translate</code></td>
-      </tr>
-      <tr>
-        <td><b>reconcile-solutions</b></td>
-        <td>Porta una feature tra due solution con merge/cherry-pick + port semantico</td>
-        <td>Raro ma legittimo: quando due prodotti sono davvero distinti (non branch dello stesso repo),
-          l'LLM riapplica l'intento della feature, non il diff. Per il caso comune (stesso repo) meglio
-          branch + merge.</td>
-        <td><code>hmi-developer/reconcile-solutions</code></td>
-      </tr>
-      <tr>
-        <td><b>add-doc</b></td>
-        <td>Disciplina unica per aggiungere commenti (fusione di <code>commentize</code>)</td>
-        <td>Recupera da <code>commentize</code> solo lo scoping sul <strong>changed-set</strong>.
-          Scartati: <code>/simplify</code>, S9 "documenta i privati", gitize-cache.
-          <span class="tag t-ok">fusa</span></td>
-        <td><code>hmi-developer/add-doc</code></td>
-      </tr>
+      <tr><td><code>dpiRepair</code></td><td><code>hmi-developer/dpi-anchor-fix</code></td></tr>
+      <tr><td><code>networkProbe</code></td><td><code>device-spy/network-probe</code></td></tr>
+      <tr><td><code>manualize</code></td><td><code>technical-writer/maintain-manual</code></td></tr>
+      <tr><td><code>translate</code></td><td><code>hmi-developer/translate</code></td></tr>
+      <tr><td><code>gitReconcile</code></td><td><code>hmi-developer/reconcile-solutions</code></td></tr>
+      <tr><td><code>commentize</code> (parziale)</td><td><code>hmi-developer/add-doc</code> <span class="tag t-warn">fuso</span></td></tr>
     </tbody>
   </table></div>
 
+  <h3>2.1 dpi-anchor-fix</h3>
+  <p><span class="tag t-ok">hmi-developer/dpi-anchor-fix</span></p>
+  <p><strong>Il problema.</strong> Le form .NET 8 di Sistec soffrono di un bug noto di DPI e ancoraggio:
+    su schermi ad alta risoluzione, i controlli si spostano o si ridimensionano male perché l'ancoraggio
+    non è calcolato correttamente al cambio di DPI. È un problema deterministico — uno script può
+    analizzare il file .resx o il designer e identificare le form a rischio.</p>
+  <p><strong>La soluzione.</strong> Uno script PowerShell bundlato scandisce le form aperte e produce un
+    report: quali controlli hanno ancoraggio incompleto, quali form hanno il flag DPI assente, quali
+    property sono potenzialmente errate. L'LLM <strong>interpreta</strong> il report e, per ogni
+    segnalazione, decide quale configurazione applicare — perché la correzione dipende dal contesto:
+    a volte basta aggiungere <code>AutoScaleMode = Dpi</code>, a volte va rivisto l'ancoraggio dei
+    controlli figli, a volte è un falso positivo.</p>
+  <p><strong>Perché passa il filtro.</strong> Lo script fa la parte deterministica; l'LLM fa ciò che
+    lo script non può fare: decidere, caso per caso, quale rimedio è sicuro sotto le condizioni del
+    progetto. Pattern «bundla + interpreta».</p>
+
+  <h3>2.2 network-probe</h3>
+  <p><span class="tag t-ok">device-spy/network-probe</span></p>
+  <p><strong>Il problema.</strong> Quando un dispositivo industriale (PLC, pannello HMI, IPC) non risponde
+    in rete, le cause possono essere molteplici: cavo scollegato, conflitto IP, driver corrotto,
+    link-flap sul switch, scheda di rete disabilitata. Un tecnico in sede deve diagnosticare
+    rapidamente, ma la diagnostica manuale è lenta.</p>
+  <p><strong>La soluzione.</strong> La skill lancia uno script che sonda la macchina: interroga le NIC
+    via <code>Get-NetAdapter</code>, controlla l'assegnazione IP (<code>Get-NetIPAddress</code>),
+    verifica la connettività con ping e tracert, raccoglie lo stato dei driver. L'LLM analizza
+     l'output e diagnostica: «link-flap sulla porta 3 dello switch» vs «conflitto IP con 192.168.1.45»
+     vs «driver Intel PRO/1000 fermo al codice 43».</p>
+  <p><strong>Perché passa il filtro.</strong> Stesso pattern: lo script raccoglie dati deterministici,
+    l'LLM li interpreta con conoscenza di dominio che un tool da solo non ha. Un ingegnere esperto
+    riconoscerebbe link-flap dall'output di <code>Get-NetAdapterStatistics</code>; la skill incapsula
+    quella conoscenza.</p>
+
+  <h3>2.3 maintain-manual</h3>
+  <p><span class="tag t-ok">technical-writer/maintain-manual</span></p>
+  <p><strong>Il problema.</strong> I manuali tecnici di Sistec sono file .docx (non markdown) con
+    commenti, revisioni tracciate, immagini incorporate. «Aggiungi un paragrafo sulla procedura di
+    calibrazione» non è un'operazione banale: bisogna aprire il file con python-docx, navigare la
+    struttura XML nascosta, inserire il contenuto nel punto giusto <strong>senza rompere</strong>
+    i canali di commenti e tracked changes, aggiornare il conteggio delle immagini, e salvare
+    preservando il formato.</p>
+  <p><strong>La soluzione.</strong> La skill incapsula tutto il know-how python-docx necessario:
+    l'apertura corretta del file, la navigazione dei paragrafi, l'inserimento di testo con
+    formattazione, la preservazione dei commenti esistenti, l'aggiornamento del conteggio immagini.
+    L'operatore dice «aggiungi questa sezione dopo il paragrafo X» e la skill gestisce il resto.</p>
+  <p><strong>Perché passa il filtro.</strong> Puro valore LLM riusabile. Nessun tool deterministico
+    sa gestire i canali nascosti di commenti e revisioni di un .docx — servono conoscenza del
+    formato XML di Office Open XML e dell'API python-docx. La skill è il <strong>know-how</strong>
+    stesso, non un'istruzione su come usare un tool esterno.</p>
+
+  <h3>2.4 translate</h3>
+  <p><span class="tag t-ok">hmi-developer/translate</span></p>
+  <p><strong>Il problema.</strong> Le HMI di Sistec hanno stringhe in italiano da tradurre in inglese
+    (e viceversa). Le traduzioni vivono in un database con schema <code>language_spv</code>, dove
+    ogni stringa ha una chiave esatta che <strong>deve</strong> corrispondere al call-site
+    (<code>#</code> = esatta, niente approssimazioni). Il file <code>MissingTranslations.csv</code>
+    elenca le chiavi mancanti.</p>
+  <p><strong>La soluzione.</strong> La skill legge il CSV, per ogni chiave mancante inferisce il
+    significato dal contesto di chiamata (legge il file .xaml o .cs che usa quella chiave), e
+    produce gli <code>INSERT</code> corretti per il database. La regola «chiave esatta» è critica:
+    l'LLM non deve inventare variazioni — deve generare la traduzione giusta per quel contesto preciso.</p>
+  <p><strong>Perché passa il filtro.</strong> La traduzione HMI non è tradurre parole: è capire
+    <strong>dove</strong> quella stringa appare nell'interfaccia e tradurla coerentemente con le
+    convenzioni Sistec (es. «Avvia ciclo» → «Start cycle» e non «Start the cycle»). Solo un LLM
+    può farlo — un dizionario deterministico non basta. La skill è stata <strong>semplificata</strong>
+    rispetto all'originale: ora usa connessione DB diretta, rileva automaticamente la versione
+    (5.7 ≡ 8), e supporta <code>--apply</code> e <code>--rescan</code>.</p>
+
+  <h3>2.5 reconcile-solutions</h3>
+  <p><span class="tag t-ok">hmi-developer/reconcile-solutions</span></p>
+  <p><strong>Il problema.</strong> In Sistec coesistono <strong>prodotti distinti</strong> che
+    condividono heritage — ad esempio, due soluzioni .NET partite dallo stesso codice base ma
+    divergenti da anni. Portare una feature da una all'altra non è un semplice merge: i nomi
+    sono cambiati, le architetture si sono differenziate, le API pubbliche non coincidono più.</p>
+  <p><strong>La soluzione.</strong> La skill non applica diff: riapplica l'<strong>intento</strong>
+    della feature. Dove il codice condiviso esiste ancora, fa cherry-pick o merge. Dove i due
+    prodotti sono divergenti, l'LLM capisce cosa faceva la feature nell'originale e la reimplementa
+    nel nuovo contesto, adattandola alle convenzioni e all'architettura del destinatario.</p>
+  <p><strong>Perché passa il filtro.</strong> Raro ma legittimo. Il documento SKILL-AUDIT.md
+    spiega il caveat: per feature tra branch dello <strong>stesso</strong> repo, il workflow
+    giusto è un branch. Ma quando i prodotti sono davvero distinti (non branch dello stesso
+    storico git), l'LLM è l'unico strumento che può riapplicare l'intento. <code>reconcile-solutions</code>
+    è stato tenuto esplicitamente con questa consapevolezza — non è la soluzione di default, ma
+    esiste per il caso eccezionale.</p>
+
+  <h3>2.6 add-doc (fusione)</h3>
+  <p><span class="tag t-ok">hmi-developer/add-doc</span> <span class="tag t-warn">fusa da commentize</span></p>
+  <p><strong>Il problema.</strong> Documentare il codice è un problema eterno. Due file di
+    <code>src/</code> cercavano di risolverlo: <code>commentize</code> e un altro frammento
+    di disciplina commenti. Entrambi avevano parti valide e parti scartabili.</p>
+  <p><strong>La soluzione.</strong> Dalla fusione è nata <code>add-doc</code>, una skill singola
+    e generale che applica una disciplina di commenti <strong>solo sul changed-set</strong> —
+    non sull'intera codebase. Da <code>commentize</code> è stato recuperato solo lo scoping
+    sul changed-set; sono stati scartati <code>/simplify</code> (un altro comando assente),
+    la regola S9 «documenta i privati» (eccessiva), e il gitize-cache (caching non necessario).
+    Il risultato è una skill corta, generale, con zero leakage di workspace privato.</p>
+  <p><strong>Perché passa il filtro.</strong> È il perfetto esempio di cosa sia una skill ben
+    fatta: non dice «scrivi commenti», ma disciplina <strong>dove</strong> scriverli (solo ciò
+    che è cambiato) e <strong>come</strong> (convenzioni Sistec). L'LLM interpreta il diff e
+    decide cosa merita un commento — è giudizio semantico, non un copia-incolla.</p>
+
   <div class="callout">
-    <h4>Qualità del porting</h4>
-    <p>Ogni skill è stata de-coupled dal workspace privato: path assoluti <code>C:\Users\Sistec 23\…</code>
-      → <code>$env:CLAUDE_PLUGIN_ROOT</code> o relativi; direttive proprietarie rimosse; descrizione
-      riscritta orientata al trigger; engine deterministici (.ps1) bundlati come <code>assets/</code>
-      del plugin. Barra di qualità: <code>add-doc</code> (corta, generale, zero leakage).</p>
+    <h4>Porting e qualità</h4>
+    <p>Ogni skill ha subito lo stesso trattamento di de-coupling: gli <strong>path assoluti</strong>
+      (<code>C:\Users\Sistec 23\…</code>) sono diventati <code>$env:CLAUDE_PLUGIN_ROOT</code> o percorsi
+      relativi; le label proprietarie (P0–P15, convenzioni S-series) sono state trasformate in regole
+      in chiaro o in rimandi a <code>assets/rules/</code>; i memory-anchor (<code>[[…]]</code>) e i
+      ledger di progetto attivo sono stati rimossi; le <strong>description</strong> sono state riscritte
+      orientate al trigger (cosa fa scattare la skill), e per le operazioni deliberate o rischiose è
+      stato impostato <code>disable-model-invocation: true</code>; gli <strong>engine deterministici</strong>
+      (.ps1) sono stati bundlati come <code>assets/</code> del plugin, non referenziati da path locali.</p>
+    <p>La barra di qualità usata è <code>add-doc</code>: corta, generale, zero leakage di workspace
+      privato, description che dice chiaramente cosa fa e quando si usa.</p>
   </div>
 </section>
 
 <!-- ========== 3 ========== -->
 <section>
-  <div class="sec-head"><span class="sec-no">§3</span><h2>Skill rifiutate (⚫) — perché</h2></div>
-  <p>Quattordici file sono stati scartati. Le motivazioni si raggruppano in quattro categorie:</p>
+  <div class="sec-head"><span class="sec-no">§3</span><h2>Skill rifiutate — le quattordici escluse, con motivazione</h2></div>
+  <p>Quattordici file non hanno superato il filtro. Le motivazioni si dividono in tre categorie nette,
+    più un caso a sé stante (port-solution) che è stato scartato per un cambio di paradigma nel
+    flusso di lavoro.</p>
 
-  <h3>3.1 Operazioni deterministiche — le fa meglio uno script</h3>
-  <p>Un LLM è non-deterministico per natura. Dove esiste un tool deterministico (git, linter, docker compose,
-    script di copia), usare un LLM aggiunge rischio senza beneficio.</p>
+  <h3>3.1 Operazioni deterministiche — le fa meglio uno script o un tool</h3>
+  <p>Il gruppo più numeroso (7 file). Sono comandi che avvolgono operazioni che un tool deterministico
+    esegue già in modo perfetto: git puro, docker compose, comandi di copia file, scan di dead code.
+    In tutti questi casi, un LLM non solo non aggiunge valore — lo <strong>sottrae</strong>, perché
+    introduce non-determinismo, consuma contesto, e rischia di sbagliare ciò che un tool farebbe
+    sempre giusto.</p>
 
   <div class="tbl-wrap"><table>
-    <thead><tr><th>File</th><th>Motivo</th></tr></thead>
+    <thead><tr><th>File</th><th>Cosa faceva</th><th>Perché scartato</th></tr></thead>
     <tbody>
-      <tr><td><b><code>fetch</code></b></td><td>Git puro (<code>fetch</code>, <code>rev-list</code>,
-        <code>status --porcelain</code>, <code>merge --ff-only</code>) + predicati. Un loop/script lo fa
-        meglio, in modo deterministico e senza consumare contesto.</td></tr>
-      <tr><td><b><code>gitAlign</code></b></td><td>Git puro + predicati. L'unico valore (guard "no
-        <code>--split</code> a merge in corso") è un check da mettere in <code>gitize</code>, non una skill.</td></tr>
-      <tr><td><b><code>gitWipe</code></b></td><td>Git puro (<code>for-each-ref</code>, <code>branch --merged</code>,
-        <code>branch -d/-D</code>). Operazione distruttiva → va fatta da uno script deterministico, non da
-        un LLM. Safety net = git stesso.</td></tr>
-      <tr><td><b><code>merge</code></b></td><td><code>git merge --no-ff</code> in loop. L'unico bit LLM (comporre
-        il messaggio) è già il mestiere di <code>gitize</code>. «Non basta <code>git merge</code>?»</td></tr>
-      <tr><td><b><code>codesys</code></b></td><td>Wrapper sottile su <code>docker compose</code>
-        (up/down/restart = comandi compose 1:1). Modo nativo: <code>docker compose</code>.</td></tr>
-      <tr><td><b><code>deploy</code></b></td><td>Rilascio in produzione (copia UNC + shortcut): operazione
-        rischiosa, irreversibile, deterministica. 240 righe per un copia-incolla che un script
-        (<code>robocopy</code> + <code>WScript.Shell</code>) fa meglio e in sicurezza.</td></tr>
-      <tr><td><b><code>deadcode</code></b></td><td>Scan LLM dell'intera codebase = spreco di contesto.
-        Il dead code lo trovano linter/analyzer (Roslyn IDE0051/CS0169, ReSharper) in modo deterministico
-        e completo.</td></tr>
+      <tr>
+        <td><b><code>fetch</code></b></td>
+        <td>Eseguiva operazioni git di sincronizzazione: <code>fetch</code>, <code>rev-list</code>,
+          <code>status --porcelain</code>, <code>merge --ff-only</code>, più predicati per decidere
+          se un branch è aggiornato o divergente.</td>
+        <td>Git puro. Un loop in PowerShell o bash fa esattamente le stesse operazioni in modo
+          deterministico, senza consumare contesto LLM, senza rischio di allucinazioni, e con
+          exit code certi. Le condizioni booleane («è aggiornato?») non richiedono giudizio semantico:
+          sono predicati su diff di SHA.</td>
+      </tr>
+      <tr>
+        <td><b><code>gitAlign</code></b></td>
+        <td>Allineava branch locali ai remoti, con guard condition su merge in corso.</td>
+        <td>Git puro + predicati. L'unico pezzo con un briciolo di logica (la guard «non fare
+          --split se c'è un merge in corso») non merita una skill: è una condizione da mettere
+          nello script <code>gitize</code> o in un alias git. Il resto sono comandi git sequenziali.</td>
+      </tr>
+      <tr>
+        <td><b><code>gitWipe</code></b></td>
+        <td>Puliva branch locali già mergiati: <code>for-each-ref</code>, <code>branch --merged</code>,
+          <code>branch -d/-D</code>.</td>
+        <td>Operazione distruttiva e deterministica. Cancellare branch è un'operazione a rischio:
+          va eseguita da uno script deterministico con safety net (dry-run prima, conferma dopo),
+          non da un LLM che potrebbe sbagliare branch da cancellare. Git stesso è la safety net
+          (reflog), ma l'esecuzione deve essere certa.</td>
+      </tr>
+      <tr>
+        <td><b><code>merge</code></b></td>
+        <td>Eseguiva <code>git merge --no-ff</code> in loop per più branch. L'unico contributo
+          LLM era comporre il messaggio di merge.</td>
+        <td>«Non basta <code>git merge</code>?» 240 righe per eseguire un comando git in serie.
+          L'unico valore LLM — il messaggio di merge — è già una capacità nativa di Claude
+          (la usa in <code>gitize</code>). Il resto è un for-loop.</td>
+      </tr>
+      <tr>
+        <td><b><code>codesys</code></b></td>
+        <td>Wrapper su docker compose per avviare/fermare/riavviare i container CODESYS.</td>
+        <td><code>docker compose up -d</code>, <code>docker compose down</code>,
+          <code>docker compose restart</code>. I comandi sono un mapping 1:1 con docker compose.
+          Una skill di 100 righe per avvolgere tre comandi docker — il modo nativo è usare
+          docker compose direttamente, o al massimo uno script .bat/.ps1.</td>
+      </tr>
+      <tr>
+        <td><b><code>deploy</code></b></td>
+        <td>Rilasciava il progetto in produzione: copia UNC di file binari + creazione shortcut
+          sul desktop del cliente.</td>
+        <td>240 righe per un copia-incolla. Operazione rischiosa (produzione), irreversibile,
+          deterministica. Un LLM non deve gestire deploy in produzione — è il caso d'uso perfetto
+          per uno script PowerShell deterministico (<code>robocopy</code> + <code>WScript.Shell</code>
+          per lo shortcut) con log e rollback. La skill è stata scartata con la motivazione più
+          netta dell'intero audit: un'operazione in produzione non può dipendere da un LLM
+          non-deterministico.</td>
+      </tr>
+      <tr>
+        <td><b><code>deadcode</code></b></td>
+        <td>Scansionava l'intera codebase per trovare dead code (metodi non chiamati, classi
+          inutilizzate, variabili morte).</td>
+        <td>Scan LLM dell'intera codebase = consumo proibitivo di contesto + risultato
+          non-deterministico. Il dead code si trova in modo deterministico e completo con
+          l'analyzer Roslyn (IDE0051 per metodi privati non usati, CS0169 per campi mai
+          referenziati) o con ReSharper. Nessun giudizio semantico richiesto.</td>
+      </tr>
     </tbody>
   </table></div>
 
-  <h3>3.2 Comportamento nativo — Claude lo fa già</h3>
-  <p>Alcuni file cercano di insegnare a Claude ciò che Claude sa fare nativamente. Sono ridondanti.</p>
+  <h3>3.2 Comportamento nativo — Claude lo sa già fare</h3>
+  <p>Quattro file cercavano di insegnare a Claude ciò che Claude Code sa già fare in modo nativo.
+    Sono ridondanti per definizione: la domanda 2 del filtro li coglie subito.</p>
 
   <div class="tbl-wrap"><table>
-    <thead><tr><th>File</th><th>Motivo</th></tr></thead>
+    <thead><tr><th>File</th><th>Cosa faceva</th><th>Perché scartato</th></tr></thead>
     <tbody>
-      <tr><td><b><code>proj</code></b></td><td>Infrastruttura di sessione. Nativo CC = lanciare
-        <code>claude</code> dentro ogni repo (la <code>cwd</code> <em>è</em> il progetto). Framework
-        privato (<code>_config</code>, <code>MEMORY.md</code>, anchor, work-dir stale) non riusabile.
-        </td></tr>
-      <tr><td><b><code>feedback</code></b></td><td>Versione striminzita della <strong>plan mode</strong>
-        nativa di Claude Code.</td></tr>
-      <tr><td><b><code>issue</code></b></td><td>Issue-tracker su file. Un umano apre su <strong>GitHub</strong>;
-        l'analisi è nativa («analizza questo problema»); i verbi CRUD = manipolazione deterministica di
-        tabella markdown; persistenza = spec-driven / «salva un md».</td></tr>
-      <tr><td><b><code>port-solution</code></b></td><td>Rimodella un tipo su un esemplare di un'altra
-        solution. Ma il workflow giusto per una feature è un <strong>branch</strong> (contesto ampio,
-        git merge, meno rischio API pubbliche), non copie parallele. Tolto il framing «due solution» =
-        refactor nativo.</td></tr>
+      <tr>
+        <td><b><code>proj</code></b></td>
+        <td>Framework di sessione: cambiava directory, caricava <code>_config</code> e
+          <code>MEMORY.md</code>, gestiva anchor e work-dir stale.</td>
+        <td>L'infrastruttura di sessione è nativa in Claude Code: la <code>cwd</code> <em>è</em>
+          il progetto, la memoria automatica (<code>MEMORY.md</code>) è già caricata, i comandi
+          <span class="kbd">/clear</span> e <span class="kbd">/compact</span> gestiscono il
+          contesto. Il framework privato (<code>_config</code>, anchor, ledger) era legato al
+          workspace personale dell'autore e non riusabile.</td>
+      </tr>
+      <tr>
+        <td><b><code>feedback</code></b></td>
+        <td>Analizzava il codice senza modificarlo e dava un parere.</td>
+        <td>È esattamente la <strong>plan mode</strong> di Claude Code: modalità sola lettura
+          che raccoglie contesto, analizza e produce un parere senza scrivere nulla. La versione
+          della skill era una copia striminzita e meno capace.</td>
+      </tr>
+      <tr>
+        <td><b><code>issue</code></b></td>
+        <td>Issue tracker su file: creava, elencava, aggiornava issue in una tabella markdown.</td>
+        <td>Tre problemi: (1) un umano apre issue su <strong>GitHub</strong>, non in una tabella
+          markdown locale; (2) l'analisi di un problema è nativa («analizza questo bug»);
+          (3) i verbi CRUD sono manipolazione deterministica di una tabella markdown — non serve
+          un LLM per aggiungere una riga a un file. La persistenza tramite spec-driven o «salva
+          un md» è già coperta da pattern esistenti.</td>
+      </tr>
+      <tr>
+        <td><b><code>port-solution</code></b></td>
+        <td>Rimodellava un tipo (classe, interfaccia) da una solution all'altra, adattandolo
+          alle convenzioni della destinazione.</td>
+        <td>Vedi §3.4 per l'analisi completa. In sintesi: è nato dall'abitudine di tenere copie
+          parallele di solution, ma il workflow giusto è un branch. Senza il framing «port tra
+          due solution distinte», è un refactor nativo.</td>
+      </tr>
     </tbody>
   </table></div>
 
-  <h3>3.3 Meta-tooling — coperto da skill-creator</h3>
-  <p>Strumenti per creare o gestire skill. Sono già coperti dallo skill-creator del marketplace.</p>
+  <h3>3.3 Meta-tooling — coperto dallo skill-creator del marketplace</h3>
+  <p>Tre file sono stati scritti per creare, gestire o registrare skill e comandi. Oggi nel marketplace
+    esiste già <strong>skill-creator</strong> — uno strumento dedicato che fa tutto ciò in modo
+    strutturato. Questi file sono obsoleti per definizione.</p>
 
   <div class="tbl-wrap"><table>
-    <thead><tr><th>File</th><th>Motivo</th></tr></thead>
+    <thead><tr><th>File</th><th>Cosa faceva</th><th>Perché scartato</th></tr></thead>
     <tbody>
-      <tr><td><b><code>command</code></b></td><td>Meta-tooling. Nativo = creare
-        <code>.claude/commands/&lt;name&gt;.md</code>; per distillare skill c'è <code>skill-creator</code>.
-        Spawner/ledger/catalog bespoke non riusabili.</td></tr>
-      <tr><td><b><code>skillify</code></b></td><td>Meta-authoring. Coperto da <code>skill-creator</code>;
-        «recording» solo comportamentale (CC non ha hook on-disk) → fragile.</td></tr>
-      <tr><td><b><code>skilliDo</code></b></td><td>Partner-produttore di <code>skillify</code>. Stesso motivo.</td></tr>
+      <tr>
+        <td><b><code>command</code></b></td>
+        <td>Framework per creare, listare, abilitare, disabilitare comandi. Spawner, ledger,
+          catalog, profili, autorizzazioni.</td>
+        <td>Il modo nativo di creare un comando è scrivere un file <code>.md</code> in
+          <code>.claude/commands/</code>. Per le skill, il marketplace ha <code>skill-creator</code>
+          che fa tutto in modo più pulito (distillazione, audit, port). Lo spawner, il ledger
+          e il catalog erano bespoke e legati al workspace privato dell'autore.</td>
+      </tr>
+      <tr>
+        <td><b><code>skillify</code></b></td>
+        <td>«Registrava» una skill osservando il comportamento di Claude e trasformandolo
+          in una skill.</td>
+        <td>Il recording era solo comportamentale — osservava cosa faceva Claude e cercava di
+          ricostruire una skill. Ma Claude Code non ha hook on-disk per catturare il comportamento
+          in modo affidabile, quindi il risultato era fragile e incompleto. Coperto da
+          <code>skill-creator</code> che fa distillazione strutturata.</td>
+      </tr>
+      <tr>
+        <td><b><code>skilliDo</code></b></td>
+        <td>Partner di <code>skillify</code>: produceva la skill una volta registrata.</td>
+        <td>Stesso motivo. Se <code>skillify</code> è fragile, <code>skilliDo</code> non ha
+          senso di esistere. L'intero ecosistema di registrazione è stato sostituito da
+          <code>skill-creator</code>.</td>
+      </tr>
     </tbody>
   </table></div>
 
-  <div class="callout">
-    <h4>Il criterio che ha salvato reconcile-solutions</h4>
-    <p><code>reconcile-solutions</code> e <code>port-solution</code> nascono dall'abitudine di tenere
-      <strong>copie parallele di solution</strong> (es. <code>5309</code> e <code>5315</code>). Il workflow
-      migliore è un <strong>branch</strong> — ma quando i prodotti sono <strong>davvero distinti</strong>
-      (non branch dello stesso repo), l'LLM è l'unico modo per riapplicare l'intento della feature.
-      <code>port-solution</code> è stato scartato perché nel caso comune si riduce a refactor nativo con
-      branch; <code>reconcile-solutions</code> è stato tenuto per il caso raro di heritage condiviso tra
-      prodotti distinti.</p>
+  <h3>3.4 Il caso port-solution — quando il workflow giusto è un branch</h3>
+  <p><code>port-solution</code> merita un discorso a parte perché tocca un'abitudine radicata
+    in Sistec: tenere <strong>copie parallele di soluzione</strong> (es. <code>5309</code> e
+    <code>5315</code>) e portare pezzi da una all'altra.</p>
+  <p>Il file <code>port-solution</code> prendeva un tipo da una solution e lo adattava per
+    l'altra: rinominava namespace, cambiava convenzioni, adattava costruttori. Il problema è
+    che <strong>il workflow giusto non è portare tra due solution</strong> — il workflow giusto
+    <strong>è un branch</strong>: su un singolo repo, con una feature branch, Claude ha contesto
+    ampio, git gestisce il merge, e c'è meno rischio di rompere API pubbliche rispetto a copie
+    parallele che divergono.</p>
+  <p>Per questo <code>port-solution</code> è stato scartato: nel caso comune (stessa famiglia
+    di prodotti, branch-milestone diversi) si riduce a un refactor nativo, che Claude fa senza
+    skill. Il caso raro (prodotti davvero distinti) è coperto da <code>reconcile-solutions</code>,
+    che è stato tenuto esplicitamente.</p>
+
+  <div class="callout key">
+    <h4>La lezione del cluster cross-solution</h4>
+    <p><code>reconcile-solutions</code> e <code>port-solution</code> nascono dallo stesso problema
+      ma hanno avuto esiti opposti. La differenza? <code>reconcile-solutions</code> porta
+      <strong>l'intento</strong> di una feature — giudizio semantico puro. <code>port-solution</code>
+      rimodella <strong>un tipo</strong> — operazione che con i branch diventa un merge o un
+      refactor nativo. La lezione per il futuro: prima di scrivere una skill «cross-solution»,
+      chiedersi «posso invece usare un branch?». Se la risposta è sì, la skill probabilmente
+      non serve.</p>
   </div>
 </section>
 
 <!-- ========== 4 ========== -->
 <section>
-  <div class="sec-head"><span class="sec-no">§4</span><h2>Riepilogo</h2></div>
+  <div class="sec-head"><span class="sec-no">§4</span><h2>Pattern ricorrenti negli scarti — cosa abbiamo imparato</h2></div>
+  <p>L'audit dei 20 file non è solo un esercizio di classificazione: ha fatto emergere tre pattern
+    ricorrenti che spiegheremo per evitare di riscriverli in futuro.</p>
+
+  <h3>4.1 La sindrome del wrapper git</h3>
+  <p>Quattro file scartati (<code>fetch</code>, <code>gitAlign</code>, <code>gitWipe</code>,
+    <code>merge</code>) sono wrapper su git. Il pattern è sempre lo stesso: «insegno a Claude
+    come usare git». Ma Claude Code usa già git in modo nativo — fa commit, push, branch, diff,
+    restore, merge. Insegnargli comandi git in una skill è come insegnargli a leggere un file:
+    è un tool nativo, non un giudizio semantico.</p>
+  <p><strong>Criterio per il futuro:</strong> se una skill si limita a chiamare comandi git in
+    sequenza, anche con predicati booleani, non supera la domanda 1 del filtro. L'unica eccezione
+    è quando l'LLM deve <strong>decidere</strong> cosa fare in base al risultato di git (es.
+    «il merge ha conflitti in questi file, risolvili semanticamente»). Ma in quel caso, la
+    decisione è il valore — la chiamata git è solo il presupposto.</p>
+
+  <h3>4.2 Coprire l'assenza di un processo con una skill</h3>
+  <p><code>port-solution</code> è l'esempio perfetto. La skill nasce perché esisteva un'abitudine
+    (copie parallele di solution) che è essa stessa problematica. La skill non risolveva il
+    problema di fondo — lo <strong>aggirava</strong> automatizzando un workflow sbagliato.
+    Il filtro l'ha colta: se il workflow giusto è un branch, la skill che automatizza il workflow
+    sbagliato non va pubblicata nel marketplace, va sostituita da un cambiamento di processo.</p>
+  <p><strong>Criterio per il futuro:</strong> prima di scrivere una skill, chiedersi «il
+    problema che risolve esisterebbe se il nostro processo fosse diverso?». Se la risposta è
+    sì, la skill potrebbe essere una stampella per un processo subottimale.</p>
+
+  <h3>4.3 Framework personali travestiti da skill</h3>
+  <p><code>command</code> e <code>proj</code> sono framework che l'autore aveva costruito per
+    organizzare il proprio workspace. Funzionavano per lui, ma erano legati al suo ambiente:
+    path assoluti, convenzioni personali, ledger di progetto attivo, memory-anchor. Quando
+    de-couplati dal workspace privato, restava poco o nulla di riusabile. La domanda 3 del
+    filtro («Claude farebbe peggio senza?») li ha bocciati: ciò che facevano era o nativo
+    (sessione, memoria) o coperto da skill-creator.</p>
+  <p><strong>Criterio per il futuro:</strong> una skill non è un framework personale. Se per
+    usarla servono file di configurazione, ledger, anchor, o path specifici della macchina
+    dell'autore, probabilmente non è una skill — è un setup personale che va tenuto fuori
+    dal marketplace.</p>
+</section>
+
+<!-- ========== 5 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§5</span><h2>Riepilogo numerico</h2></div>
 
   <div class="tbl-wrap"><table>
-    <thead><tr><th></th><th>Conteggio</th><th>Percentuale</th></tr></thead>
+    <thead><tr><th>Categoria</th><th>Conteggio</th><th>% su 20</th></tr></thead>
     <tbody>
       <tr><td><b>Skill integrate</b></td><td>6</td><td>30%</td></tr>
       <tr><td><b>Skill rifiutate</b></td><td>14</td><td>70%</td></tr>
@@ -217,30 +470,43 @@
     </tbody>
   </table></div>
 
-  <p>Le 14 skill rifiutate si suddividono per motivo:</p>
-  <ul class="tight">
-    <li><b>7</b> — operazioni deterministiche (le fa meglio uno script/tool)</li>
-    <li><b>4</b> — comportamento nativo di Claude Code (ridondanti)</li>
-    <li><b>3</b> — meta-tooling coperto da <code>skill-creator</code></li>
-  </ul>
+  <p>Le 14 skill rifiutate per motivo:</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Motivo</th><th>Conteggio</th><th>File</th></tr></thead>
+    <tbody>
+      <tr><td>Operazione deterministica (tool/script meglio)</td><td>7</td><td><code>fetch</code>, <code>gitAlign</code>, <code>gitWipe</code>, <code>merge</code>, <code>codesys</code>, <code>deploy</code>, <code>deadcode</code></td></tr>
+      <tr><td>Comportamento nativo di Claude Code</td><td>4</td><td><code>proj</code>, <code>feedback</code>, <code>issue</code>, <code>port-solution</code></td></tr>
+      <tr><td>Meta-tooling coperto da skill-creator</td><td>3</td><td><code>command</code>, <code>skillify</code>, <code>skilliDo</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Il dato più significativo: il <strong>70%</strong> dei file di <code>src/</code> non ha superato
+    il filtro. Non perché fossero scritti male — al contrario, molti erano ben fatti per il loro
+    scopo contingente. Ma non erano <strong>skill</strong> nel senso del marketplace: non portavano
+    giudizio semantico che solo un LLM poteva dare. La maggior parte era automazione deterministica
+    vestita da skill. Il filtro ha separato i due mondi.</p>
 </section>
 
-<!-- ========== 5 ========== -->
+<!-- ========== 6 ========== -->
 <section>
-  <div class="sec-head"><span class="sec-no">§5</span><h2>Collegamenti</h2></div>
+  <div class="sec-head"><span class="sec-no">§6</span><h2>Riferimenti</h2></div>
   <ul class="tight">
-    <li><a href="SKILL-AUDIT.md"><b>SKILL-AUDIT.md</b></a> — audit sorgente completo: 20 file, esito per ciascuno,
-      filtro a tre domande</li>
-    <li><a href="index.html"><b>Adozione Claude &amp; Claude Code in Sistec</b></a> — il contesto operativo:
-      ciclo agentico, skill, marketplace, wiki-LLM</li>
+    <li><a href="SKILL-AUDIT.md"><b>SKILL-AUDIT.md</b></a> — audit sorgente completo: 20 file, esito
+      per ciascuno, filtro a tre domande, difetti trasversali corretti nel port, nota sul cluster
+      cross-solution</li>
+    <li><a href="index.html"><b>Adozione Claude &amp; Claude Code in Sistec</b></a> — il documento
+      principale: ciclo agentico, contesto, prompt, skill, CLAUDE.md, marketplace di plugin,
+      wiki-LLM</li>
     <li><b>Marketplace Sistec</b> — repository interno delle skill, branch <code>main</code> protetto,
-      accesso via PR</li>
+      accesso via PR, maintainer che applica il filtro a tre domande</li>
+    <li><b>skill-creator</b> — skill del marketplace per distillare, validare e pubblicare nuove
+      skill</li>
   </ul>
 </section>
 
 <footer>
-  <span>Sistec · audit skill · marketplace interno · 5 §</span>
-  <span>6 integrate · 14 scartate · 2026-07-23 · v1.0</span>
+  <span>Sistec · audit skill · marketplace interno · 6 §</span>
+  <span>6 integrate · 14 scartate · validato con skill-creator · 2026-07-23 · v1.0</span>
 </footer>
 </div>
 
