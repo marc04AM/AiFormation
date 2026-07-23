@@ -614,6 +614,56 @@ Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
       registration con i permessi Graph: <code>ChannelMessage.Read.All</code>,
       <code>Notes.Read.All</code>, <code>Files.Read.All</code> (solo lettura — l'ingest non scrive su M365).</p>
   </div>
+
+  <h3>8.5 Sicurezza con account Anthropic condiviso</h3>
+  <p>In Sistec le licenze Claude sono condivise: più persone usano lo stesso account Anthropic.
+    Questo ha implicazioni profonde su <strong>dove</strong> e <strong>come</strong> vengono conservati i token
+    di accesso ai servizi Microsoft 365, a seconda della superficie di Claude utilizzata.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Claude Code (MCP locale)</th><th>Claude Cowork (connector built-in)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Configurazione</b></td><td>file <code>.mcp.json</code> o <code>~/.claude.json</code> locale</td><td>via claude.ai (connector nel workspace Anthropic)</td></tr>
+      <tr><td><b>Token OAuth</b></td><td>OS credential store / file locale (<code>0600</code>)</td><td>server Anthropic (infrastruttura cloud)</td></tr>
+      <tr><td><b>Legato all'account Anthropic?</b></td><td><b>No</b> — puramente locale</td><td><b>Sì</b> — il token è associato all'account</td></tr>
+      <tr><td><b>Accessibile dai colleghi?</b></td><td><b>No</b> — ogni PC ha i propri token</td><td><b>Sì</b> — stesso account = stesso token</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout key">
+    <h4>Il rischio</h4>
+    <p>Con un account Anthropic condiviso, se un operatore collega Microsoft 365 a <strong>Claude Cowork</strong>
+      via connector built-in (es. il connector Microsoft 365 dal catalogo claude.ai), il token OAuth viene
+      memorizzato sui server Anthropic e chiunque acceda allo stesso account può interrogare quei dati — mail,
+      calendario, file OneDrive — via Cowork.</p>
+  </div>
+
+  <p>Il problema non si pone con <strong>Claude Code</strong> o con i <strong>local MCP server</strong>
+    configurati in Cowork via <em>Settings > Developer Tools > MCP</em>: in entrambi i casi i token risiedono
+    nel credential store del PC locale. I colleghi su altri computer non hanno accesso.</p>
+
+  <p>Nel contesto della wiki-LLM, lo scenario pianificato usa <code>@softeria/ms-365-mcp-server</code> come MCP
+    server locale (<code>npx</code> via stdio), non come connector Cowork built-in. Questo è il modello
+    <strong>sicuro</strong> con account condiviso: il token OAuth di Microsoft resta nel credential store di ogni
+    operatore, configurato per il proprio account M365 aziendale. I colleghi vedono solo i propri dati.</p>
+
+  <div class="callout">
+    <h4>Raccomandazione</h4>
+    <p><strong>Non</strong> usare i connector built-in di Claude Cowork per Microsoft 365 in presenza di
+      account Anthropic condivisi. Usare invece il server MCP locale <code>@softeria/ms-365-mcp-server</code>
+      configurato via <code>.mcp.json</code> (Claude Code) o via Developer Tools (Cowork), così ogni operatore
+      autorizza il proprio account M365 e i token restano sul proprio PC. Se in futuro Sistec passa a un piano
+      Team/Enterprise con account separati e SSO, i connector built-in diventano sicuri perché ogni utente
+      autorizza i propri servizi individualmente.</p>
+  </div>
+
+  <p>Per approfondimento: la documentazione ufficiale Anthropic conferma che i token dei connector sono
+    memorizzati nei server Anthropic (<em>"Anthropic stores encrypted access tokens and refresh tokens"</em> —
+    <a href="https://claude.com/docs/connectors/building/authentication" target="_blank" rel="noopener">Authentication for connectors</a>),
+    e il modello di autorizzazione prevede che ogni utente su piani Team/Enterprise autorizzi individualmente
+    i propri servizi (<em>"each person still needs to authenticate individually before they can use it"</em> —
+    <a href="https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" target="_blank" rel="noopener">Use connectors</a>).
+    Su un account condiviso (Pro/Max) questa separazione non esiste.</p>
 </section>
 
 <!-- ========== 9 ========== -->
@@ -625,6 +675,8 @@ Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
     <li><a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener"><b>LLM-wiki di Karpathy</b></a> — il gist ufficiale che definisce il pattern</li>
     <li><a href="https://code.claude.com/docs/en/claude-directory" target="_blank" rel="noopener"><b>Documentazione ufficiale Claude Code</b></a> — la directory <code>.claude</code></li>
     <li><a href="https://github.com/Softeria/ms-365-mcp-server" target="_blank" rel="noopener"><b>@softeria/ms-365-mcp-server</b></a> — MCP server per Microsoft 365 via Graph API</li>
+    <li><a href="https://claude.com/docs/connectors/building/authentication" target="_blank" rel="noopener"><b>Authentication for connectors</b></a> — documentazione ufficiale Anthropic su OAuth e token dei connector</li>
+    <li><a href="https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" target="_blank" rel="noopener"><b>Use connectors</b></a> — guida ufficiale Anthropic su autorizzazione connector per Team/Enterprise</li>
     <li><b>sistec-llm-wiki</b> — demo funzionante del pattern in Sistec</li>
     <li><b>openspec</b> — pattern spec-first per la documentazione delle decisioni nei progetti</li>
   </ul>
