@@ -1044,7 +1044,7 @@ openspec/
     <h4>Comportamenti vs conoscenza</h4>
     <p>Regola utile di Anthropic: «i <em>progetti</em> conservano la conoscenza, le <em>skill</em> eseguono i compiti».
     Le skill portano il <strong>come</strong> — la procedura ripetibile (questo §); la conoscenza — il <strong>cosa</strong>,
-    i fatti e i documenti — vive altrove, nella <strong>wiki-LLM</strong> (§10). Due nature, due canali.</p>
+    i fatti e i documenti — vive altrove, nella <strong><a href="sistec-wiki.html">wiki-LLM</a></strong> (§10, <a href="sistec-wiki.html">approfondimento dedicato</a>). Due nature, due canali.</p>
   </div>
 </section>
 
@@ -1054,6 +1054,15 @@ openspec/
   <p>Per la conoscenza inter-ufficio <strong>non serve inventare nulla</strong>: né un collector, né un lease
   Graph-ETag, né un Orchestrator con un unico scrittore. Esiste un framework universalmente noto — la
   <strong>wiki-LLM</strong>, il pattern di Karpathy (<a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">gist ufficiale</a>) — e una demo funzionante è già in <code>sistec-llm-wiki</code>.</p>
+
+  <div class="callout">
+    <h4>Approfondimento dedicato</h4>
+    <p>Questo § è una panoramica. Il documento <a href="sistec-wiki.html"><b>sistec-llm-wiki: specifica,
+      architettura e proposta di sviluppo</b></a> esplora il pattern in profondità: architettura (sync, ingest,
+      retrieval), skill di ingest e query, integrazione con Claude Code, roadmap in tre fasi da demo a produzione
+      e casi d'uso concreti.</p>
+  </div>
+
   <p>Il pattern è semplice: una cartella su <strong>OneDrive o NAS</strong> che tutti sincronizzano; tutti aggiungono i
   documenti grezzi in <code>src/</code>; l'AI fa <strong>ingest</strong> e <strong>retrieval</strong>. La
   sincronizzazione la fa già OneDrive/il NAS. La canonicalizzazione la fa il retrieval dell'AI al momento della

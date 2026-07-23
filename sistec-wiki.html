@@ -1,0 +1,650 @@
+<title>sistec-llm-wiki — specifica, architettura e proposta di sviluppo</title>
+<link rel="stylesheet" href="style.css">
+
+<div class="wrap">
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · wiki-LLM · pattern Karpathy · proposta di sviluppo</p>
+  <h1>sistec-llm-wiki: la wiki aziendale per l'AI</h1>
+  <p class="lede">Un'analisi approfondita del pattern LLM-wiki di Karpathy, della demo funzionante in
+    <code>sistec-llm-wiki</code>, della proposta operativa per portarla da demo a strumento di produzione,
+    e dell'integrazione con Microsoft 365 via MCP per ingest automatico da Teams, OneNote e OneDrive.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>wiki-LLM</b> · pattern Karpathy</span>
+    <span class="chip">da demo a produzione</span>
+    <span class="chip">2026-07-23</span>
+  </div>
+</header>
+
+<dl class="sig" aria-label="firma del documento">
+  <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · AI expert and early adopter, Developer</dd>
+  <dt>Versione</dt><dd>1.0 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
+  <dt>Ultima revisione</dt><dd>2026-07-23 · revisionato da Marco Manfrin @Sistec</dd>
+</dl>
+
+<div class="callout key">
+  <h4>Documento a monte</h4>
+  <p>Questo documento è il <strong>§10</strong> di <a href="index.html"><b>Adozione Claude &amp; Claude Code in Sistec</b></a>,
+    sviluppato in un documento autonomo. Leggi prima l'<a href="index.html">index</a> per il contesto: ciclo agentico,
+    skill, <code>CLAUDE.md</code>, subagent e il marketplace di plugin. Qui si approfondisce solo la wiki-LLM.</p>
+</div>
+
+<!-- ========== 1 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§1</span><h2>Cos'è la wiki-LLM</h2></div>
+  <p>La <strong>wiki-LLM</strong> è un pattern di condivisione della conoscenza reso celebre da Andrej Karpathy
+    (<a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">gist
+    ufficiale</a>). L'idea centrale è che l'AI non ha bisogno di un'infrastruttura custom per accedere alla conoscenza
+    aziendale: le servono solo <strong>file di testo</strong> in una cartella che tutti possono sincronizzare.</p>
+
+  <div class="callout key">
+    <h4>Il principio</h4>
+    <p><em>«Le AI leggono file di testo. Metti la conoscenza in file di testo in una cartella condivisa. Il resto lo fa
+      l'AI con ingest e retrieval.»</em></p>
+  </div>
+
+  <p>Il pattern si contrappone al modello <code>shared-ai</code> (collector / lease Graph-ETag / Orchestrator) che
+    richiede un'infrastruttura distribuita custom da progettare, costruire e verificare. La wiki-LLM è l'alternativa
+    <strong>zero infrastruttura</strong>: si appoggia a OneDrive/NAS per la sincronizzazione e all'AI stessa per
+    l'indicizzazione e il recupero.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>shared-ai (scartato)</th><th>wiki-LLM (adottato)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Infrastruttura</b></td><td>collector, lease Graph-ETag, Orchestrator</td><td>OneDrive / NAS + cartella di file .md</td></tr>
+      <tr><td><b>Sincronizzazione</b></td><td>protocollo custom da progettare</td><td>già risolta da OneDrive</td></tr>
+      <tr><td><b>Canonicalizzazione</b></td><td>mutex distribuito, unico scrittore</td><td>il retrieval dell'AI al momento della domanda</td></tr>
+      <tr><td><b>Manutenibilità</b></td><td>pezzi custom da verificare e far evolvere</td><td>zero: solo file di markdown</td></tr>
+      <tr><td><b>Accesso AI</b></td><td>via API del collector</td><td>lettura diretta dei file di testo</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ========== 2 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§2</span><h2>La demo: <code>sistec-llm-wiki</code></h2></div>
+  <p>Esiste già una demo funzionante in <code>sistec-llm-wiki</code>. La struttura della cartella dimostra il pattern
+    in azione:</p>
+
+  <pre><span class="c">// struttura della demo</span>
+sistec-llm-wiki/
+├── raw/                          <span class="c">// documenti grezzi, chiunque può aggiungerne</span>
+│   ├── verbale-2026-03-15.md
+│   ├── specifica-atlas-v2.pdf
+│   └── decisione-auth-marco.md
+├── wiki/                         <span class="c">// conoscenza canonicalizzata per tipo</span>
+│   ├── concetti/
+│   │   ├── strangler-fig-pattern.md
+│   │   └── auth-jwt-rotation.md
+│   ├── decisioni/
+│   │   └── adozione-claude-2026.md
+│   ├── fonti/
+│   │   └── karpathy-llm-wiki-gist.md
+│   ├── organizzazioni/
+│   │   └── sistec.md
+│   ├── persone/
+│   │   ├── marco-manfrin.md
+│   │   └── davide-conti.md
+│   └── progetti/
+│       └── progetto-atlas.md
+├── CLAUDE                        <span class="c">// configurazione per l'AI che fa ingest</span>
+├── index                         <span class="c">// indice generato dall'ingest</span>
+└── log                           <span class="c">// log delle operazioni di ingest</span></pre>
+
+  <p>Il flusso è lineare:</p>
+  <ol class="steps">
+    <li><b>Deposito.</b> Chiunque mette un documento grezzo in <code>raw/</code> — verbali, specifiche, decisioni,
+      appunti. Nessun formato imposto: markdown, PDF, txt.</li>
+    <li><b>Ingest.</b> L'AI legge i nuovi file, estrae le entità (persone, progetti, decisioni, concetti, fonti,
+      organizzazioni) e le relazioni tra loro, e popola <code>wiki/</code> con file canonicalizzati per tipo.</li>
+    <li><b>Indicizzazione.</b> L'AI aggiorna <code>index</code> con la mappa delle entità e dei collegamenti, creando
+      un grafo di conoscenza navigabile.</li>
+    <li><b>Retrieval.</b> Alla domanda di un operatore, l'AI naviga il grafo: parte dalle entità menzionate, segue i
+      collegamenti alle fonti, e risponde con provenienza citata.</li>
+  </ol>
+
+  <div class="callout">
+    <h4>La vista a grafo</h4>
+    <p>La demo genera una visualizzazione a grafo dove ogni entità è un nodo (es. <code>progetto-atlas</code>,
+      <code>marco-manfrin</code>, <code>strangler-fig-pattern</code>) e le relazioni sono archi. Il retrieval naviga
+      questi collegamenti per rispondere con contesto e provenienza.</p>
+  </div>
+</section>
+
+<!-- ========== 3 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§3</span><h2>Architettura del sistema</h2></div>
+  <p>L'architettura della wiki-LLM si basa su tre componenti: <strong>sync</strong>, <strong>ingest</strong>,
+    <strong>retrieval</strong>. Nessuno dei tre richiede infrastruttura custom.</p>
+
+  <figure>
+    <div class="plate-cap"><b>Fig 1</b><span>Architettura della wiki-LLM: sync via OneDrive, ingest e retrieval via AI.</span></div>
+    <div class="plate-body">
+    <svg class="dgm" viewBox="0 0 840 280" role="img" aria-label="Architettura wiki-LLM">
+      <defs>
+        <marker id="arS" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--signal)"/></marker>
+      </defs>
+      <!-- sync -->
+      <rect x="28" y="40" width="200" height="80" rx="10" fill="var(--signal)" fill-opacity="0.10" stroke="var(--signal)"/>
+      <text x="128" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--signal-ink)">Sync</text>
+      <text x="128" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">OneDrive / NAS</text>
+      <text x="128" y="112" text-anchor="middle" font-size="10" fill="var(--slate-soft)">tutti vedono tutto</text>
+      <line x1="228" y1="80" x2="280" y2="80" stroke="var(--signal)" stroke-width="2" marker-end="url(#arS)"/>
+
+      <!-- ingest -->
+      <rect x="282" y="40" width="200" height="80" rx="10" fill="var(--reuse)" fill-opacity="0.12" stroke="var(--reuse)"/>
+      <text x="382" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--reuse)">Ingest</text>
+      <text x="382" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">raw/ → wiki/ + index</text>
+      <text x="382" y="112" text-anchor="middle" font-size="10" fill="var(--slate-soft)">estrazione entità e relazioni</text>
+      <line x1="482" y1="80" x2="534" y2="80" stroke="var(--reuse)" stroke-width="2" marker-end="url(#arS)"/>
+
+      <!-- retrieval -->
+      <rect x="536" y="40" width="200" height="80" rx="10" fill="var(--ok)" fill-opacity="0.10" stroke="var(--ok)"/>
+      <text x="636" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ok)">Retrieval</text>
+      <text x="636" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">domanda → naviga grafo → risposta</text>
+      <text x="636" y="112" text-anchor="middle" font-size="10" fill="var(--slate-soft)">con provenienza citata</text>
+
+      <!-- ingest-retrieval feed -->
+      <path d="M382,120 L382,180 L636,180 L636,120" fill="none" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="1.5" marker-end="url(#arS)"/>
+      <text x="509" y="194" text-anchor="middle" font-size="10.5" fill="var(--slate)">index + grafo</text>
+
+      <!-- user -->
+      <rect x="282" y="208" width="200" height="52" rx="10" fill="none" stroke="var(--line-strong)"/>
+      <text x="382" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Operatore</text>
+      <text x="382" y="250" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">aggiunge documenti in raw/</text>
+
+      <!-- AI agent consuming -->
+      <rect x="536" y="208" width="200" height="52" rx="10" fill="none" stroke="var(--line-strong)"/>
+      <text x="636" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Claude Code</text>
+      <text x="636" y="250" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">legge wiki/ + index per contesto</text>
+
+      <line x1="482" y1="234" x2="536" y2="234" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arS)"/>
+    </svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--signal);border-color:var(--signal)"></i> sync</span>
+      <span><i class="sw" style="background:var(--reuse);border-color:var(--reuse)"></i> ingest</span>
+      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> retrieval</span>
+      <span><i class="sw" style="border-color:var(--line-strong)"></i> consumatori</span>
+    </div>
+  </figure>
+
+  <h3>3.1 Sync — la dorsale</h3>
+  <p>La sincronizzazione è affidata a <strong>OneDrive</strong> o a un <strong>NAS</strong> aziendale. Ogni utente
+    autorizzato ha la cartella sincronizzata in locale. Quando un documento nuovo viene aggiunto a <code>raw/</code>,
+    OneDrive lo propaga a tutti i sottoscrittori. <strong>Niente da progettare</strong>: funziona già.</p>
+
+  <h3>3.2 Ingest — l'estrazione della conoscenza</h3>
+  <p>L'ingest è eseguito da un agente AI (Claude Code o opencode) che:</p>
+  <ol class="steps">
+    <li><b>Scansiona</b> <code>raw/</code> per i file nuovi o modificati (dall'ultimo log).</li>
+    <li><b>Legge</b> ogni documento e <b>identifica</b> le entità: persone, progetti, organizzazioni, concetti tecnici,
+      decisioni, e le fonti che li citano.</li>
+    <li><b>Canonicalizza</b> ogni entità in un file <code>.md</code> dentro <code>wiki/&lt;tipo&gt;/</code> con frontmatter
+      strutturato (nome, tipo, relazioni, fonti, riassunto).</li>
+    <li><b>Aggiorna</b> le entità esistenti: se un nuovo documento aggiunge informazioni su una persona o un progetto,
+      il file canonicalizzato viene esteso (non sovrascritto).</li>
+    <li><b>Costruisce</b> l'indice e il grafo delle relazioni.</li>
+    <li><b>Logga</b> l'operazione.</li>
+  </ol>
+
+  <h3>3.3 Retrieval — il consumo della conoscenza</h3>
+  <p>Il retrieval avviene in due modalità:</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Modalità</th><th>Come</th><th>Quando</th></tr></thead>
+    <tbody>
+      <tr><td><b>Diretta (umana)</b></td><td>un operatore chiede all'AI via chat: «chi ha lavorato al progetto Atlas?»
+        L'AI legge <code>wiki/progetti/progetto-atlas.md</code>, segue i link alle persone, e risponde.</td><td>domande
+        puntuali, esplorazione libera</td></tr>
+      <tr><td><b>Da agente (Claude Code)</b></td><td>Claude Code, durante una sessione di lavoro su un repo, legge
+        <code>wiki/</code> e <code>index</code> per contestualizzare le sue azioni: capire le decisioni pregresse,
+        le architetture, i perché.</td><td>sviluppo attivo, codice</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§4</span><h2>Proposta di sviluppo: da demo a produzione</h2></div>
+  <p>La demo <code>sistec-llm-wiki</code> dimostra che il pattern funziona. Per portarla a produzione servono alcuni
+    accorgimenti. La proposta si articola in <strong>tre fasi</strong>.</p>
+
+  <h3>Fase 1 — Standardizzazione e scalabilità (2 settimane)</h3>
+  <p>La demo è manuale. La fase 1 rende il processo ripetibile e misurabile.</p>
+  <ol class="steps">
+    <li><b>Skill di ingest.</b> Creare una skill Claude Code (<code>skills/wiki-ingest/SKILL.md</code>) che, invocata
+      con <code>/ingest</code>, scandisce <code>raw/</code>, esegue l'ingest e aggiorna <code>wiki/</code> e
+      <code>index</code>. L'operatore la lancia dopo aver aggiunto documenti.</li>
+    <li><b>Template di frontmatter.</b> Definire uno schema YAML condiviso per i file canonicalizzati in
+      <code>wiki/</code>: <code>type</code>, <code>name</code>, <code>aliases</code>, <code>related</code>,
+      <code>sources</code>, <code>summary</code>, <code>last_updated</code>. Ogni entità segue lo stesso schema.</li>
+    <li><b>Skill di query.</b> Creare una skill <code>/wiki</code> che risponde a domande sulla knowledge base
+      leggendo <code>wiki/</code> e <code>index</code> e navigando il grafo. Con <code>disable-model-invocation: true</code>
+      — la invoca solo l'operatore.</li>
+    <li><b>Log e audit.</b> Strutturare il <code>log</code> in formato timestamp + entità processate + esito, per
+      tracciare cosa è stato indicizzato e quando.</li>
+  </ol>
+
+  <div class="callout">
+    <h4>Skill di ingest — esempio</h4>
+    <pre><span class="c">// .claude/skills/wiki-ingest/SKILL.md</span>
+---
+description: Ingestisce nuovi documenti nella wiki-LLM
+argument-hint: [optional: file-specifico]
+---
+
+<span class="c">// 1. Trova i file nuovi/modificati in raw/ dall'ultimo log</span>
+<span class="c">// 2. Per ciascuno: leggi, estrai entità, canonicalizza in wiki/</span>
+<span class="c">// 3. Aggiorna index con le nuove entità e relazioni</span>
+<span class="c">// 4. Scrivi log</span>
+
+Leggi <code>log</code> per la timestamp dell'ultimo ingest.
+Trova i file in <code>raw/</code> più recenti di quella data.
+Per ogni file:
+  - Identifica persone, progetti, organizzazioni, concetti, decisioni
+  - Per ogni entità: aggiorna o crea <code>wiki/&lt;tipo&gt;/&lt;nome&gt;.md</code>
+  - Aggiungi le relazioni incrociate
+Rigenera <code>index</code>.
+Scrivi <code>log</code> con la nuova timestamp.</pre>
+  </div>
+
+  <h3>Fase 2 — Integrazione col ciclo agentico (2 settimane)</h3>
+  <p>La wiki-LLM diventa parte del contesto di lavoro quotidiano di Claude Code.</p>
+  <ol class="steps">
+    <li><b>Regola path-scoped.</b> In <code>.claude/rules/wiki-knowledge.md</code>, con <code>paths: wiki/**</code>:
+      quando Claude Code legge un file in <code>wiki/</code>, carica una regola che gli spiega come interpretare il
+      frontmatter, le relazioni e le fonti — niente da reinventare a ogni sessione.</li>
+    <li><b>Memoria automatica.</b> I file in <code>wiki/</code> possono essere referenziati dalla memoria automatica
+      di Claude Code (<code>MEMORY.md</code>), ma il consiglio è di tenerli separati: la memoria è per note
+      procedurali (comandi build, errori noti), la wiki per la conoscenza stabile.</li>
+    <li><b>Hook di ingest automatico.</b> Opzionale: un hook <code>PostToolUse</code> su <code>Write</code> in
+      <code>raw/</code> lancia automaticamente l'ingest dopo l'aggiunta di un documento. Utile per i power-user,
+      ma attenti al context rot se l'ingest è verboso.</li>
+    <li><b>REPL integrativo.</b> Un alias o script che lancia opencode nella cartella della wiki con un prompt
+      preimpostato: «Sei il custode della wiki aziendale. Rispondi alle domande usando i file in wiki/ e index.»</li>
+  </ol>
+
+  <h3>Fase 3 — Adozione e governo (continua)</h3>
+  <p>La wiki vive se viene usata e curata. Serve un modello di governo leggero.</p>
+  <ol class="steps">
+    <li><b>Canonicalizzatore dedicato.</b> Una persona (o un ruolo a rotazione) revisiona periodicamente i documenti
+      in <code>raw/</code> e la qualità dell'ingest: le entità sono corrette? Le relazioni sono aggiornate? Le fonti
+      sono citate? L'AI fa il grosso, ma un occhio umano mantiene la qualità.</li>
+    <li><b>Retro-ingest dei progetti esistenti.</b> I repository git dei progetti Sistec (commessa 5309 FAEL, ecc.)
+      hanno già <code>openspec/changes/archive/</code> con proposte e design che contengono decisioni. Un'operazione
+      una tantum di retro-ingest popola <code>wiki/</code> con la conoscenza già scritta.</li>
+    <li><b>Metriche d'uso.</b> Tracciare quante query al giorno, quanti documenti nuovi in <code>raw/</code>, quante
+      entità in <code>wiki/</code>. Il valore della wiki cresce con la sua dimensione e il suo uso.</li>
+    <li><b>CLAUDE.md nella wiki.</b> Mettere un <code>CLAUDE.md</code> nella cartella della wiki con le istruzioni
+      per l'agente: come fare ingest, come rispondere, che formato usare. Chiunque lanci opencode lì dentro parte
+      già configurato.</li>
+  </ol>
+
+  <div class="callout key">
+    <h4>Il traguardo</h4>
+    <p>Alla fine della Fase 3, la wiki-LLM è il <strong>primo posto</strong> dove un operatore o un agente cerca la
+      conoscenza aziendale: «Chi ha lavorato a questo modulo? Quale decisione è stata presa sul pattern di autenticazione?
+      Dove è documentata l'architettura del progetto Atlas?» — la risposta sta nei file di <code>wiki/</code>, con
+      provenienza citata. Niente più «chiedi a Marco», niente più chat perse, niente più documenti sparsi in cartelle
+      personali.</p>
+  </div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§5</span><h2>Integrazione con i due canali di condivisione</h2></div>
+  <p>Nel documento <a href="index.html">index</a> si parla di due canali di condivisione. La wiki-LLM è il secondo.
+    Ecco come si integrano:</p>
+
+  <figure>
+    <div class="plate-cap"><b>Fig 2</b><span>Due canali, due nature: le skill via marketplace, la conoscenza via wiki-LLM.
+      In basso, il flusso di sviluppo che li lega.</span></div>
+    <div class="plate-body">
+    <svg class="dgm" viewBox="0 0 860 280" role="img" aria-label="Integrazione dei due canali">
+      <defs>
+        <marker id="arD" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--accent-dark)"/></marker>
+      </defs>
+      <rect x="40" y="40" width="250" height="80" rx="10" fill="var(--signal)" fill-opacity="0.10" stroke="var(--signal)"/>
+      <text x="165" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--signal-ink)">Marketplace di plugin</text>
+      <text x="165" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">skill · comportamenti · PR</text>
+
+      <rect x="360" y="40" width="250" height="80" rx="10" fill="var(--reuse)" fill-opacity="0.12" stroke="var(--reuse)"/>
+      <text x="485" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="var(--reuse)">Wiki-LLM</text>
+      <text x="485" y="98" text-anchor="middle" font-size="11" fill="var(--slate)">conoscenza · fatti · sync</text>
+
+      <rect x="360" y="180" width="250" height="60" rx="10" fill="none" stroke="var(--line-strong)"/>
+      <text x="485" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">Repository del progetto</text>
+      <text x="485" y="226" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">codice + CLAUDE.md + .claude/</text>
+
+      <line x1="290" y1="60" x2="360" y2="60" stroke="var(--accent-dark)" stroke-width="1.5" marker-end="url(#arD)"/>
+      <line x1="290" y1="100" x2="360" y2="100" stroke="var(--accent-dark)" stroke-width="1.5" marker-end="url(#arD)"/>
+      <text x="325" y="72" text-anchor="middle" font-size="9.5" fill="var(--accent-dark)">skill</text>
+      <text x="325" y="114" text-anchor="middle" font-size="9.5" fill="var(--accent-dark)">conoscenza</text>
+
+      <rect x="40" y="180" width="250" height="60" rx="10" fill="var(--ok)" fill-opacity="0.08" stroke="var(--ok)"/>
+      <text x="165" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ok)">Operatore</text>
+      <text x="165" y="226" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">usa skill e consulta wiki</text>
+    </svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--signal);border-color:var(--signal)"></i> skill</span>
+      <span><i class="sw" style="background:var(--reuse);border-color:var(--reuse)"></i> conoscenza</span>
+      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> operatore</span>
+    </div>
+  </figure>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Skill (marketplace)</th><th>Wiki-LLM</th></tr></thead>
+    <tbody>
+      <tr><td><b>Cosa</b></td><td>comportamenti, procedure, automazioni</td><td>fatti, decisioni, conoscenza</td></tr>
+      <tr><td><b>Dove vive</b></td><td><code>.claude/skills/</code> nel repo</td><td>cartella OneDrive/NAS</td></tr>
+      <tr><td><b>Condivisione</b></td><td>PR su main protetto</td><td>sync automatica via OneDrive</td></tr>
+      <tr><td><b>Versionamento</b></td><td>git</td><td>cronologia file + log</td></tr>
+      <tr><td><b>Manutenzione</b></td><td>codice revisionato in PR</td><td>canonicalizzatore umano + ingest AI</td></tr>
+      <tr><td><b>Consumo</b></td><td>invocazione esplicita (/skill) o automatica (model-invocation)</td><td>query diretta o lettura agente</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <h4>Il flusso completo</h4>
+    <p>Un operatore lavora su un progetto. Usa le skill (via marketplace) per eseguire compiti ripetibili — ingest
+      wiki, code review, commit. Quando serve contesto, consulta la wiki-LLM: decisioni pregresse, architetture,
+      persone di riferimento. La conoscenza che produce (una decisione architetturale, un'appunto tecnico) finisce
+      in <code>raw/</code> e da lì nella wiki. Il ciclo si chiude: la wiki alimenta il lavoro, il lavoro alimenta
+      la wiki.</p>
+  </div>
+</section>
+
+<!-- ========== 6 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§6</span><h2>Casi d'uso concreti</h2></div>
+
+  <h3>6.1 «Chi ha lavorato a questo modulo?»</h3>
+  <p>Un operatore ereditato un modulo senza documentazione chiede: «Chi ha lavorato a <code>gestione-mescole</code>?».
+    L'AI consulta <code>wiki/progetti/gestione-mescole.md</code>, segue i link alle persone e risponde: «Marco Manfrin
+    e Davide Conti, vedi le decisioni in <code>wiki/decisioni/</code>.» Con provenienza citata.</p>
+
+  <h3>6.2 «Perché è stata scelta questa architettura?»</h3>
+  <p>«Perché il modulo <code>auth</code> usa JWT rotation invece di sessioni?» L'AI trova la decisione in
+    <code>wiki/decisioni/auth-jwt-rotation.md</code>, scritta dopo un'analisi dei requisiti, e cita la fonte in
+    <code>raw/</code> (il verbale della riunione del 15 marzo 2026).</p>
+
+  <h3>6.3 «Quali progetti usano il pattern Strangler Fig?»</h3>
+  <p>L'AI naviga il grafo da <code>wiki/concetti/strangler-fig-pattern.md</code>, segue le relazioni
+    <code>usato-da</code> verso i progetti, e rispone: «Progetto Atlas e Gestione Mescole. Vedi
+    <code>wiki/progetti/progetto-atlas.md</code> per i dettagli.»</p>
+
+  <h3>6.4 Ingest automatico dopo una riunione</h3>
+  <p>Dopo un incontro tecnico, un partecipante scrive appunti in <code>raw/verbale-2026-07-22.md</code>. Lancia
+    <code>/ingest</code> (skill), l'AI processa il verbale, estrae le entità (decisioni, persone, concetti), aggiorna
+    i file canonicalizzati in <code>wiki/</code>. I colleghi possono subito interrogare la wiki sulle decisioni prese.</p>
+
+  <h3>6.5 Retro-ingest da openspec</h3>
+  <p>I repository dei progetti Sistec hanno <code>openspec/changes/archive/</code> con decine di proposte e design
+    documentati. Una tantum, si esegue un ingest massivo: l'AI legge gli archive, estrae decisioni e architetture,
+    e popola <code>wiki/</code> con la conoscenza già prodotta. La wiki parte già piena.</p>
+
+  <div class="callout key">
+    <h4>Il valore della provenienza</h4>
+    <p>Ogni risposta della wiki-LLM cita la fonte (<code>fonti/</code> e <code>raw/</code>). Non è «l'AI ha detto»:
+      è «il verbale della riunione del 15 marzo dice». La differenza tra un parere e una fonte verificabile.</p>
+  </div>
+</section>
+
+<!-- ========== 7 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§7</span><h2>Roadmap</h2></div>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Fase</th><th>Cosa</th><th>Tempo</th><th>Dipendenza</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tag t-ok">Fase 1</span></td>
+        <td>Standardizzazione: skill di ingest, template frontmatter, skill di query, log strutturato</td>
+        <td>2 settimane</td>
+        <td>demo <code>sistec-llm-wiki</code> funzionante, repository condiviso</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-ok">Fase 2</span></td>
+        <td>Integrazione agente: regola path-scoped, memoria, hook ingest, REPL wiki</td>
+        <td>2 settimane</td>
+        <td>Fase 1 completata, Claude Code installato sugli operatori pilota</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-ok">Fase 3</span></td>
+        <td>Adozione: canonicalizzatore, retro-ingest progetti, metriche, CLAUDE.md wiki</td>
+        <td>continua</td>
+        <td>Fase 2 completata, adesione del team</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout key">
+    <h4>Primo passo concreto</h4>
+    <p>La Fase 1 non richiede autorizzazioni speciali: la demo esiste già. Basta scrivere la skill di ingest (un
+      file <code>.md</code> in <code>.claude/skills/</code>) e definire i template. Si può partire subito, anche
+      su un repository personale per collaudo. Il costo è zero infrastruttura e un pomeriggio di lavoro.</p>
+  </div>
+</section>
+
+<!-- ========== 8 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§8</span><h2>Ingest da Microsoft 365 via MCP</h2></div>
+  <p>Finora la wiki-LLM si basa su file depositati manualmente in <code>raw/</code>. Ma la conoscenza aziendale
+    esiste già — nei messaggi Teams, nei notebook OneNote, nei documenti OneDrive. Con un <strong>MCP server per
+    Microsoft 365</strong>, Claude Code può accedervi direttamente e portarli nell'ingest.</p>
+
+  <div class="callout key">
+    <h4>Il principio</h4>
+    <p>Invece di skill che chiamano Graph API (token da gestire, auth custom), un MCP server espone tool che Claude
+      chiama come qualsiasi altro tool. L'autenticazione OAuth2 la gestisce il server una volta — niente secret nel repo.</p>
+  </div>
+
+  <p>Il server di riferimento è <code>@softeria/ms-365-mcp-server</code> (<a
+    href="https://github.com/Softeria/ms-365-mcp-server" target="_blank" rel="noopener">github</a>), 200+ tool su
+    Graph API. Si configura in <code>.mcp.json</code>:</p>
+
+  <pre>{
+  "mcpServers": {
+    "ms365": {
+      "command": "npx",
+      "args": ["-y", "@softeria/ms-365-mcp-server", "--org-mode"]
+    }
+  }
+}</pre>
+
+  <h3>8.1 Tool per sorgente</h3>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Sorgente</th><th>Tool MCP</th><th>Cosa estrarre</th></tr></thead>
+    <tbody>
+      <tr><td><b>Teams</b></td><td><code>list-joined-teams</code>, <code>list-team-channels</code>,
+        <code>list-channel-messages</code>, <code>get-channel-message</code></td><td>decisioni emerse in canali di
+        progetto, discussioni tecniche, risposte a problemi</td></tr>
+      <tr><td><b>Teams chat</b></td><td><code>list-chats</code>, <code>list-chat-messages</code>,
+        <code>get-chat-message</code></td><td>conversazioni 1:1 che contengono decisioni o specifiche</td></tr>
+      <tr><td><b>OneNote</b></td><td><code>list-onenote-notebooks</code>, <code>list-onenote-section-pages</code>,
+        <code>get-onenote-page-content</code></td><td>appunti riunioni, specifiche tecniche, verbali già scritti</td></tr>
+      <tr><td><b>OneDrive</b></td><td><code>list-folder-files</code>, <code>download-onedrive-file-content</code></td>
+        <td>documenti .docx/.pdf fuori dalla cartella wiki, specifiche fornite dai clienti</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Teams richiede <code>--org-mode</code> (account aziendale). OneNote e OneDrive funzionano anche in modalità
+    personale. Il server supporta <strong>preset</strong> per caricare solo i tool necessari e risparmiare contesto:</p>
+
+  <pre><span class="c"># Solo Teams (--org-mode + --preset teams)</span>
+npx @softeria/ms-365-mcp-server --org-mode --preset teams
+
+<span class="c"># Solo OneNote</span>
+npx @softeria/ms-365-mcp-server --preset onenote
+
+<span class="c"># Solo OneDrive</span>
+npx @softeria/ms-365-mcp-server --preset onedrive</pre>
+
+  <h3>8.2 Flusso di ingest M365 → wiki</h3>
+
+  <p>La skill <code>/sync-m365</code> orchesta i tool MCP in sequenza e deposita il risultato in <code>raw/</code>:</p>
+
+  <figure>
+    <div class="plate-cap"><b>Fig 3</b><span>Flusso di ingest da Microsoft 365: i tool MCP estraggono contenuto,
+      la skill lo converte in markdown in <code>raw/</code>, poi l'ingest standard lo canonicalizza in <code>wiki/</code>.</span></div>
+    <div class="plate-body">
+    <svg class="dgm" viewBox="0 0 860 260" role="img" aria-label="Flusso ingest M365">
+      <defs>
+        <marker id="arM" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--accent-dark)"/></marker>
+      </defs>
+
+      <rect x="28" y="60" width="156" height="80" rx="10" fill="var(--signal)" fill-opacity="0.10" stroke="var(--signal)"/>
+      <text x="106" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--signal-ink)">Teams · OneNote</text>
+      <text x="106" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="var(--signal-ink)">OneDrive</text>
+      <text x="106" y="133" text-anchor="middle" font-size="10" fill="var(--slate-soft)">Microsoft Graph</text>
+      <line x1="184" y1="100" x2="228" y2="100" stroke="var(--accent-dark)" stroke-width="1.8" marker-end="url(#arM)"/>
+
+      <rect x="230" y="60" width="170" height="80" rx="10" fill="var(--reuse)" fill-opacity="0.12" stroke="var(--reuse)"/>
+      <text x="315" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--reuse)">MCP server</text>
+      <text x="315" y="116" text-anchor="middle" font-size="10.5" fill="var(--slate)">@softeria/ms-365</text>
+      <text x="315" y="133" text-anchor="middle" font-size="10" fill="var(--slate-soft)">tool MCP</text>
+      <line x1="400" y1="100" x2="444" y2="100" stroke="var(--accent-dark)" stroke-width="1.8" marker-end="url(#arM)"/>
+
+      <rect x="446" y="60" width="160" height="80" rx="10" fill="var(--ok)" fill-opacity="0.10" stroke="var(--ok)"/>
+      <text x="526" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ok)">Skill /sync-m365</text>
+      <text x="526" y="116" text-anchor="middle" font-size="10.5" fill="var(--slate)">converte in .md</text>
+      <text x="526" y="133" text-anchor="middle" font-size="10" fill="var(--slate-soft)">scrive in raw/</text>
+      <line x1="606" y1="100" x2="650" y2="100" stroke="var(--accent-dark)" stroke-width="1.8" marker-end="url(#arM)"/>
+
+      <rect x="652" y="60" width="160" height="80" rx="10" fill="none" stroke="var(--line-strong)"/>
+      <text x="732" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-soft)">raw/</text>
+      <text x="732" y="116" text-anchor="middle" font-size="10.5" fill="var(--slate-soft)">→ ingest → wiki/</text>
+
+      <path d="M526,140 L526,200 L200,200 L200,140" fill="none" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="1.3"/>
+      <text x="363" y="216" text-anchor="middle" font-size="10.5" fill="var(--slate)">stesso percorso di ingest della wiki</text>
+    </svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--signal);border-color:var(--signal)"></i> sorgenti M365</span>
+      <span><i class="sw" style="background:var(--reuse);border-color:var(--reuse)"></i> MCP server</span>
+      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> skill Claude Code</span>
+      <span><i class="sw" style="border-color:var(--line-strong)"></i> deposito</span>
+    </div>
+  </figure>
+
+  <p>La skill <code>/sync-m365</code> segue questa sequenza:</p>
+  <ol class="steps">
+    <li><b>Teams — canali.</b> Per ogni team di progetto (<code>Progetto Atlas</code>, <code>FAEL</code>, ecc.),
+      elenca i canali, poi per ogni canale legge i messaggi dell'ultima settimana. Scrive in
+      <code>raw/teams/&lt;team&gt;-&lt;canale&gt;-YYYY-MM.md</code>.</li>
+    <li><b>Teams — chat.</b> Elenca le chat recenti, filtra quelle con attività tecnica (contiene codice, menzioni di
+      repo, decisioni), scrive in <code>raw/teams/chat-&lt;persona&gt;-YYYY-MM.md</code>.</li>
+    <li><b>OneNote.</b> Per ogni notebook condiviso (es. <code>Riunioni Sistec</code>, <code>Specifiche</code>),
+      elenca sezioni e pagine, estrae il contenuto delle pagine nuove o aggiornate. Scrive in
+      <code>raw/onenote/&lt;notebook&gt;-&lt;sezione&gt;-&lt;pagina&gt;.md</code>.</li>
+    <li><b>OneDrive.</b> Per ogni cartella condivisa di progetto, elenca i file nuovi, scarica .docx/.pdf,
+      converte in markdown. Scrive in <code>raw/onedrive/&lt;progetto&gt;-&lt;file&gt;.md</code>.</li>
+    <li><b>Segnala completamento.</b> Restituisce all'operatore un riepilogo: quanti messaggi, pagine e file
+      processati, pronti per <code>/ingest</code>.</li>
+  </ol>
+
+  <div class="callout">
+    <h4>Skill /sync-m365 — esempio</h4>
+    <pre><span class="c">// .claude/skills/sync-m365/SKILL.md</span>
+---
+description: Sincronizza Teams, OneNote e OneDrive nella wiki-LLM
+argument-hint: [optional: team/channel filter]
+disable-model-invocation: true
+---
+
+<span class="c">// Usa i tool MCP ms365 per estrarre contenuto da:</span>
+<span class="c">// - Messaggi dei canali Teams (list-channel-messages)</span>
+<span class="c">// - Pagine OneNote (get-onenote-page-content)</span>
+<span class="c">// - File OneDrive (download-onedrive-file-content)</span>
+<span class="c">// Converte ogni elemento in markdown e lo scrive in raw/&lt;sorgente&gt;/</span>
+<span class="c">// Restituisce il conteggio degli elementi processati.</span>
+
+Lista i team usando <code>list-joined-teams</code>.
+Se ARGUMENTS contiene un filtro (es. "Atlas"), limita a quel team.
+Per ogni team: elenca canali, poi messaggi degli ultimi 7 giorni.
+  - Salta i messaggi già processati (confronta timestamp con ultimo sync).
+  - Scrive in <code>raw/teams/&lt;team&gt;-&lt;canale&gt;.md</code>.
+Per OneNote: elenca notebook, sezioni, pagine nuove.
+  - Scrive in <code>raw/onenote/&lt;notebook&gt;-&lt;pagina&gt;.md</code>.
+Per OneDrive: elenca file nuovi in cartelle condivise.
+  - Scarica .docx, converte in markdown, scrive in <code>raw/onedrive/&lt;file&gt;.md</code>.
+Conclusione: «Processati X messaggi, Y pagine, Z file. Lancia /ingest.»</pre>
+  </div>
+
+  <h3>8.3 Retrieval live via MCP</h3>
+  <p>L'ingest porta nella wiki solo la conoscenza <strong>stabile</strong> — ciò che è stato selezionato e
+    canonicalizzato. Per domande su contenuto <strong>transitorio</strong> (es. «cosa si è detto ieri su Teams
+    riguardo al modulo auth?»), Claude può chiamare i tool MCP <strong>direttamente</strong> in tempo reale, senza
+    aspettare l'ingest. La wiki resta per la conoscenza consolidata; Teams/OneNote per il flusso vivo.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Wiki-LLM (ingest)</th><th>MCP live (retrieval diretto)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Cosa contiene</b></td><td>conoscenza canonicalizzata, stabile, revisionata</td><td>tutto il contenuto grezzo di Teams/OneNote/OneDrive</td></tr>
+      <tr><td><b>Qualità</b></td><td>entità strutturate, relazioni, provenienza citata</td><td>rumore, duplicati, non strutturato</td></tr>
+      <tr><td><b>Quando usarlo</b></td><td>decisioni pregresse, architetture, chi-ha-fatto-cosa</td><td>«cos'è successo ieri», messaggi recenti, bozze</td></tr>
+      <tr><td><b>Velocità</b></td><td>immediata (file locali già indicizzati)</td><td>dipende da Graph API (latenza rete)</td></tr>
+      <tr><td><b>Costo contesto</b></td><td>basso (legge solo i file pertinenti)</td><td>ogni chiamata MCP consuma contesto</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout key">
+    <h4>Due velocità</h4>
+    <p>L'ingest M365 via MCP alimenta la wiki con la conoscenza che <strong>merita di essere conservata</strong>
+      (decisioni, architetture, specifiche). Il retrieval live via MCP risponde a domande sul <strong>transitorio</strong>
+      (chat recenti, bozze, appunti). I due canali sono complementari: nessuno sostituisce l'altro.</p>
+  </div>
+
+  <h3>8.4 Nella roadmap</h3>
+  <p>L'integrazione M365 si inserisce come sotto-attività della <strong>Fase 2</strong> (integrazione agente):
+    dopo la skill di ingest standard, si aggiunge la skill <code>/sync-m365</code> e il server MCP.
+    Il grosso del lavoro è definire i filtri (quali team/canali/notebook sono rilevanti) per evitare rumore.
+    Una volta a regime, <code>/sync-m365</code> si lancia in pochi secondi e prepara i nuovi contenuti per
+    <code>/ingest</code>.</p>
+
+  <div class="callout">
+    <h4>Autenticazione</h4>
+    <p>Il server <code>@softeria/ms-365-mcp-server</code> usa MSAL con device code flow: la prima volta si
+      autentica via browser, poi i token sono cachati in locale. Per uso enterprise serve un Azure AD app
+      registration con i permessi Graph: <code>ChannelMessage.Read.All</code>,
+      <code>Notes.Read.All</code>, <code>Files.Read.All</code> (solo lettura — l'ingest non scrive su M365).</p>
+  </div>
+</section>
+
+<!-- ========== 9 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§9</span><h2>Riferimenti</h2></div>
+  <ul class="tight">
+    <li><a href="index.html"><b>Adozione Claude &amp; Claude Code in Sistec</b></a> — il documento principale: ciclo
+      agentico, contesto, prompt, skill, CLAUDE.md, condivisione</li>
+    <li><a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener"><b>LLM-wiki di Karpathy</b></a> — il gist ufficiale che definisce il pattern</li>
+    <li><a href="https://code.claude.com/docs/en/claude-directory" target="_blank" rel="noopener"><b>Documentazione ufficiale Claude Code</b></a> — la directory <code>.claude</code></li>
+    <li><a href="https://github.com/Softeria/ms-365-mcp-server" target="_blank" rel="noopener"><b>@softeria/ms-365-mcp-server</b></a> — MCP server per Microsoft 365 via Graph API</li>
+    <li><b>sistec-llm-wiki</b> — demo funzionante del pattern in Sistec</li>
+    <li><b>openspec</b> — pattern spec-first per la documentazione delle decisioni nei progetti</li>
+  </ul>
+</section>
+
+<footer>
+  <span>Sistec · wiki-LLM · pattern Karpathy · proposta di sviluppo · 9 § · 3 figure</span>
+  <span>autorità: LLM-wiki (Karpathy) · documentazione Claude Code · sistec-llm-wiki · 2026-07-23 · v1.0</span>
+</footer>
+</div>
+
+<script>
+  (function(){
+    var btn=document.getElementById('themebtn');
+    var root=document.documentElement;
+    root.setAttribute('data-theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+    btn.addEventListener('click',function(){
+      var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+      var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+      root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+    });
+  })();
+</script>
