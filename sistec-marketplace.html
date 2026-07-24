@@ -1,0 +1,501 @@
+<title>Il marketplace di plugin — le skill: cosa sono, come nascono, come si condividono</title>
+<link rel="stylesheet" href="style.css">
+
+<div class="wrap">
+<header class="sheet">
+  <button class="toggle" id="themebtn" type="button" aria-label="Cambia tema colore">◐ tema</button>
+  <p class="eyebrow">Sistec · skill &amp; marketplace di plugin · ciclo di vita</p>
+  <h1>Il marketplace di plugin: dalle esigenze alle skill condivise</h1>
+  <p class="lede">Cos'è una skill (un <strong>comportamento</strong>, non un comando), come nasce da un'esigenza
+    concreta in un progetto, come si crea e si valida con <code>skill-creator</code>, come capire se esiste già
+    un tool o una skill che fa quel lavoro, i criteri del marketplace, ed esempi reali — per lo sviluppo software
+    e non.</p>
+  <div class="meta">
+    <span class="chip"><span class="dot"></span><b>skill</b> · marketplace di plugin</span>
+    <span class="chip">esigenza → skill → PR</span>
+    <span class="chip">validate con skill-creator</span>
+    <span class="chip">2026-07-24</span>
+  </div>
+</header>
+
+<dl class="sig" aria-label="firma del documento">
+  <dt>Autore</dt><dd><b>Marco Manfrin</b> · Sistec · AI expert and early adopter, Developer</dd>
+  <dt>Versione</dt><dd>1.0 <span class="sig-note">· indice di revisione, incrementato a ogni revisione</span></dd>
+  <dt>Ultima revisione</dt><dd>2026-07-24 · revisionato da Marco Manfrin @Sistec</dd>
+</dl>
+
+<div class="callout key">
+  <h4>Documento a monte</h4>
+  <p>Questo documento è il <strong>§9</strong> di <a href="index.html"><b>Adozione Claude &amp; Claude Code in
+    Sistec</b></a>, sviluppato in un documento autonomo. Leggi prima l'<a href="index.html">index</a> per il contesto:
+    ciclo agentico, contesto, prompt, <code>CLAUDE.md</code>, subagent. Qui si approfondisce solo il primo dei due
+    canali di condivisione — le <strong>skill via marketplace</strong>. L'altro canale, la conoscenza, vive nella
+    <a href="sistec-wiki.html"><b>wiki-LLM</b></a>. L'analisi delle skill già presenti nel marketplace Sistec è nel
+    documento complementare <a href="sistec-marketplace-audit.html"><b>audit e criteri di integrazione</b></a>.</p>
+</div>
+
+<!-- ========== 1 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§1</span><h2>Cos'è una skill</h2></div>
+  <p>Una skill <strong>non è un comando da terminale</strong> — non è <code>git merge</code>. È un
+    <strong>comportamento atteso</strong>. La sua <code>description</code> dichiara <em>quando</em> va usata, e Claude
+    la richiama <strong>da solo</strong> quando la situazione combacia. Non la invochi per nome: la descrivi bene e
+    lei si attiva al momento giusto. L'interfaccia con l'utente è il <strong>linguaggio naturale</strong>, non un
+    vocabolario di comandi da imparare.</p>
+
+  <pre><b>---</b>
+<b>name:</b> commenti-codice
+<b>description:</b> Come scrivere i commenti del codice in questo progetto.
+             Usare QUANDO Claude sta per scrivere o modificare codice sorgente.   <span class="c">// &lt;- il "quando" è la parte che conta</span>
+<b>---</b>
+  ... corpo della skill: le istruzioni vere e proprie ...</pre>
+
+  <div class="callout key">
+    <h4>Il principio</h4>
+    <p><em>«Una skill serve quando c'è una decisione da prendere — giudizio semantico che solo un LLM può dare —
+      non un'istruzione meccanica da eseguire.»</em></p>
+  </div>
+
+  <p>Ogni skill è una cartella con un <code>SKILL.md</code> (l'entry point: trigger, invocabilità, istruzioni) più
+    eventuali file di supporto: script deterministici, checklist, template. Regola d'oro: <strong>self-contained</strong>
+    — tutto ciò che serve sta dentro la cartella, niente dipendenze implicite dall'esterno.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Skill (comportamento)</th><th>Script / tool deterministico</th></tr></thead>
+    <tbody>
+      <tr><td><b>Natura</b></td><td>giudizio, interpretazione, dominio</td><td>procedura fissa, stesso output ogni volta</td></tr>
+      <tr><td><b>Quando</b></td><td>l'output dipende dal contesto</td><td>l'operazione è sempre identica</td></tr>
+      <tr><td><b>Esempio</b></td><td>«diagnostica perché il device non risponde»</td><td>build, copia file, deploy</td></tr>
+      <tr><td><b>Forma giusta</b></td><td><code>SKILL.md</code> nel marketplace</td><td>bash, Python, GitHub Action</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <h4>Il test infallibile</h4>
+    <p>Se la procedura che stai descrivendo si può scrivere in <strong>30 righe di bash</strong>, non è una skill: è
+      uno script. Mettilo in <code>scripts/</code> o in una GitHub Action. La skill non è un contenitore per rimediare
+      alla mancanza di tooling.</p>
+  </div>
+
+  <div class="callout">
+    <h4>Comando vs skill — nota</h4>
+    <p>I <strong>comandi</strong> (gli slash-command scriptati) sono <strong>deprecati</strong> a favore delle skill.
+      Per i pochi casi che devono restare a scatenamento esplicito (li invoca solo l'umano, mai il modello) si usa
+      una skill con <code>disable-model-invocation: true</code>.</p>
+  </div>
+</section>
+
+<!-- ========== 2 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§2</span><h2>Il ciclo di vita: dall'esigenza al marketplace</h2></div>
+  <p>Una skill non nasce nel marketplace. Nasce da un'<strong>esigenza concreta</strong> mentre si lavora a un
+    progetto: un compito ripetibile che richiede giudizio e che vorresti non dover rispiegare ogni volta. Il
+    marketplace è l'<em>ultimo</em> passo, non il primo — e non è automatico.</p>
+
+  <figure>
+    <div class="plate-cap"><b>Fig 1</b><span>Il ciclo di vita di una skill: nasce da un'esigenza nel progetto, si
+      crea e valida con skill-creator, si condivide via pull request al marketplace, si installa ovunque.</span></div>
+    <div class="plate-body">
+    <svg class="dgm" viewBox="0 0 880 250" role="img" aria-label="Ciclo di vita di una skill">
+      <defs>
+        <marker id="arL" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--signal)"/></marker>
+      </defs>
+
+      <rect x="24" y="80" width="160" height="82" rx="10" fill="var(--reuse)" fill-opacity="0.12" stroke="var(--reuse)"/>
+      <text x="104" y="112" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--reuse)">Esigenza</text>
+      <text x="104" y="132" text-anchor="middle" font-size="10.5" fill="var(--slate)">compito ripetibile</text>
+      <text x="104" y="147" text-anchor="middle" font-size="10" fill="var(--slate-soft)">nel progetto · commessa</text>
+      <line x1="184" y1="121" x2="228" y2="121" stroke="var(--signal)" stroke-width="1.8" marker-end="url(#arL)"/>
+
+      <rect x="230" y="80" width="160" height="82" rx="10" fill="var(--signal)" fill-opacity="0.10" stroke="var(--signal)"/>
+      <text x="310" y="106" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--signal-ink)">Crea + valida</text>
+      <text x="310" y="126" text-anchor="middle" font-size="10.5" fill="var(--slate)">skill-creator</text>
+      <text x="310" y="141" text-anchor="middle" font-size="10" fill="var(--slate-soft)">eval · variance</text>
+      <line x1="390" y1="121" x2="434" y2="121" stroke="var(--signal)" stroke-width="1.8" marker-end="url(#arL)"/>
+
+      <rect x="436" y="80" width="170" height="82" rx="10" fill="var(--signal)" fill-opacity="0.10" stroke="var(--signal)"/>
+      <text x="521" y="106" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--signal-ink)">Pull request</text>
+      <text x="521" y="126" text-anchor="middle" font-size="10.5" fill="var(--slate)">main protetto · revisione</text>
+      <text x="521" y="141" text-anchor="middle" font-size="10" fill="var(--slate-soft)">de-coupling dal workspace</text>
+      <line x1="606" y1="121" x2="650" y2="121" stroke="var(--signal)" stroke-width="1.8" marker-end="url(#arL)"/>
+
+      <rect x="652" y="80" width="204" height="82" rx="10" fill="var(--ok)" fill-opacity="0.10" stroke="var(--ok)"/>
+      <text x="754" y="106" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ok)">Marketplace</text>
+      <text x="754" y="126" text-anchor="middle" font-size="10.5" fill="var(--slate)">install · disponibile a tutti</text>
+      <text x="754" y="141" text-anchor="middle" font-size="10" fill="var(--slate-soft)">una sola versione canonica</text>
+
+      <path d="M754,162 L754,208 L104,208 L104,162" fill="none" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="1.3" marker-end="url(#arL)"/>
+      <text x="429" y="224" text-anchor="middle" font-size="10.5" fill="var(--slate)">l'uso genera nuove esigenze → nuove skill</text>
+    </svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--reuse);border-color:var(--reuse)"></i> esigenza</span>
+      <span><i class="sw" style="background:var(--signal);border-color:var(--signal)"></i> creazione · condivisione</span>
+      <span><i class="sw" style="background:var(--ok);border-color:var(--ok)"></i> distribuzione</span>
+    </div>
+  </figure>
+
+  <ol class="steps">
+    <li><b>Nasce da un'esigenza.</b> Lavori alla commessa <code>141414</code> e ti accorgi di ripetere lo stesso
+      ragionamento — «tradurre le stringhe HMI rispettando le chiavi del DB», «diagnosticare un device muto in rete».
+      La skill nasce <strong>lì</strong>, in <code>.claude/skills/</code> del progetto.</li>
+    <li><b>Si crea e si valida.</b> Non a mano: con <code>skill-creator</code> (§4), che struttura lo
+      <code>SKILL.md</code>, affina la <code>description</code> per lo scatenamento corretto, e la mette alla prova
+      con degli eval.</li>
+    <li><b>Passa il filtro.</b> Prima di proporla, la si mette contro le tre domande del marketplace (§3, §5): esiste
+      già un tool deterministico? è comportamento nativo travestito? Claude farebbe peggio senza?</li>
+    <li><b>Si condivide via PR.</b> Il marketplace espone solo <code>main</code>, protetto: niente commit diretti.
+      La skill viene <strong>de-coupled</strong> dal workspace privato di chi l'ha scritta (path assoluti → relativi
+      o <code>$env:CLAUDE_PLUGIN_ROOT</code>) e proposta con una pull request al maintainer.</li>
+    <li><b>Si installa ovunque.</b> Approvata e mergiata, è disponibile a tutto il team con un <code>install</code>.
+      Una sola versione canonica, sempre passata da revisione.</li>
+  </ol>
+
+  <div class="callout key">
+    <h4>Perché nasce prima nel progetto</h4>
+    <p>Una skill che nasce «per il marketplace» in astratto è quasi sempre sbagliata: manca il banco di prova. Una
+      skill che nasce da un'esigenza reale è già stata usata, corretta, affinata sul campo <strong>prima</strong> di
+      essere proposta. La condivisione promuove qualcosa che <em>funziona già</em>, non un'ipotesi.</p>
+  </div>
+</section>
+
+<!-- ========== 3 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§3</span><h2>Prima di scriverla: esiste già?</h2></div>
+  <p>La domanda più importante viene <strong>prima</strong> di scrivere una riga: quel lavoro lo fa già qualcosa?
+    Due controlli, in quest'ordine.</p>
+
+  <h3>3.1 Esiste già un tool deterministico?</h3>
+  <p>Git, un linter, un analyzer, <code>docker compose</code>, uno script PowerShell. Se per quel compito esiste già
+    un tool deterministico che dà risposte <strong>certe</strong>, un'approssimazione LLM ha <strong>valore
+    negativo</strong>: aggiunge non-determinismo, consuma contesto, e azzera il vantaggio di uno strumento che produce
+    lo stesso risultato ogni volta.</p>
+  <div class="callout">
+    <h4>Esempio</h4>
+    <p>Una skill che «analizza il repo, cerca i metodi definiti e vede se sono chiamati» non ha senso: scrivi mezza
+      riga di prompt — «builda ed elimina i warning di codice morto» — e per il rigore usa un <strong>linter</strong>,
+      che esiste da quarant'anni.</p>
+  </div>
+
+  <h3>3.2 Esiste già una skill?</h3>
+  <p>Esistono skill universalmente note, riusabili, mantenute da altri. Prima di reinventarle, cercale — nel
+    marketplace Sistec e in quelli pubblici:</p>
+  <ul class="tight">
+    <li><code>caveman</code> — comunicazione ultra-compressa per risparmiare token
+      (<a href="https://getcaveman.dev/" target="_blank" rel="noopener">sito</a> ·
+      <a href="https://github.com/JuliusBrussee/caveman/tree/main" target="_blank" rel="noopener">github</a>).</li>
+    <li><code>openspec</code> — pattern spec-first per documentare le decisioni prima del codice
+      (<a href="https://openspec.dev" target="_blank" rel="noopener">sito</a> ·
+      <a href="https://github.com/Fission-AI/OpenSpec/" target="_blank" rel="noopener">github</a>).</li>
+    <li><code>graphify</code> — qualunque input → knowledge graph
+      (<a href="https://graphifylabs.ai" target="_blank" rel="noopener">sito</a> ·
+      <a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener">github</a>).</li>
+    <li><code>ponytail</code>, e in generale il catalogo del marketplace interno.</li>
+  </ul>
+  <p>Esempio di skill fatta bene da studiare:
+    <a href="https://github.com/multica-ai/andrej-karpathy-skills/blob/main/skills/karpathy-guidelines/SKILL.md" target="_blank" rel="noopener">karpathy-guidelines</a>.</p>
+
+  <div class="callout key">
+    <h4>Il filtro a tre domande</h4>
+    <p>Se sopravvive ai due controlli sopra, resta la domanda decisiva del marketplace (§5): <strong>«Claude farebbe
+      materialmente peggio SENZA questa skill?»</strong> Se togliendola Claude se la cava comunque — magari con un
+      prompt un po' più lungo — la skill non merita il marketplace.</p>
+  </div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§4</span><h2>Creare e validare con <code>skill-creator</code></h2></div>
+  <p>Le skill si scrivono bene con una skill: <code>skill-creator</code>. Non è un template statico — è un
+    assistente che <strong>crea</strong> una skill da zero, <strong>modifica</strong> e migliora quelle esistenti,
+    e soprattutto ne <strong>misura le prestazioni</strong>.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Cosa fa</th><th>A cosa serve</th></tr></thead>
+    <tbody>
+      <tr><td><b>Crea da zero</b></td><td>struttura la cartella e il <code>SKILL.md</code> — frontmatter, corpo,
+        file di supporto — secondo le convenzioni.</td></tr>
+      <tr><td><b>Modifica / ottimizza</b></td><td>rifinisce una skill esistente: corpo più chiaro, istruzioni meno
+        ambigue, file di supporto meglio separati.</td></tr>
+      <tr><td><b>Ottimizza la <code>description</code></b></td><td>è la parte che conta: la <code>description</code>
+        decide <em>quando</em> la skill scatta. La affina per una precisione di scatenamento più alta.</td></tr>
+      <tr><td><b>Esegue eval</b></td><td>mette la skill alla prova su casi reali per verificare che si attivi quando
+        deve — e <strong>non</strong> quando non deve (falsi positivi).</td></tr>
+      <tr><td><b>Benchmark + variance analysis</b></td><td>misura le prestazioni ripetutamente e ne quantifica la
+        variabilità: una skill che scatta il 60% delle volte non è pronta.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>4.1 Il punto critico — la <code>description</code></h3>
+  <p>Una skill perfetta nel corpo ma con una <code>description</code> vaga è inutile: non scatta mai, o scatta a
+    sproposito. Il valore di <code>skill-creator</code> è proprio qui — trasformare la <code>description</code> da
+    «cosa fa la skill» a «<strong>quando</strong> Claude deve usarla», e verificarlo con gli eval invece di
+    indovinare.</p>
+
+  <div class="callout">
+    <h4>Il ciclo di validazione</h4>
+    <ol class="steps">
+      <li><b>Scrivi</b> la skill (o falla scrivere a <code>skill-creator</code> dall'esigenza).</li>
+      <li><b>Esegui gli eval</b>: casi che <em>devono</em> attivarla e casi che <em>non devono</em>.</li>
+      <li><b>Misura la variance</b>: ripeti e guarda quanto è stabile lo scatenamento.</li>
+      <li><b>Affina la <code>description</code></b> finché la precisione è alta e stabile.</li>
+      <li><b>Solo allora</b> proponi la PR al marketplace.</li>
+    </ol>
+  </div>
+
+  <div class="callout key">
+    <h4>Validato prima di condividere</h4>
+    <p>Il marketplace non è il posto dove scoprire che una skill non scatta. Una skill entra in PR solo dopo essere
+      passata dagli eval e dal benchmark di <code>skill-creator</code>. È il controllo di qualità che rende sensata
+      la revisione umana successiva: il maintainer valuta il <em>merito</em>, non il funzionamento di base.</p>
+  </div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§5</span><h2>Il marketplace, tecnicamente</h2></div>
+  <p>Fin qui il marketplace è stato «il posto dove vivono le skill condivise». Concretamente è una cosa precisa:
+    un <strong>catalogo</strong> — un repository git (o una directory) che contiene un file manifesto
+    <code>.claude-plugin/marketplace.json</code>. Quel file elenca i <strong>plugin</strong>; ogni plugin
+    <em>impacchetta</em> le skill (e altro). Claude Code non installa skill sciolte: installa plugin da un
+    marketplace registrato.</p>
+
+  <div class="callout key">
+    <h4>Tre livelli — non confonderli</h4>
+    <p><b>Marketplace</b> = il catalogo (il repo con <code>marketplace.json</code>). <b>Plugin</b> = un'unità
+      installabile elencata nel catalogo; impacchetta uno o più componenti. <b>Skill</b> = un componente dentro un
+      plugin (una cartella con <code>SKILL.md</code>). Si installa il plugin; le sue skill diventano disponibili.</p>
+  </div>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Marketplace</th><th>Plugin</th><th>Skill</th></tr></thead>
+    <tbody>
+      <tr><td><b>Cos'è</b></td><td>catalogo git</td><td>unità installabile</td><td>comportamento</td></tr>
+      <tr><td><b>File chiave</b></td><td><code>.claude-plugin/marketplace.json</code></td><td><code>.claude-plugin/plugin.json</code></td><td><code>SKILL.md</code></td></tr>
+      <tr><td><b>Contiene</b></td><td>lista di plugin</td><td>skill, agent, hook, MCP server…</td><td>trigger + istruzioni</td></tr>
+      <tr><td><b>Azione</b></td><td>si registra (<code>add</code>)</td><td>si installa (<code>install</code>)</td><td>scatta da sola</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>5.1 Struttura del repository</h3>
+  <p>Un plugin non impacchetta solo skill: può portare <strong>agent</strong>, <strong>hook</strong>, <strong>MCP
+    server</strong>, output-style, tema. La skill è il componente più comune, ma il plugin è il contenitore.</p>
+  <pre><span class="c">// repo del marketplace</span>
+marketplace-sistec/
+├── .claude-plugin/
+│   └── marketplace.json          <span class="c">// IL CATALOGO: name, owner, plugins[]</span>
+└── plugins/
+    └── hmi-developer/            <span class="c">// un plugin</span>
+        ├── .claude-plugin/
+        │   └── plugin.json       <span class="c">// manifesto del plugin (solo name obbligatorio)</span>
+        ├── skills/
+        │   ├── translate/
+        │   │   └── SKILL.md       <span class="c">// una skill = una cartella con SKILL.md</span>
+        │   └── dpi-anchor-fix/
+        │       ├── SKILL.md
+        │       └── assets/probe.ps1   <span class="c">// engine deterministico bundlato</span>
+        ├── agents/               <span class="c">// subagent (opzionale)</span>
+        └── hooks/hooks.json       <span class="c">// hook (opzionale)</span></pre>
+
+  <p>Il <code>marketplace.json</code> elenca i plugin e da dove prenderli — path relativo nello stesso repo, oppure
+    un altro repo GitHub/git, un sottoalbero di monorepo, un pacchetto npm:</p>
+  <pre>{
+  <b>"name":</b> "marketplace-sistec",
+  <b>"owner":</b> { "name": "Sistec", "email": "..." },
+  <b>"plugins":</b> [
+    { "name": "hmi-developer",   "source": "./plugins/hmi-developer" },
+    { "name": "technical-writer","source": "./plugins/technical-writer" }
+  ]
+}</pre>
+
+  <h3>5.2 Registrare e installare</h3>
+  <p>Due verbi distinti: si <strong>registra</strong> il marketplace una volta, poi si <strong>installa</strong> il
+    plugin che serve. Le skill del plugin diventano subito disponibili — namespaciate col nome del plugin
+    (<code>/hmi-developer:translate</code>), ma nell'uso normale scattano da sole via <code>description</code>.</p>
+  <pre><span class="c"># 1. registra il marketplace (una volta) — GitHub, git URL, path locale</span>
+/plugin marketplace add sistec/marketplace-sistec
+/plugin marketplace add ./marketplace-sistec          <span class="c"># path locale</span>
+
+<span class="c"># 2. installa un plugin dal marketplace</span>
+/plugin install hmi-developer@marketplace-sistec
+
+<span class="c"># gestione</span>
+/plugin marketplace list          <span class="c"># marketplace registrati</span>
+/plugin list --enabled            <span class="c"># plugin installati</span>
+/plugin uninstall hmi-developer@marketplace-sistec
+/plugin                           <span class="c"># manager interattivo (Discover/Installed/Marketplaces/Errors)</span></pre>
+
+  <div class="callout">
+    <h4>La versione canonica è git</h4>
+    <p>La sorgente di un plugin può fissare un <strong>ramo/tag</strong> (<code>ref</code>) o un <strong>commit
+      esatto</strong> (<code>sha</code>). Con <code>sha</code> tutti installano <em>lo stesso identico</em> commit,
+      anche se il ramo a monte cambia. È così che «una sola versione canonica» smette di essere uno slogan e diventa
+      un fatto verificabile: il commit è l'identità.</p>
+  </div>
+
+  <div class="callout key">
+    <h4>Il marketplace Sistec</h4>
+    <p>È un repo git <strong>interno</strong>. Espone solo <code>main</code>, con <strong>regola di protezione</strong>:
+      niente commit diretti, si entra solo via <strong>pull request</strong> revisionata. Aggiungere una skill =
+      aprire una PR che tocca <code>plugins/&lt;plugin&gt;/skills/</code> e, se è un plugin nuovo, la voce in
+      <code>marketplace.json</code>. Per il <strong>cowork in ufficio</strong> stesso meccanismo, marketplace
+      diverso.</p>
+  </div>
+</section>
+
+<!-- ========== 6 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§6</span><h2>I criteri del marketplace</h2></div>
+  <p>Registrare e installare è meccanica (§5). La domanda vera è <strong>cosa</strong> merita di entrare nel catalogo.
+    Il marketplace Sistec espone solo <code>main</code> protetto: si entra solo via pull request revisionata — una
+    sola versione canonica, niente copie a mano che divergono.</p>
+
+  <div class="callout">
+    <h4>Perché la PR è l'unico canale</h4>
+    <p><code>main</code> protetto significa una sola versione, sempre passata da una revisione. La condivisione
+      diventa un atto tracciabile — esattamente come un merge in git. Per il <strong>cowork in ufficio</strong>
+      valgono le stesse regole, ma su un marketplace <strong>diverso</strong> (interno). Stesso meccanismo, ambito
+      diverso.</p>
+  </div>
+
+  <h3>6.1 Il filtro a tre domande</h3>
+  <p>Una skill merita il marketplace <strong>solo</strong> se passa tutte e tre. Se anche una risposta è «no» o
+    «forse», si scarta.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Domanda</th><th>Se «sì»…</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 · Lo fa già, meglio, un tool deterministico?</b> (git, linter, script)</td>
+        <td>scartata: l'LLM aggiunge solo non-determinismo.</td></tr>
+      <tr><td><b>2 · È comportamento nativo travestito?</b> (plan mode, <code>/clear</code>, Read/Grep/Glob)</td>
+        <td>scartata: ridondante, e rischia di peggiorare ciò che Claude già sa fare.</td></tr>
+      <tr><td><b>3 · Claude farebbe materialmente peggio SENZA?</b></td>
+        <td>se «no», scartata: deve portare <strong>giudizio semantico</strong> irrinunciabile.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.2 I due pattern che vincono</h3>
+  <div class="callout">
+    <h4>1 · Bundla + interpreta</h4>
+    <p>Uno script deterministico raccoglie dati grezzi (sonda la configurazione DPI delle form, scandisce le NIC di
+      rete); l'LLM <strong>interpreta</strong> il risultato e decide l'azione migliore. Il valore è nel giudizio, non
+      nella raccolta.</p>
+  </div>
+  <div class="callout">
+    <h4>2 · Puro semantico</h4>
+    <p>Un lavoro che nessun tool deterministico sa fare: tradurre testo HMI rispettando le chiavi esatte del database,
+      manutenere un .docx preservando commenti e revisioni, portare l'intento di una feature tra due codebase
+      divergenti.</p>
+  </div>
+  <p>Il punto comune: l'LLM non sostituisce un tool — fa ciò che il tool <strong>non può</strong> fare.</p>
+
+  <h3>6.3 Requisiti di forma</h3>
+  <ul class="tight">
+    <li><b>Self-contained.</b> Tutto nella cartella; gli engine deterministici (<code>.ps1</code>, <code>.py</code>)
+      bundlati come <code>assets/</code>.</li>
+    <li><b>De-coupled dal workspace.</b> Niente path assoluti (<code>C:\Users\Sistec 23\…</code>): relativi o
+      <code>$env:CLAUDE_PLUGIN_ROOT</code>.</li>
+    <li><b>Direttive chiare.</b> Le regole proprietarie riscritte in istruzioni esplicite, non appunti privati.</li>
+    <li><b>Validata.</b> Passata da eval e benchmark di <code>skill-creator</code> (§4).</li>
+  </ul>
+
+  <div class="callout key">
+    <h4>Specificità di dominio non squalifica</h4>
+    <p>A differenza di un marketplace pubblico, la specificità Sistec (lo schema <code>language_spv</code>, le
+      convenzioni <code>Sistec.Core</code>, i pattern .NET per l'automazione industriale) <strong>non</strong>
+      squalifica una skill — anzi, è il motivo per cui esiste: incapsula conoscenza di dominio che un LLM generico
+      non ha.</p>
+  </div>
+  <p>L'analisi completa — 6 skill integrate, 14 scartate, con la motivazione di ciascuna — è nel documento
+    <a href="sistec-marketplace-audit.html"><b>audit e criteri di integrazione</b></a>.</p>
+</section>
+
+<!-- ========== 7 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§7</span><h2>Esempi di skill — dev e non</h2></div>
+  <p>Una skill non serve solo a chi scrive codice. Il criterio è sempre lo stesso — giudizio semantico riusabile —
+    ma il dominio cambia. Ecco esempi reali (e plausibili) su entrambi i fronti.</p>
+
+  <h3>7.1 Sviluppo software</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Skill</th><th>Esigenza</th><th>Pattern</th></tr></thead>
+    <tbody>
+      <tr><td><code>hmi-developer/dpi-anchor-fix</code></td><td>form .NET 8 con bug di DPI e ancoraggio: uno script
+        segnala i controlli a rischio, l'LLM decide caso per caso quale correzione è sicura.</td>
+        <td><span class="tag t-ok">bundla + interpreta</span></td></tr>
+      <tr><td><code>hmi-developer/translate</code></td><td>tradurre stringhe HMI IT↔EN rispettando le chiavi esatte
+        di <code>language_spv</code>, inferendo il significato dal call-site.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+      <tr><td><code>hmi-developer/reconcile-solutions</code></td><td>portare l'intento di una feature tra due
+        soluzioni .NET divergenti — un merge semantico, non testuale.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+      <tr><td><code>hmi-developer/add-doc</code></td><td>aggiungere commenti/doc di codice secondo le convenzioni
+        del progetto, dove serve giudizio su cosa vale la pena documentare.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>6.2 Non solo codice</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Skill</th><th>Esigenza</th><th>Pattern</th></tr></thead>
+    <tbody>
+      <tr><td><code>technical-writer/maintain-manual</code></td><td>manuali <code>.docx</code> con commenti e
+        revisioni tracciate: inserire una sezione senza rompere i canali nascosti di Office Open XML.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+      <tr><td><code>device-spy/network-probe</code></td><td>device industriale muto in rete: uno script sonda NIC/IP/
+        driver, l'LLM diagnostica (link-flap vs conflitto IP vs driver fermo).</td>
+        <td><span class="tag t-ok">bundla + interpreta</span></td></tr>
+      <tr><td><code>spec-document</code></td><td>redigere una specifica tecnica nello stile engineering-sheet Sistec:
+        struttura, callout, figure, revisioni — dove il giudizio è nell'organizzare il contenuto.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+      <tr><td><code>graphify</code></td><td>trasformare documenti, appunti o codice in un knowledge graph
+        clusterizzato — utile a chiunque debba mappare relazioni, non solo agli sviluppatori.</td>
+        <td><span class="tag t-ok">puro semantico</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <h4>Il filo comune</h4>
+    <p>Dev o non-dev, la skill vale quando cattura una <strong>competenza</strong> — la sensibilità del tecnico di
+      rete che legge un output di <code>Get-NetAdapterStatistics</code>, la mano del technical writer che non rompe
+      un .docx, la convenzione di traduzione HMI — e la rende riusabile da chiunque, senza doverla rispiegare.</p>
+  </div>
+</section>
+
+<!-- ========== 8 ========== -->
+<section>
+  <div class="sec-head"><span class="sec-no">§8</span><h2>Riferimenti</h2></div>
+  <ul class="tight">
+    <li><a href="index.html"><b>Adozione Claude &amp; Claude Code in Sistec</b></a> — il documento principale: ciclo
+      agentico, contesto, prompt, skill, <code>CLAUDE.md</code>, condivisione (§9 è la panoramica di questo documento).</li>
+    <li><a href="sistec-marketplace-audit.html"><b>Marketplace Sistec — audit e criteri di integrazione</b></a> —
+      le 6 skill integrate, le 14 scartate, il filtro a tre domande e i pattern ricorrenti.</li>
+    <li><a href="sistec-wiki.html"><b>sistec-llm-wiki</b></a> — l'altro canale di condivisione: la conoscenza.</li>
+    <li><a href="https://code.claude.com/docs/en/claude-directory" target="_blank" rel="noopener"><b>Documentazione ufficiale Claude Code</b></a> — la directory <code>.claude</code>, skill e plugin.</li>
+    <li><a href="https://code.claude.com/docs/en/plugin-marketplaces" target="_blank" rel="noopener"><b>Plugin marketplaces</b></a> · <a href="https://code.claude.com/docs/en/plugins-reference" target="_blank" rel="noopener"><b>Plugins reference</b></a> · <a href="https://code.claude.com/docs/en/discover-plugins" target="_blank" rel="noopener"><b>Discover plugins</b></a> — schema <code>marketplace.json</code>/<code>plugin.json</code>, comandi <code>/plugin</code>, sorgenti git.</li>
+    <li><a href="https://github.com/multica-ai/andrej-karpathy-skills/blob/main/skills/karpathy-guidelines/SKILL.md" target="_blank" rel="noopener"><b>karpathy-guidelines</b></a> — esempio di skill fatta bene.</li>
+    <li><b>skill-creator</b> — la skill per creare, modificare e validare skill (eval, benchmark, variance).</li>
+    <li><b>caveman</b> (<a href="https://getcaveman.dev/" target="_blank" rel="noopener">sito</a>) ·
+      <b>openspec</b> (<a href="https://openspec.dev" target="_blank" rel="noopener">sito</a>) ·
+      <b>graphify</b> (<a href="https://graphifylabs.ai" target="_blank" rel="noopener">sito</a>) — skill note e riusabili.</li>
+  </ul>
+</section>
+
+<footer>
+  <span>Sistec · marketplace di plugin · skill: cosa sono, come nascono, come si condividono · 8 § · 1 figura</span>
+  <span>autorità: documentazione Claude Code · skill-creator · audit marketplace Sistec · 2026-07-24 · v1.0</span>
+</footer>
+</div>
+
+<script>
+  (function(){
+    var btn=document.getElementById('themebtn');
+    var root=document.documentElement;
+    root.setAttribute('data-theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+    btn.addEventListener('click',function(){
+      var dark=matchMedia('(prefers-color-scheme:dark)').matches;
+      var cur=root.getAttribute('data-theme')||(dark?'dark':'light');
+      root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+    });
+  })();
+</script>

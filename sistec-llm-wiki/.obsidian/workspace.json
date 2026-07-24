@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "7e05d8b69ea62d6f",
+        "id": "902015b95ef60b92",
         "type": "tabs",
         "children": [
           {
-            "id": "dfd81bc182a21a42",
+            "id": "717a5afa56089e53",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Vista grafo"
+              "type": "markdown",
+              "state": {
+                "file": "sistec-llm-wiki/wiki/organizzazioni/acme-spa.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "acme-spa"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "sistec-llm-wiki/wiki/organizzazioni/acme-spa.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Riferimenti"
+              "title": "Riferimenti a acme-spa"
             }
           },
           {
@@ -162,8 +167,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -176,9 +180,11 @@
       "bases:Crea nuova Base": false
     }
   },
-  "active": "dfd81bc182a21a42",
+  "active": "5bfa9b904e5a7a53",
   "lastOpenFiles": [
+    "sistec-llm-wiki/wiki/concetti/strangler-fig-pattern.md",
     "sistec-llm-wiki/raw/2026-06-17-kickoff-progetto-atlas.md",
+    "sistec-llm-wiki/log.md",
     "sistec-llm-wiki/index.md",
     "sistec-llm-wiki/wiki/persone/davide-conti.md",
     "sistec-llm-wiki/wiki/persone/laura-bianchi.md",
